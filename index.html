@@ -1,0 +1,2211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#fdeaf2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1c0d14" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="World of ASMR">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<script>window.WOA_STANDALONE = true;</script>
+<title>WORLD OF ASMR</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=DM+Mono:wght@400;500&family=Nunito:wght@600;800&display=swap">
+<style>
+/* Layout: one machine read top to bottom. Four letter keys and a stereo ear meter,
+   six area keys, a recessed tray of twelve pads, then a strip of controls. */
+:root {
+  --h: 350;            /* hue of the area you are in; script changes it */
+  --dl: 0;             /* per-pad lightness nudge */
+
+  /* Colour, as lightness and chroma numbers that every hue shares */
+  --bg-l: .955;   --bg-c: .022;      /* page ground */
+  --ink-l: .27;   --ink-c: .05;      /* main text */
+  --soft-l: .45;  --soft-c: .04;     /* secondary text */
+  --plate-l: .9;  --plate-c: .035;   /* recessed pad tray */
+  --rim-l: .82;
+  --key-l: .87;   --key-c: .085;     /* pad face */
+  --edge-l: .69;  --edge-c: .11;     /* pad side wall */
+  --label-l: .27; --label-c: .08;    /* text on a pad */
+  --hot-l: .58;   --hot-c: .2;       /* accent: lit LEDs, focus, slider */
+  --blank-l: .985; --blank-edge-l: .84; /* uncoloured keys */
+  --screen-l: .23; --screen-ink-l: .93; --bar-l: .82; /* meter screen */
+  --gloss: .45;   --shade: .16;
+  --good-l: .83;  --bad-l: .8;       /* right and wrong answers in the games */
+
+  /* Type */
+  --display: "Bagel Fat One", "Arial Rounded MT Bold", "Trebuchet MS", system-ui, sans-serif;
+  --body: "Nunito", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+/* Colours are built where the hue is set, so one key can carry its own hue. */
+:root, .hue {
+  --bg: oklch(var(--bg-l) var(--bg-c) var(--h));
+  --ink: oklch(var(--ink-l) var(--ink-c) var(--h));
+  --soft: oklch(var(--soft-l) var(--soft-c) var(--h));
+  --plate: oklch(var(--plate-l) var(--plate-c) var(--h));
+  --rim: oklch(var(--rim-l) var(--plate-c) var(--h));
+  --key: oklch(calc(var(--key-l) + var(--dl)) var(--key-c) var(--h));
+  --key-lit: oklch(calc(var(--key-l) + var(--dl) + .06) calc(var(--key-c) + .035) var(--h));
+  --edge: oklch(calc(var(--edge-l) + var(--dl)) var(--edge-c) var(--h));
+  --label: oklch(var(--label-l) var(--label-c) var(--h));
+  --hot: oklch(var(--hot-l) var(--hot-c) var(--h));
+  --blank: oklch(var(--blank-l) .012 var(--h));
+  --blank-edge: oklch(var(--blank-edge-l) .03 var(--h));
+  --screen: oklch(var(--screen-l) .04 var(--h));
+  --screen-ink: oklch(var(--screen-ink-l) .03 var(--h));
+  --bar: oklch(var(--bar-l) .13 var(--h));
+  --drop: oklch(.2 .05 var(--h) / var(--shade));
+  --shine: oklch(1 0 0 / var(--gloss));
+  --good: oklch(var(--good-l) .13 150);
+  --good-edge: oklch(calc(var(--good-l) - .17) .13 150);
+  --bad: oklch(var(--bad-l) .13 25);
+  --bad-edge: oklch(calc(var(--bad-l) - .17) .14 25);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-l: .185;  --bg-c: .028;
+    --ink-l: .94;  --ink-c: .02;
+    --soft-l: .74; --soft-c: .035;
+    --plate-l: .14; --plate-c: .025;
+    --rim-l: .27;
+    --key-l: .44;  --key-c: .1;
+    --edge-l: .29; --edge-c: .09;
+    --label-l: .97; --label-c: .03;
+    --hot-l: .8;   --hot-c: .15;
+    --blank-l: .3; --blank-edge-l: .2;
+    --screen-l: .115; --screen-ink-l: .9; --bar-l: .8;
+    --gloss: .13;  --shade: .55;
+    --good-l: .46; --bad-l: .47;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg-l: .185;  --bg-c: .028;
+  --ink-l: .94;  --ink-c: .02;
+  --soft-l: .74; --soft-c: .035;
+  --plate-l: .14; --plate-c: .025;
+  --rim-l: .27;
+  --key-l: .44;  --key-c: .1;
+  --edge-l: .29; --edge-c: .09;
+  --label-l: .97; --label-c: .03;
+  --hot-l: .8;   --hot-c: .15;
+  --blank-l: .3; --blank-edge-l: .2;
+  --screen-l: .115; --screen-ink-l: .9; --bar-l: .8;
+  --gloss: .13;  --shade: .55;
+  --good-l: .46; --bad-l: .47;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font: 600 1rem/1.45 var(--body);
+  -webkit-text-size-adjust: 100%;
+  transition: background-color .5s;
+}
+.wrap {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding-inline: 16px;
+  padding-block: 22px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ---------- keys: every pressable thing is one of these ---------- */
+.cap {
+  --lift: 6px;
+  --face: var(--key);
+  --side: var(--edge);
+  position: relative;
+  border: 0;
+  margin: 0 0 var(--lift);
+  border-radius: 16px;
+  background: var(--face) radial-gradient(120% 90% at 50% 0%, var(--shine), transparent 62%);
+  color: var(--label);
+  font: 800 .95rem/1.12 var(--body);
+  cursor: pointer;
+  box-shadow: 0 var(--lift) 0 var(--side), 0 calc(var(--lift) + 5px) 12px var(--drop);
+  transition: transform 70ms ease-out, box-shadow 70ms ease-out, background-color 140ms;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.cap:focus-visible { outline: 3px solid var(--hot); outline-offset: 3px; }
+.cap.blank {
+  --lift: 4px;
+  --face: var(--blank);
+  --side: var(--blank-edge);
+  color: var(--ink);
+  border-radius: 12px;
+  font-size: .86rem;
+}
+.cap.down,
+.cap.on,
+.cap:active:not(:disabled),
+.cap[aria-selected="true"],
+.cap[aria-checked="true"],
+.cap[aria-pressed="true"] {
+  transform: translateY(calc(var(--lift) - 1px));
+  box-shadow: 0 1px 0 var(--side), 0 2px 5px var(--drop);
+}
+.cap.down, .cap.on { --face: var(--key-lit); }
+.cap.blank[aria-selected="true"],
+.cap.blank[aria-checked="true"],
+.cap.blank[aria-pressed="true"] { --face: var(--key); --side: var(--edge); color: var(--label); }
+.cap:disabled { opacity: .45; cursor: default; }
+
+/* ---------- top: name and meter ---------- */
+.top { display: grid; gap: 16px 32px; align-items: end; }
+@media (min-width: 820px) { .top { grid-template-columns: auto minmax(0, 1fr); } }
+.brand { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.mark { margin: 0; display: flex; flex-direction: column; gap: 9px; font: inherit; }
+.mark-over {
+  font: 500 .8rem/1 var(--mono);
+  letter-spacing: .34em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+.letters { display: flex; gap: 10px; }
+.lk {
+  width: clamp(54px, 15vw, 76px);
+  aspect-ratio: 1;
+  max-width: 100%;
+  padding: 0;
+  border-radius: 18px;
+  font: 400 clamp(2rem, 8vw, 2.9rem)/1 var(--display);
+}
+.lede { margin: 0; max-width: 36ch; color: var(--soft); }
+.jump { display: flex; flex-wrap: wrap; gap: 8px; }
+.jump .cap { padding: 9px 13px; }
+
+.screen {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px 11px;
+  border-radius: 20px;
+  background: var(--screen);
+  color: var(--screen-ink);
+  box-shadow: inset 0 2px 10px oklch(0 0 0 / .4);
+  transition: background-color .5s;
+}
+.meter { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+.meter b { font: 500 .78rem/1 var(--mono); opacity: .7; }
+#scope { display: block; width: 100%; height: 54px; color: var(--bar); }
+@media (min-width: 820px) { #scope { height: 72px; } }
+.readout {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font: 400 .72rem/1.3 var(--mono);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.readout span { min-width: 0; overflow-wrap: anywhere; }
+.readout span:last-child { text-align: right; opacity: .75; }
+
+/* ---------- categories ---------- */
+.areas { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px 6px; }
+@media (min-width: 860px) { .areas { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 10px 8px; } }
+.cap.area {
+  min-width: 0;
+  min-height: 60px;
+  padding: 9px 3px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  font-size: .7rem;
+  overflow-wrap: anywhere;
+}
+@media (min-width: 560px) { .cap.area { font-size: .86rem; } }
+.area .dot { flex: none; width: 10px; height: 10px; border-radius: 50%; background: var(--hot); }
+.area[aria-selected="true"] .dot { background: var(--label); }
+.area .name { min-width: 0; }
+
+/* ---------- pad tray ---------- */
+.deck {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 14px 14px;
+  border-radius: 26px;
+  background: var(--plate);
+  box-shadow: inset 0 0 0 1px var(--rim), inset 0 3px 8px var(--drop);
+  transition: background-color .5s;
+}
+.deck-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; padding-inline: 4px; }
+.deck-head h2 { margin: 0; font: 400 1.75rem/1.05 var(--display); letter-spacing: .01em; text-wrap: balance; }
+.deck-head p { margin: 0; color: var(--soft); font-size: .92rem; order: 3; flex: 1 1 100%; }
+.deck-head h2 { order: 1; }
+.deck-head .auto, .deck-head .power { order: 2; }
+@media (min-width: 700px) {
+  .deck-head p { order: 2; flex: 0 1 auto; }
+  .deck-head .auto, .deck-head .power { order: 3; }
+  .mic .deck-head p { flex: 1 1 220px; }
+}
+.pads { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (min-width: 600px) { .pads { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; } }
+@media (min-width: 900px) { .pads { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; } }
+.pad {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 84px;
+  aspect-ratio: 1 / .84;
+  padding: 16px 8px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 599px) { .pad { padding-inline: 4px; font-size: .86rem; } }
+@media (min-width: 900px) { .pad { aspect-ratio: 1 / .66; } }
+.pad > * { pointer-events: none; }
+.pad .hint {
+  display: none;
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  font: 500 .68rem/1 var(--mono);
+  text-transform: uppercase;
+  opacity: .55;
+}
+.pad .led {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--edge);
+}
+.pad.on .led { background: var(--hot); box-shadow: 0 0 0 4px color-mix(in oklch, var(--hot) 28%, transparent); }
+.pad .tag {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 7px;
+  font: 500 .6rem/1 var(--mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  opacity: .7;
+}
+.pad .tag::after { content: "loop"; }
+.pad.on .tag::after { content: "playing"; }
+@media (hover: hover) and (pointer: fine) { .pad .hint, .area .hint { display: block; } }
+.area .hint { display: none; position: absolute; top: 6px; right: 8px; font: 500 .66rem/1 var(--mono); opacity: .5; }
+.deck-note { margin: 0; padding-inline: 4px; color: var(--soft); font-size: .84rem; max-width: 65ch; }
+.deck-note i { font: 500 .78em/1 var(--mono); font-style: normal; letter-spacing: .14em; text-transform: uppercase; }
+
+.auto { margin-left: auto; padding: 9px 13px; }
+
+/* ---------- the mic ---------- */
+.mic .deck-head { align-items: center; }
+.mic .deck-head p { max-width: 52ch; }
+.power { margin-left: auto; padding: 9px 13px; display: inline-flex; align-items: center; gap: 8px; }
+.lamp { width: 9px; height: 9px; border-radius: 50%; background: var(--blank-edge); }
+.power[aria-checked="true"] .lamp { background: var(--hot); box-shadow: 0 0 0 4px color-mix(in oklch, var(--hot) 28%, transparent); }
+.mic-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--screen);
+  color: var(--screen-ink);
+  box-shadow: inset 0 2px 10px oklch(0 0 0 / .4);
+  transition: background-color .5s, box-shadow .3s;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+.mic-stage.on { touch-action: none; cursor: grab; }
+.mic-stage.on.ultra { box-shadow: inset 0 2px 10px oklch(0 0 0 / .4), 0 0 0 2px var(--bar), 0 0 26px color-mix(in oklch, var(--bar) 45%, transparent); }
+#mic-cv { display: block; width: 100%; height: clamp(210px, 42vw, 300px); color: var(--screen-ink); }
+.mic-tag {
+  position: absolute;
+  bottom: 10px;
+  font: 500 .64rem/1 var(--mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  opacity: .65;
+  pointer-events: none;
+}
+.mic-tag.l { left: 14px; }
+.mic-tag.r { right: 14px; }
+.mic-off { position: absolute; inset: 0; display: grid; place-items: center; }
+.mic-off .cap { padding: 14px 20px; }
+.ctl.stack { flex-direction: column; align-items: stretch; gap: 9px; padding-inline: 4px; }
+.seg.grid { display: grid; gap: 8px 6px; }
+.seg.mats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (min-width: 760px) { .seg.mats { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+.seg.sens { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 540px; }
+.seg.grid .cap { min-width: 0; min-height: 46px; padding: 9px 5px; text-wrap: balance; overflow-wrap: anywhere; }
+.seg.sens .cap b { display: block; font: 400 1.02em/1.1 var(--display); letter-spacing: .04em; }
+
+.voice { margin-top: 4px; padding-top: 14px; border-top: 1px solid var(--rim); }
+.voice-note { margin: 0; color: var(--soft); font-size: .88rem; max-width: 62ch; }
+.voice-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.voice-row .cap { padding: 11px 14px; }
+.voice-status { margin: 0; min-height: 1.45em; font-size: .9rem; font-weight: 800; }
+
+/* ---------- games ---------- */
+.games .deck-head p { max-width: 52ch; }
+.g-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 6px; max-width: 540px; padding-inline: 4px; }
+.g-tabs .cap { min-width: 0; min-height: 46px; padding: 9px 5px; text-wrap: balance; }
+.g-body { display: flex; flex-direction: column; gap: 14px; }
+.g-status { margin: 0; padding-inline: 4px; min-height: 1.45em; font-weight: 800; }
+.g-actions { display: flex; flex-wrap: wrap; gap: 8px; padding-inline: 4px; }
+.g-actions .cap { padding: 11px 15px; }
+.bubs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 9px; padding: 4px; touch-action: pan-y; }
+@media (min-width: 700px) { .bubs { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; } }
+.bub {
+  aspect-ratio: 1;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background: var(--key) radial-gradient(circle at 34% 28%, var(--shine), transparent 48%);
+  box-shadow: inset 0 -5px 9px var(--drop), 0 3px 5px var(--drop);
+  transition: transform 90ms, background-color 90ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.bub.popped { background: var(--rim); box-shadow: inset 0 2px 5px var(--drop); transform: scale(.86); cursor: default; }
+.bub:focus-visible { outline: 3px solid var(--hot); outline-offset: 2px; }
+.cats, .opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; max-width: 540px; padding-inline: 4px; }
+.catkey { min-width: 0; min-height: 86px; font-size: 1.05rem; }
+.opt { min-width: 0; min-height: 60px; padding: 10px 8px; text-wrap: balance; }
+.opt .mark { display: block; margin-top: 5px; font: 500 .62rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.cap.opt.right { --face: var(--good); --side: var(--good-edge); color: var(--label); }
+.cap.opt.wrong { --face: var(--bad); --side: var(--bad-edge); color: var(--label); }
+
+/* ---------- controls ---------- */
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 26px; padding-inline: 4px; }
+.ctl { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; min-width: 0; }
+.ctl-label {
+  font: 500 .72rem/1 var(--mono);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+.seg { display: flex; gap: 6px; }
+.seg .cap, .stop { padding: 10px 13px; }
+.vol { flex: 1 1 180px; max-width: 300px; flex-wrap: nowrap; }
+.vol input { flex: 1 1 auto; min-width: 0; height: 28px; accent-color: var(--hot); }
+.foot { margin: 0; padding-inline: 4px; color: var(--soft); font-size: .84rem; max-width: 65ch; }
+
+@media (prefers-reduced-motion: reduce) {
+  body, .deck, .screen, .cap, .mic-stage { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1 class="mark">
+        <span class="mark-over">World of</span>
+        <span class="letters" id="letters">
+          <button type="button" class="cap hue lk" style="--h:350" data-n="0">A</button>
+          <button type="button" class="cap hue lk" style="--h:85" data-n="1">S</button>
+          <button type="button" class="cap hue lk" style="--h:235" data-n="2">M</button>
+          <button type="button" class="cap hue lk" style="--h:310" data-n="3">R</button>
+        </span>
+      </h1>
+      <p class="lede">Ten categories, 120 sounds, three games and a mic you can stroke. Put headphones on, then press everything.</p>
+      <nav class="jump" aria-label="Jump to">
+        <button type="button" class="cap blank" data-go="deck">Sounds</button>
+        <button type="button" class="cap blank" data-go="mic">The Mic</button>
+        <button type="button" class="cap blank" data-go="games">Games</button>
+      </nav>
+    </div>
+    <div class="screen">
+      <div class="meter"><b>L</b><canvas id="scope" aria-hidden="true"></canvas><b>R</b></div>
+      <div class="readout"><span id="now">Press a pad to start</span><span id="loopcount"></span></div>
+    </div>
+  </header>
+
+  <nav class="areas" id="areas" role="tablist" aria-label="Categories"></nav>
+
+  <main class="deck" id="deck" role="tabpanel">
+    <div class="deck-head"><h2 id="zname"></h2><p id="zblurb"></p><button type="button" class="cap blank auto" id="auto" aria-pressed="false">Auto play</button></div>
+    <div class="pads" id="pads"></div>
+    <p class="deck-note">Pads marked <i>loop</i> keep playing until you press them again. They carry on when you change category, so you can tap over the top of them.</p>
+  </main>
+
+  <section class="deck mic" id="mic" aria-labelledby="mic-h">
+    <div class="deck-head">
+      <h2 id="mic-h">The Mic</h2>
+      <p>Stroke it, scratch it or tap it. Touch the left side for your left ear and the right side for your right.</p>
+      <button type="button" class="cap blank power" id="mic-power" role="switch" aria-checked="false"><span class="lamp"></span><span id="mic-power-t">Mic off</span></button>
+    </div>
+    <div class="mic-stage" id="mic-stage" role="group" aria-label="A stereo microphone with a left and a right capsule. When the mic is on, stroke or tap it to hear the touch.">
+      <canvas id="mic-cv" aria-hidden="true"></canvas>
+      <span class="mic-tag l">Left ear</span>
+      <span class="mic-tag r">Right ear</span>
+      <div class="mic-off" id="mic-off"><button type="button" class="cap" id="mic-wake">Turn the mic on</button></div>
+    </div>
+    <div class="ctl stack">
+      <span class="ctl-label" id="matlab">Touch it with</span>
+      <div class="seg grid mats" role="radiogroup" aria-labelledby="matlab" id="mats"></div>
+    </div>
+    <div class="ctl stack">
+      <span class="ctl-label" id="senslab">How sensitive</span>
+      <div class="seg grid sens" role="radiogroup" aria-labelledby="senslab" id="sens">
+        <button type="button" class="cap blank" role="radio" id="sens-0" data-s="0" aria-checked="true">Sensitive</button>
+        <button type="button" class="cap blank" role="radio" id="sens-1" data-s="1" aria-checked="false">Very sensitive</button>
+        <button type="button" class="cap blank" role="radio" id="sens-2" data-s="2" aria-checked="false"><b>ULTRA</b> sensitive</button>
+      </div>
+    </div>
+    <div class="ctl stack voice">
+      <span class="ctl-label" id="voicelab">Say it in ASMR</span>
+      <p class="voice-note" id="voice-note"></p>
+      <div class="voice-row">
+        <button type="button" class="cap" id="voice-rec" hidden>Record my voice</button>
+        <button type="button" class="cap blank" id="voice-pick">Choose a recording</button>
+        <input type="file" id="voice-file" accept="audio/*" hidden>
+        <button type="button" class="cap blank" id="voice-play" disabled>Play it back</button>
+        <div class="seg" role="radiogroup" aria-labelledby="voicelab" id="voice-mode">
+          <button type="button" class="cap blank" role="radio" id="voice-whisper" data-v="whisper" aria-checked="true">Whisper</button>
+          <button type="button" class="cap blank" role="radio" id="voice-soft" data-v="soft" aria-checked="false">Soft voice</button>
+        </div>
+      </div>
+      <p class="voice-status" id="voice-status" role="status"></p>
+    </div>
+  </section>
+
+  <section class="deck games" id="games" aria-labelledby="games-h">
+    <div class="deck-head">
+      <h2 id="games-h">Games</h2>
+      <p>Three ways to play with the sounds.</p>
+    </div>
+    <div class="g-tabs" role="radiogroup" aria-labelledby="games-h" id="game-tabs">
+      <button type="button" class="cap blank" role="radio" id="game-pop" data-g="pop" aria-checked="true">Bubble Wrap</button>
+      <button type="button" class="cap blank" role="radio" id="game-cat" data-g="cat" aria-checked="false">Copy Cat</button>
+      <button type="button" class="cap blank" role="radio" id="game-quiz" data-g="quiz" aria-checked="false">Mystery Sound</button>
+    </div>
+    <div class="g-body" id="game-body"></div>
+  </section>
+
+  <section class="controls" aria-label="Sound controls">
+    <div class="ctl">
+      <span class="ctl-label" id="earlab">Ear</span>
+      <div class="seg" role="radiogroup" aria-labelledby="earlab" id="ears">
+        <button type="button" class="cap blank" role="radio" id="ear-left" data-ear="left" aria-checked="false">Left</button>
+        <button type="button" class="cap blank" role="radio" id="ear-both" data-ear="both" aria-checked="true">Both</button>
+        <button type="button" class="cap blank" role="radio" id="ear-right" data-ear="right" aria-checked="false">Right</button>
+        <button type="button" class="cap blank" role="radio" id="ear-drift" data-ear="drift" aria-checked="false">Drift</button>
+      </div>
+    </div>
+    <div class="ctl vol">
+      <label class="ctl-label" for="vol">Volume</label>
+      <input id="vol" type="range" min="0" max="100" value="80">
+    </div>
+    <button type="button" id="stop" class="cap blank stop" disabled>Stop all</button>
+  </section>
+
+  <p class="foot">Quiet on a phone? Switch silent mode off and turn the volume up. Nothing here is a recording. Every sound is made fresh in your browser, so no two presses are quite the same. The mic is drawn on the screen. It feels your touch and never listens to the room.</p>
+</div>
+
+<script>
+'use strict';
+/* =====================================================================
+   Sound engine. Everything is synthesised: filtered noise, short tones,
+   struck-object partials and a few pre-made textures (crackle, water).
+   ===================================================================== */
+const rnd = (a, b) => a + Math.random() * (b - a);
+const sgn = () => (Math.random() < 0.5 ? -1 : 1);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+
+const SR = 44100;
+let RAW = null;
+function genRaw() {
+  if (RAW) return RAW;
+  const X = Math.floor(0.05 * SR);
+  // Each texture is made a little long, then its tail is folded into its head so it loops without a seam.
+  const mk = (sec, fill, norm) => {
+    const len = Math.floor(sec * SR), out = [];
+    for (let c = 0; c < 2; c++) {
+      const tmp = new Float32Array(len + X); fill(tmp);
+      const d = new Float32Array(len); d.set(tmp.subarray(0, len));
+      for (let i = 0; i < X; i++) { const w = i / X; d[i] = tmp[i] * w + tmp[len + i] * (1 - w); }
+      let sum = 0, peak = 0;
+      for (let i = 0; i < len; i++) { sum += d[i] * d[i]; const a = Math.abs(d[i]); if (a > peak) peak = a; }
+      const k = norm === 'peak' ? 0.92 / (peak || 1) : 0.25 / (Math.sqrt(sum / len) || 1);
+      for (let i = 0; i < len; i++) d[i] *= k;
+      out.push(d);
+    }
+    return out;
+  };
+  const white = d => { for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; };
+  const pink = d => {
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < d.length; i++) {
+      const w = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + w * 0.0555179; b1 = 0.99332 * b1 + w * 0.0750759; b2 = 0.969 * b2 + w * 0.153852;
+      b3 = 0.8665 * b3 + w * 0.3104856; b4 = 0.55 * b4 + w * 0.5329522; b5 = -0.7616 * b5 - w * 0.016898;
+      d[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362; b6 = w * 0.115926;
+    }
+  };
+  const brown = d => { let l = 0; for (let i = 0; i < d.length; i++) { l = (l + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = l; } };
+  // Crackle: random tiny bursts of noise, each with its own loudness and length.
+  const crackle = (rate, lo, hi) => d => {
+    const p = rate / SR; let e = 0, dec = 0;
+    for (let i = 0; i < d.length; i++) {
+      if (Math.random() < p) { e = Math.pow(Math.random(), 3) * 0.9 + 0.1; dec = Math.exp(-1 / (rnd(lo, hi) * SR)); }
+      d[i] = e > 0.0005 ? (Math.random() * 2 - 1) * e : 0;
+      e *= dec;
+    }
+  };
+  // Water: hundreds of little upward chirps, the sound of bubbles closing.
+  const water = d => {
+    const n = Math.floor(95 * d.length / SR);
+    for (let k = 0; k < n; k++) {
+      const len = Math.floor(rnd(0.012, 0.06) * SR), st = Math.floor(Math.random() * (d.length - len));
+      const f0 = 500 * Math.pow(6, Math.random()), sw = rnd(1.2, 2), amp = Math.pow(Math.random(), 2) * 0.9 + 0.1;
+      let ph = 0;
+      for (let i = 0; i < len; i++) {
+        const x = i / len; ph += 2 * Math.PI * f0 * (1 + (sw - 1) * x) / SR;
+        d[st + i] += Math.sin(ph) * amp * Math.exp(-5 * x) * Math.min(1, i / 40);
+      }
+    }
+  };
+  // Rub: noise whose loudness wobbles the way friction does. Things catch, slip and catch again.
+  const rub = (rate, sharp, floor) => d => {
+    const period = SR / rate; let e = 0, target = 0, n = 0;
+    for (let i = 0; i < d.length; i++) {
+      if (n-- <= 0) { target = Math.pow(Math.random(), sharp); n = period * rnd(0.4, 1.6); }
+      e += (target - e) * 3 / period;
+      d[i] = (Math.random() * 2 - 1) * (floor + (1 - floor) * e);
+    }
+  };
+  // Foil: every crease rings for a moment at its own high pitch.
+  const foil = d => {
+    const n = Math.floor(28 * d.length / SR);
+    for (let k = 0; k < n; k++) {
+      const len = Math.floor(rnd(0.002, 0.012) * SR), st = Math.floor(Math.random() * (d.length - len));
+      const w = 2 * Math.PI * rnd(3000, 10000) / SR, amp = Math.pow(Math.random(), 2.5) * 0.9 + 0.1;
+      for (let i = 0; i < len; i++) { const x = i / len; d[st + i] += (Math.sin(w * i) * 0.6 + (Math.random() * 2 - 1) * 0.4 * (1 - x)) * amp * Math.exp(-6 * x); }
+    }
+  };
+  RAW = {
+    white: mk(2, white), pink: mk(3, pink), brown: mk(3, brown),
+    crk1: mk(4, crackle(18, 0.0004, 0.003), 'peak'),
+    crk2: mk(3, crackle(110, 0.0003, 0.002), 'peak'),
+    crk3: mk(3, crackle(700, 0.0002, 0.001), 'peak'),
+    water: mk(3, water, 'peak'),
+    rub: mk(3, rub(35, 1.5, 0.15)),
+    scratch: mk(3, rub(110, 3, 0.04)),
+    foil: mk(4, foil, 'peak')
+  };
+  return RAW;
+}
+
+const BELL = (() => { const c = new Float32Array(48); for (let i = 0; i < 48; i++) c[i] = Math.pow(Math.sin(Math.PI * Math.pow(i / 47, 0.85)), 1.6); return c; })();
+
+function makeEngine(ctx, opt) {
+  const flat = opt && opt.flat;
+  const raw = genRaw(), bufs = {};
+  for (const k in raw) {
+    const b = ctx.createBuffer(2, raw[k][0].length, SR);
+    b.getChannelData(0).set(raw[k][0]); b.getChannelData(1).set(raw[k][1]);
+    bufs[k] = b;
+  }
+  const hasPan = !!ctx.createStereoPanner;
+  const bus = ctx.createGain();
+  let verb = null, ear = null, lfoG = null, vol = null, anL = null, anR = null;
+  if (!flat) {
+    // A small, soft room so the sounds sit somewhere.
+    const sr = ctx.sampleRate, irLen = Math.floor(1.3 * sr), ir = ctx.createBuffer(2, irLen, sr);
+    for (let c = 0; c < 2; c++) {
+      const d = ir.getChannelData(c); let lp = 0;
+      for (let i = 0; i < irLen; i++) { const x = i / sr; lp += ((Math.random() * 2 - 1) - lp) * 0.45; d[i] = lp * (0.7 * Math.exp(-x / 0.04) + 0.3 * Math.exp(-x / 0.4)); }
+    }
+    verb = ctx.createConvolver(); verb.buffer = ir;
+    const room = ctx.createGain(); room.gain.value = 0.05;
+    ear = hasPan ? ctx.createStereoPanner() : ctx.createGain();
+    // No compressor: it would duck the rain every time you tapped. A soft clipper keeps a pile-up of pads from crackling.
+    const post = ctx.createGain(); post.gain.value = 0.5;
+    const clip = ctx.createWaveShaper(), curve = new Float32Array(1025);
+    for (let i = 0; i < 1025; i++) { const x = i / 512 - 1; curve[i] = 0.9 * Math.tanh(2 * x) / Math.tanh(2); }
+    clip.curve = curve; clip.oversample = '2x';
+    vol = ctx.createGain(); vol.gain.value = 0.8;
+    bus.connect(ear); bus.connect(room); room.connect(verb); verb.connect(ear);
+    ear.connect(post); post.connect(clip); clip.connect(vol); vol.connect(ctx.destination);
+    const split = ctx.createChannelSplitter(2); vol.connect(split);
+    anL = ctx.createAnalyser(); anR = ctx.createAnalyser();
+    [anL, anR].forEach((a, i) => { a.fftSize = 1024; a.smoothingTimeConstant = 0.72; a.minDecibels = -88; a.maxDecibels = -22; split.connect(a, i); });
+    const lfo = ctx.createOscillator(); lfo.frequency.value = 0.07;
+    lfoG = ctx.createGain(); lfoG.gain.value = 0; lfo.connect(lfoG);
+    if (ear.pan) lfoG.connect(ear.pan);
+    lfo.start();
+  }
+
+  // The mic has its own little signal chain: a touch of low thump, some air on top, then the sensitivity gain.
+  const micIn = ctx.createGain(), micLow = ctx.createBiquadFilter(), micHigh = ctx.createBiquadFilter(), micOut = ctx.createGain();
+  micLow.type = 'lowshelf'; micLow.frequency.value = 200; micLow.gain.value = 4;
+  micHigh.type = 'highshelf'; micHigh.frequency.value = 4500; micHigh.gain.value = 0;
+  micOut.gain.value = 0;
+  micIn.connect(micLow); micLow.connect(micHigh); micHigh.connect(micOut); micOut.connect(bus);
+  let hiss = null;
+
+  let dest = bus, trim = 1, cur = null;
+  const loops = new Set();
+  let timer = 0;
+
+  function env(p, t, o) {
+    const g = (o.g == null ? 0.5 : o.g) * trim * (o.k || 1), dur = o.dur;
+    if (o.bell) { const c = new Float32Array(48); for (let i = 0; i < 48; i++) c[i] = BELL[i] * g; p.value = 0; p.setValueCurveAtTime(c, t, dur); return; }
+    const a = Math.min(o.a == null ? 0.002 : o.a, dur * 0.6);
+    p.setValueAtTime(0, t);
+    p.linearRampToValueAtTime(g, t + a);
+    if (o.r != null) { p.setValueAtTime(g, t + Math.max(a, dur - o.r)); p.linearRampToValueAtTime(0, t + dur); }
+    else p.exponentialRampToValueAtTime(0.0001, t + dur);
+  }
+  function filt(n, t, o) {
+    const add = (type, f, f2, q) => {
+      const b = ctx.createBiquadFilter(); b.type = type; b.frequency.setValueAtTime(f, t);
+      if (f2) b.frequency.exponentialRampToValueAtTime(f2, t + (o.ft || o.dur));
+      b.Q.value = q; n.connect(b); n = b;
+    };
+    if (o.bp) add('bandpass', o.bp, o.bp2, o.q == null ? 1 : o.q);
+    if (o.hp) add('highpass', o.hp, o.hp2, 0.7);
+    if (o.lp) add('lowpass', o.lp, o.lp2, 0.7);
+    return n;
+  }
+  function out(n, t, o) {
+    if (hasPan) {
+      const p = ctx.createStereoPanner();
+      p.pan.setValueAtTime(o.pan == null ? rnd(-0.2, 0.2) : o.pan, t);
+      if (o.pan2 != null && o.dur) p.pan.linearRampToValueAtTime(o.pan2, t + o.dur);
+      n.connect(p); n = p;
+    }
+    n.connect(dest);
+    if (o.rev && verb) { const w = ctx.createGain(); w.gain.value = o.rev; n.connect(w); w.connect(verb); }
+  }
+  // Narrow filters throw most of the noise away, so give some back.
+  function makeup(o, c) {
+    if (o.bp) return Math.max(0.8, Math.min(7, Math.sqrt(8000 / (o.bp / (o.q == null ? 1 : o.q)))));
+    if (o.lp && c !== 'pink' && c !== 'brown' && c !== 'water') return Math.min(5, Math.sqrt(8000 / o.lp));
+    return 1;
+  }
+  /* N: a burst or swell of noise or texture */
+  function N(t, o) {
+    const c = o.c || 'white', s = ctx.createBufferSource();
+    s.buffer = bufs[c]; s.loop = true; s.playbackRate.value = o.rate || 1;
+    const g = ctx.createGain(); o.k = makeup(o, c); env(g.gain, t, o);
+    filt(s, t, o).connect(g); out(g, t, o);
+    s.start(t, Math.random() * (s.buffer.duration - 0.1)); s.stop(t + o.dur + 0.05);
+  }
+  /* T: a tone, optionally sliding in pitch */
+  function T(t, o) {
+    const s = ctx.createOscillator(); s.type = o.w || 'sine';
+    s.frequency.setValueAtTime(o.f, t);
+    if (o.f2) s.frequency.exponentialRampToValueAtTime(o.f2, t + (o.ft || o.dur));
+    if (o.f3) s.frequency.exponentialRampToValueAtTime(o.f3, t + o.dur);
+    const g = ctx.createGain(); o.k = o.bp && o.w && o.w !== 'sine' ? 3 : 1; env(g.gain, t, o);
+    filt(s, t, o).connect(g); out(g, t, o);
+    s.start(t); s.stop(t + o.dur + 0.05);
+  }
+  /* M: something hard being struck: ringing partials plus the knock itself */
+  function M(t, o) {
+    const pan = o.pan == null ? rnd(-0.3, 0.3) : o.pan, g = o.g == null ? 0.3 : o.g, damp = o.damp == null ? 0.6 : o.damp;
+    o.fs.forEach((f, i) => T(t, { f, dur: (o.d || 0.1) / (1 + i * damp), g: g / (1 + i * 0.8), a: 0.0005, pan, rev: o.rev }));
+    if (o.hit !== 0) N(t, { dur: o.hd || 0.012, g: (o.hit == null ? 0.5 : o.hit) * g, bp: o.hf || o.fs[0] * 2, q: 0.7, a: 0.0003, pan, rev: o.rev });
+  }
+  /* K: a single dry tick */
+  function K(t, o) { N(t, { dur: o.dur || 0.02, g: o.g == null ? 0.4 : o.g, bp: o.f, q: o.q == null ? 4 : o.q, a: 0.0004, pan: o.pan, rev: o.rev }); }
+  /* D: one water drop */
+  function D(t, f, g, pan) {
+    T(t, { f, f2: f * rnd(1.6, 2.1), ft: 0.03, dur: rnd(0.07, 0.11), g, a: 0.002, pan, rev: 0.25 });
+    N(t, { dur: 0.004, g: g * 0.2, hp: 3000, a: 0.0003, pan });
+  }
+  /* H: a held layer for looping pads */
+  function H(o) {
+    const now = ctx.currentTime, s = o.w ? ctx.createOscillator() : ctx.createBufferSource();
+    if (o.w) { s.type = o.w; s.frequency.value = o.f; }
+    else { s.buffer = bufs[o.c || 'white']; s.loop = true; s.playbackRate.value = o.rate || 1; }
+    let n = filt(s, now, o);
+    const g = ctx.createGain();
+    g.gain.value = (o.g == null ? 0.3 : o.g) * trim * (o.w ? 1 : makeup(o, o.c || 'white'));
+    n.connect(g); n = g;
+    (o.am || []).forEach(([w, rate, depth]) => {
+      const a = ctx.createGain(); a.gain.value = 1 - depth;
+      const l = ctx.createOscillator(); l.type = w; l.frequency.value = rate;
+      const lg = ctx.createGain(); lg.gain.value = depth;
+      l.connect(lg); lg.connect(a.gain); l.start(now); cur.srcs.push(l);
+      n.connect(a); n = a;
+    });
+    if (hasPan) { const p = ctx.createStereoPanner(); p.pan.value = o.pan || 0; n.connect(p); n = p; }
+    n.connect(dest);
+    if (o.w) s.start(now); else s.start(now, Math.random() * (s.buffer.duration - 0.1));
+    cur.srcs.push(s);
+  }
+
+  function playAt(pad, t) { dest = bus; trim = pad.trim || 1; pad.fn(t); trim = 1; }
+  function play(pad) { playAt(pad, ctx.currentTime + 0.005); }
+  function pumpTo(end) {
+    loops.forEach(L => {
+      if (!L.sched) return;
+      dest = L.g; trim = L.trim;
+      let n = 0;
+      while (L.next < end && n++ < 400) L.next = L.sched(L.next);
+    });
+    dest = bus; trim = 1;
+  }
+  function pump() {
+    const now = ctx.currentTime;
+    loops.forEach(L => { if (L.sched && L.next < now) L.next = now + 0.02; });
+    pumpTo(now + 0.4);
+  }
+  function startLoop(pad) {
+    const now = ctx.currentTime, g = ctx.createGain();
+    g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(1, now + 0.5); g.connect(bus);
+    const L = { g, srcs: [], next: now + 0.06, trim: pad.trim || 1, sched: null };
+    dest = g; trim = L.trim; cur = L;
+    L.sched = pad.loop() || null;
+    dest = bus; trim = 1; cur = null;
+    loops.add(L);
+    if (!flat && !timer) timer = setInterval(pump, 110);
+    if (!flat) pump();
+    return L;
+  }
+  function stopLoop(L) {
+    loops.delete(L);
+    const now = ctx.currentTime;
+    L.g.gain.cancelScheduledValues(now); L.g.gain.setTargetAtTime(0, now, 0.12);
+    setTimeout(() => { L.srcs.forEach(s => { try { s.stop(); } catch (e) {} }); try { L.g.disconnect(); } catch (e) {} }, 900);
+    if (!loops.size && timer) { clearInterval(timer); timer = 0; }
+  }
+  function playBuffer(buf, done) {
+    const src = ctx.createBufferSource(), g = ctx.createGain();
+    src.buffer = buf; src.connect(g); g.connect(bus);
+    src.onended = () => { try { g.disconnect(); } catch (e) {} if (done) done(); };
+    src.start(ctx.currentTime + 0.02);
+    return () => { try { src.stop(); } catch (e) {} };
+  }
+  function setVol(v) { if (vol) vol.gain.setTargetAtTime(v, ctx.currentTime, 0.02); }
+  function setEar(mode) {
+    if (!ear || !ear.pan) return;
+    const now = ctx.currentTime;
+    ear.pan.setTargetAtTime(mode === 'left' ? -0.92 : mode === 'right' ? 0.92 : 0, now, 0.12);
+    lfoG.gain.setTargetAtTime(mode === 'drift' ? 0.9 : 0, now, 0.3);
+  }
+  /* One finger on the mic: a few held layers whose loudness and brightness follow how fast it moves. */
+  const lerp = (a, b, x) => a + (b - a) * x;
+  function micVoice(mat) {
+    const now = ctx.currentTime, sum = ctx.createGain(), pan = hasPan ? ctx.createStereoPanner() : null;
+    if (pan) { sum.connect(pan); pan.connect(micIn); } else sum.connect(micIn);
+    const layers = mat.layers.map(L => {
+      const s = L.w ? ctx.createOscillator() : ctx.createBufferSource(), fr = L.bp || L.lp || L.hp;
+      if (L.w) { s.type = L.w; s.frequency.value = L.f[0]; }
+      else { s.buffer = bufs[L.c]; s.loop = true; s.playbackRate.value = L.rate ? L.rate[0] : 1; }
+      const f = ctx.createBiquadFilter(); f.type = L.bp ? 'bandpass' : L.lp ? 'lowpass' : 'highpass';
+      f.frequency.value = fr[0]; f.Q.value = L.q == null ? 0.7 : L.q;
+      const g = ctx.createGain(); g.gain.value = 0;
+      s.connect(f); f.connect(g); g.connect(sum);
+      if (L.w) s.start(now); else s.start(now, Math.random() * (s.buffer.duration - 0.1));
+      const mid = (fr[0] + fr[1]) / 2;
+      const k = L.w ? 3 : makeup(L.bp ? { bp: mid, q: L.q == null ? 0.7 : L.q } : L.lp ? { lp: mid } : {}, L.c);
+      return { L, s, f, g, fr, k };
+    });
+    return {
+      set(level, x, near) {
+        const t = ctx.currentTime;
+        layers.forEach(v => {
+          const L = v.L, amp = Math.pow(level, L.pw || 1) * (L.body ? 1 : 0.35 + 0.65 * near);
+          v.g.gain.setTargetAtTime(amp * L.g * v.k * (mat.trim || 1), t, 0.03);
+          v.f.frequency.setTargetAtTime(lerp(v.fr[0], v.fr[1], level) * (L.hp || L.body ? 1 : 0.7 + 0.3 * near), t, 0.05);
+          if (L.rate) v.s.playbackRate.setTargetAtTime(lerp(L.rate[0], L.rate[1], level), t, 0.05);
+          if (L.w) v.s.frequency.setTargetAtTime(lerp(L.f[0], L.f[1], level) * rnd(0.93, 1.07), t, 0.03);
+        });
+        if (pan) pan.pan.setTargetAtTime(x, t, 0.04);
+      },
+      stop() {
+        sum.gain.setTargetAtTime(0, ctx.currentTime, 0.05);
+        setTimeout(() => { layers.forEach(v => { try { v.s.stop(); } catch (e) {} }); try { (pan || sum).disconnect(); } catch (e) {} }, 450);
+      }
+    };
+  }
+  function micTap(mat, x, gain) { dest = micIn; trim = (mat.tapTrim || 1) * gain; mat.tap(ctx.currentTime + 0.003, x); dest = bus; trim = 1; }
+  const MIC_GAIN = [0.8, 1.25, 1.75], MIC_AIR = [0, 2, 4], MIC_HISS = [0, 0.012, 0.03];
+  function setMic(on, sens) {
+    const t = ctx.currentTime, want = on ? MIC_HISS[sens] : 0;
+    micOut.gain.setTargetAtTime(on ? MIC_GAIN[sens] : 0, t, 0.05);
+    micHigh.gain.setTargetAtTime(MIC_AIR[sens], t, 0.05);
+    // A very sensitive mic is never quite silent.
+    if (want && !hiss) {
+      const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      src.buffer = bufs.pink; src.loop = true; f.type = 'highpass'; f.frequency.value = 1500; g.gain.value = 0;
+      src.connect(f); f.connect(g); g.connect(bus); src.start();
+      hiss = g;
+    }
+    if (hiss) hiss.gain.setTargetAtTime(want, t, 0.2);
+  }
+  return { ctx, bus, vol, anL, anR, micOut, api: { N, T, M, K, D, H }, play, playAt, startLoop, stopLoop, pumpTo, setVol, setEar, micVoice, micTap, setMic, playBuffer };
+}
+
+/* The pads below call these directly; use() points them at the live engine. */
+let N, T, M, K, D, H;
+function use(E) { ({ N, T, M, K, D, H } = E.api); }
+
+/* =====================================================================
+   The world: ten categories, twelve pads each.
+   ===================================================================== */
+const SCALE = [523.25, 587.33, 659.25, 698.46, 783.99, 880];          // C D E F G A
+const PENTA = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51];
+// A nursery tune everyone knows, one note per press.
+const TUNE = [0, 0, 4, 4, 5, 5, 4, 3, 3, 2, 2, 1, 1, 0, 4, 4, 3, 3, 2, 2, 1, 4, 4, 3, 3, 2, 2, 1, 0, 0, 4, 4, 5, 5, 4, 3, 3, 2, 2, 1, 1, 0];
+let tune = 0;
+function popWrap(t, p) {
+  N(t, { dur: 0.03, g: 0.5, lp: 2200, a: 0.0005, pan: p });
+  T(t, { f: rnd(230, 300), f2: 120, dur: 0.05, g: 0.6, pan: p });
+  N(t, { dur: 0.006, g: 0.5, hp: 3500, pan: p });
+  N(t + 0.01, { c: 'crk2', dur: 0.08, g: 0.2, hp: 3000, pan: p });
+}
+function popIt(t, p, f) {
+  T(t, { f, f2: f * 0.5, dur: 0.05, g: 0.6, a: 0.0008, pan: p });
+  N(t, { c: 'pink', dur: 0.02, g: 0.6, lp: 1500, a: 0.0005, pan: p });
+  N(t + 0.012, { dur: 0.012, g: 0.15, bp: 2400, q: 2, pan: p });
+}
+// Mouth noises: 0 a tongue click, 1 lips parting, 2 a small sticky tick.
+function mouthTick(t, p, kind, f) {
+  if (kind === 0) {
+    f = f || rnd(1000, 1500);
+    N(t, { dur: 0.045, g: 0.5, bp: f, q: 9, a: 0.0005, pan: p });
+    T(t, { f: f * 1.1, f2: f * 0.6, dur: 0.04, g: 0.25, a: 0.0005, pan: p });
+    N(t, { dur: 0.006, g: 0.3, hp: 3000, a: 0.0003, pan: p });
+    N(t + 0.004, { c: 'water', rate: 1.6, dur: 0.03, g: 0.25, hp: 1200, pan: p });
+  } else if (kind === 1) {
+    T(t, { f: rnd(260, 340), f2: rnd(700, 950), ft: 0.03, dur: 0.06, g: 0.45, a: 0.001, pan: p });
+    N(t, { c: 'water', rate: 1.8, dur: 0.04, g: 0.3, hp: 900, pan: p });
+  } else {
+    N(t, { c: 'water', rate: rnd(1.4, 2), dur: 0.035, g: 0.45, hp: 1500, a: 0.001, pan: p });
+    N(t, { dur: 0.008, g: 0.2, hp: 4000, pan: p });
+  }
+}
+function kalimba(t, f) {
+  const p = rnd(-0.3, 0.3);
+  T(t, { f, dur: 1.1, g: 0.4, a: 0.002, pan: p, rev: 0.3 });
+  T(t, { f: f * 2, dur: 0.3, g: 0.08, pan: p });
+  T(t, { f: f * 5.9, dur: 0.08, g: 0.05, pan: p });
+  N(t, { dur: 0.015, g: 0.15, bp: 2500, q: 1, pan: p });
+}
+
+const ZONES = [
+{ id: 'salon', name: 'The Salon', blurb: 'Brushes, snips and sprays', hue: 350, pads: [
+  { name: 'Hairbrush', fn: t => { const s = sgn(), o = { dur: rnd(0.7, 1), bell: 1, pan: -0.8 * s, pan2: 0.8 * s };
+      N(t, { ...o, c: 'rub', g: 0.8, bp: rnd(3600, 4400), bp2: rnd(2600, 3200), q: 0.5 });   // hair sliding over the bristles
+      N(t, { ...o, c: 'crk3', g: 0.5, hp: 3500 });                                             // strands ticking free
+      N(t, { ...o, c: 'scratch', g: 0.3, bp: rnd(1500, 1900), q: 0.8 });                       // bristles dragging
+      N(t, { c: 'pink', dur: 0.09, g: 0.3, lp: 350, pan: -0.8 * s }); } },                     // the brush landing,
+  { name: 'Comb', fn: t => { const s = sgn(), o = { dur: rnd(0.32, 0.45), pan: -0.6 * s, pan2: 0.6 * s };
+      T(t, { ...o, w: 'sawtooth', f: rnd(55, 70), f2: rnd(120, 160), a: 0.01, r: 0.05, g: 0.5, bp: rnd(3000, 3800), q: 2.5 });
+      N(t, { ...o, c: 'crk3', bell: 1, g: 0.2, bp: 5000, q: 0.8 }); } },
+  { name: 'Scissors', fn: t => { const p = rnd(-0.5, 0.5);
+      N(t, { dur: 0.1, a: 0.075, g: 0.3, hp: 5000, pan: p });
+      M(t + 0.085, { fs: [rnd(2900, 3300), 5100, 7700], d: 0.07, g: 0.3, hit: 0.9, hf: 6000, pan: p });
+      K(t + rnd(0.2, 0.26), { f: 2200, q: 3, g: 0.15, pan: p }); } },
+  { name: 'Spray bottle', fn: t => { const p = rnd(-0.6, 0.6);
+      K(t, { f: 900, q: 2, g: 0.25, pan: p });
+      N(t + 0.03, { dur: 0.28, a: 0.015, r: 0.2, g: 0.5, hp: 2800, pan: p });
+      N(t + 0.03, { c: 'crk3', dur: 0.26, a: 0.01, r: 0.2, g: 0.4, bp: 6000, q: 0.5, pan: p });
+      K(t + 0.37, { f: 1300, q: 3, g: 0.18, pan: p }); } },
+  { name: 'Scalp scratch', fn: t => { const s = sgn(); for (let i = 0; i < 5; i++) { const u = t + i * 0.11 + rnd(0, 0.02), p = s * (i % 2 ? 0.6 : 0.25);
+      N(u, { c: 'scratch', dur: rnd(0.07, 0.1), bell: 1, g: 0.9, bp: rnd(1500, 2300), q: 1.2, pan: p });
+      N(u, { c: 'crk3', dur: 0.08, bell: 1, g: 0.3, bp: 2600, q: 1, pan: p });
+      N(u, { c: 'pink', dur: 0.09, bell: 1, g: 0.3, lp: 900, pan: p }); } } },
+  { name: 'Hairspray', fn: t => { const p = rnd(-0.6, 0.6), d = rnd(0.6, 0.85);
+      N(t, { dur: d, a: 0.03, r: 0.25, g: 0.4, hp: 5500, pan: p, pan2: p + rnd(-0.3, 0.3) });
+      N(t, { c: 'pink', dur: d, a: 0.03, r: 0.25, g: 0.2, bp: 3000, q: 0.5, pan: p }); } },
+  { name: 'Fluffy brush', fn: t => { const s = sgn(), o = { dur: rnd(0.6, 0.9), bell: 1, pan: -0.7 * s, pan2: 0.7 * s };
+      N(t, { ...o, c: 'rub', g: 0.9, lp: rnd(900, 1300) });
+      N(t, { ...o, c: 'pink', g: 0.4, lp: 500 });
+      N(t, { ...o, c: 'crk3', g: 0.25, bp: 1800, q: 0.6, lp: 2600 }); } },
+  { name: 'Hair clip', fn: t => { const p = rnd(-0.5, 0.5);
+      M(t, { fs: [rnd(1700, 2000), 3100, 4700], d: 0.03, g: 0.3, hit: 1.2, pan: p });
+      M(t + rnd(0.07, 0.1), { fs: [rnd(1300, 1500), 2600], d: 0.035, g: 0.22, hit: 1, pan: p }); } },
+  { name: 'Shampoo', fn: t => { const s = sgn(), d = rnd(0.8, 1.1);
+      N(t, { c: 'crk3', dur: d, bell: 1, g: 0.8, bp: rnd(1800, 2600), q: 1.5, pan: -0.5 * s, pan2: 0.5 * s });
+      N(t, { c: 'water', rate: 0.7, dur: d, bell: 1, g: 0.35, lp: 2500, pan: 0.3 * s });
+      N(t, { c: 'pink', dur: d, bell: 1, g: 0.35, lp: 700 }); } },
+  { name: 'Towel rub', fn: t => { const s = sgn(); for (let i = 0; i < 4; i++) { const u = t + i * 0.13, p = s * (i % 2 ? 0.6 : -0.1);
+      N(u, { c: 'rub', dur: 0.12, bell: 1, g: 0.8, lp: rnd(1500, 2200), hp: 200, pan: p });
+      N(u, { c: 'crk3', dur: 0.12, bell: 1, g: 0.25, bp: 1400, q: 0.6, pan: p }); } } },
+  { name: 'Hair dryer', loop: () => {
+      H({ c: 'pink', g: 0.5, bp: 850, q: 0.5 }); H({ c: 'white', g: 0.07, hp: 2500 });
+      H({ w: 'sawtooth', f: 118, g: 0.06, lp: 600 }); H({ w: 'sawtooth', f: 236.7, g: 0.03, lp: 900 });
+      H({ w: 'sine', f: 2360, g: 0.012 }); H({ w: 'triangle', f: 4725, g: 0.005 }); } },   // the motor's whine,
+  { name: 'Clippers', loop: () => {
+      H({ w: 'sawtooth', f: 122, g: 0.22, bp: 1900, q: 0.7, am: [['sine', 0.9, 0.12]] });
+      H({ w: 'square', f: 61, g: 0.1, lp: 500 });
+      H({ c: 'white', g: 0.1, bp: 3200, q: 1, am: [['sawtooth', 122, 0.5]] }); } }
+] },
+{ id: 'mouth', name: 'Mouth Sounds', blurb: 'Clicks, pops and whispers', hue: 20, pads: [
+  { name: 'Tongue click', fn: t => mouthTick(t, rnd(-0.4, 0.4), 0) },
+  { name: 'Lip pop', fn: t => { const p = rnd(-0.4, 0.4);
+      T(t, { f: rnd(260, 340), f2: rnd(700, 950), ft: 0.035, dur: 0.07, g: 0.6, a: 0.001, pan: p });
+      N(t, { c: 'pink', dur: 0.02, g: 0.5, lp: 1200, a: 0.0005, pan: p }); } },
+  { name: 'Tk tk tk', fn: t => { const p = rnd(-0.5, 0.5); for (let i = 0; i < 3; i++) { const u = t + i * rnd(0.15, 0.17);
+      N(u, { dur: 0.018, g: 0.4, hp: 4500, a: 0.0005, pan: p });
+      N(u + 0.07, { dur: 0.03, g: 0.5, bp: rnd(1500, 1900), q: 5, a: 0.0005, pan: p }); } } },
+  { name: 'Sk sk sk', fn: t => { const p = rnd(-0.5, 0.5); for (let i = 0; i < 3; i++) { const u = t + i * 0.24;
+      N(u, { dur: 0.1, a: 0.02, r: 0.03, g: 0.3, bp: rnd(6000, 7500), q: 1.5, pan: p });
+      N(u + 0.11, { dur: 0.03, g: 0.5, bp: rnd(1500, 1900), q: 5, a: 0.0005, pan: p }); } } },
+  { name: 'Shhh', fn: t => { const s = sgn();
+      N(t, { dur: rnd(0.9, 1.3), bell: 1, g: 0.45, bp: rnd(2300, 2900), q: 0.9, hp: 1500, pan: -0.5 * s, pan2: 0.5 * s }); } },
+  { name: 'Whisper', fn: t => { const p = sgn() * rnd(0.4, 0.8), n = 3 + Math.floor(rnd(0, 3)); let u = t;
+      // each syllable slides between two vowel shapes, sometimes behind a consonant
+      const V = [[730, 1090, 2440], [270, 2290, 3010], [570, 840, 2410], [300, 870, 2240], [530, 1840, 2480], [660, 1720, 2410]];
+      for (let i = 0; i < n; i++) { const d = rnd(0.11, 0.22), a = pick(V), b = pick(V);
+        if (Math.random() < 0.6) { N(u, { dur: rnd(0.02, 0.05), g: 0.3, hp: pick([2500, 4000, 5500]), a: 0.002, pan: p }); u += 0.03; }
+        for (let k = 0; k < 3; k++) N(u, { c: 'pink', dur: d, bell: 1, g: [0.5, 0.35, 0.2][k], bp: a[k], bp2: (a[k] + b[k]) / 2, q: 5 + k, pan: p });
+        N(u, { dur: d, bell: 1, g: 0.07, hp: 3500, pan: p });
+        u += d + rnd(0.01, 0.07); } } },
+  { name: 'Kiss', fn: t => { const p = rnd(-0.5, 0.5);
+      N(t, { dur: 0.09, a: 0.05, g: 0.5, bp: 1400, bp2: 3800, q: 7, pan: p });
+      N(t, { c: 'water', rate: 1.8, dur: 0.085, a: 0.05, g: 0.3, hp: 1000, pan: p });
+      T(t + 0.085, { f: 500, f2: 900, dur: 0.03, g: 0.3, pan: p });
+      N(t + 0.085, { dur: 0.015, g: 0.3, hp: 2500, pan: p }); } },
+  { name: 'Bubble pop', fn: t => { const p = rnd(-0.4, 0.4);
+      T(t, { f: rnd(380, 520), f2: rnd(1100, 1500), ft: 0.04, dur: 0.09, g: 0.5, pan: p });
+      K(t, { f: 2600, q: 2, g: 0.12, pan: p }); } },
+  { name: 'Gulp', fn: t => { const p = rnd(-0.2, 0.2);
+      T(t, { f: 230, f2: 150, ft: 0.07, f3: 340, dur: 0.2, bell: 1, g: 0.7, pan: p });
+      N(t, { c: 'pink', dur: 0.18, bell: 1, g: 0.5, lp: 500, pan: p });
+      K(t, { f: 650, q: 3, g: 0.15, pan: p }); } },
+  { name: 'Teeth taps', fn: t => { const p = rnd(-0.4, 0.4);
+      for (let i = 0; i < 3; i++) M(t + i * rnd(0.09, 0.12), { fs: [rnd(2200, 2600), 4100], d: 0.018, g: 0.3, hit: 1.5, pan: p }); } },
+  { name: 'Soft blow', fn: t => { const s = sgn() * 0.8, d = rnd(1, 1.4);
+      N(t, { c: 'pink', dur: d, bell: 1, g: 0.9, lp: rnd(600, 950), pan: s });
+      N(t, { c: 'brown', dur: d, bell: 1, g: 0.6, lp: 400, pan: s });
+      N(t, { c: 'pink', dur: d, bell: 1, g: 0.15, bp: 1500, q: 0.5, pan: s }); } },
+  { name: 'Tongue roll', fn: t => { const p = rnd(-0.4, 0.4), n = 10 + Math.floor(rnd(0, 5)), iv = rnd(0.035, 0.045);
+      for (let i = 0; i < n; i++) N(t + i * iv, { c: 'pink', dur: 0.03, g: 0.5 * (1 - i / n * 0.5), bp: rnd(650, 850), q: 4, pan: p });
+      T(t, { w: 'triangle', f: 190, dur: n * iv, bell: 1, g: 0.12, pan: p }); } }
+] },
+{ id: 'clicks', name: 'Click City', blurb: 'Keys, taps and switches', hue: 85, pads: [
+  { name: 'Keyboard', fn: t => { const p = rnd(-0.4, 0.4), u = t + rnd(0.075, 0.1);
+      N(t, { dur: 0.02, g: 0.5, bp: rnd(1100, 1400), q: 2.5, pan: p });
+      T(t, { f: 190, f2: 110, dur: 0.05, g: 0.5, pan: p });
+      N(t, { dur: 0.005, g: 0.25, hp: 4000, pan: p });
+      N(u, { dur: 0.018, g: 0.25, bp: rnd(1900, 2400), q: 3, pan: p });
+      T(u, { f: 260, f2: 170, dur: 0.03, g: 0.15, pan: p }); } },
+  { name: 'Pen click', fn: t => { const p = rnd(-0.4, 0.4), u = t + rnd(0.11, 0.15);
+      N(t, { dur: 0.012, g: 0.5, bp: rnd(3600, 4200), q: 6, pan: p });
+      T(t, { f: 3100, dur: 0.05, g: 0.06, pan: p });
+      T(t, { f: 480, f2: 300, dur: 0.02, g: 0.2, pan: p });
+      N(u, { dur: 0.012, g: 0.4, bp: rnd(2700, 3100), q: 6, pan: p });
+      T(u, { f: 2500, dur: 0.04, g: 0.05, pan: p }); } },
+  { name: 'Glass tap', fn: t => { const f = rnd(2600, 3200);
+      M(t, { fs: [f, f * 1.83, f * 2.71], d: 0.12, g: 0.22, hit: 1.2, hf: 5000 }); } },
+  { name: 'Wood knock', fn: t => { const f = rnd(280, 360), p = rnd(-0.3, 0.3);
+      M(t, { fs: [f, f * 1.9, f * 3.1], d: 0.07, g: 0.5, hit: 0.6, hf: 900, damp: 1, pan: p });
+      N(t, { c: 'pink', dur: 0.03, g: 0.6, lp: 800, pan: p }); } },
+  { name: 'Mouse click', fn: t => { const p = rnd(-0.4, 0.4);
+      N(t, { dur: 0.008, g: 0.4, bp: 3200, q: 4, pan: p });
+      T(t, { f: 900, f2: 500, dur: 0.012, g: 0.12, pan: p });
+      N(t + 0.07, { dur: 0.008, g: 0.25, bp: 2500, q: 4, pan: p }); } },
+  { name: 'Light switch', fn: t => { const p = rnd(-0.4, 0.4);
+      N(t, { dur: 0.03, g: 0.5, bp: rnd(650, 800), q: 3, pan: p });
+      T(t, { f: 240, f2: 150, dur: 0.05, g: 0.5, pan: p });
+      N(t, { dur: 0.004, g: 0.3, hp: 3000, pan: p });
+      T(t + 0.004, { f: 1900, dur: 0.09, g: 0.04, pan: p }); } },
+  { name: 'Lid snap', fn: t => { const p = rnd(-0.4, 0.4);
+      M(t, { fs: [rnd(1500, 1800), 3400, 5200], d: 0.025, g: 0.35, hit: 1.6, hf: 4000, pan: p });
+      T(t, { f: 420, f2: 300, dur: 0.03, g: 0.25, pan: p }); } },
+  { name: 'Camera', fn: t => { const p = rnd(-0.3, 0.3);
+      K(t, { f: 2400, q: 3, g: 0.4, pan: p }); T(t, { f: 300, f2: 200, dur: 0.025, g: 0.3, pan: p });
+      N(t + 0.02, { dur: 0.07, a: 0.01, r: 0.02, g: 0.15, bp: 1800, q: 1.5, pan: p });
+      K(t + 0.1, { f: 1700, q: 3, g: 0.35, pan: p }); T(t + 0.1, { f: 260, f2: 170, dur: 0.03, g: 0.3, pan: p });
+      N(t + 0.13, { c: 'crk3', dur: 0.12, bell: 1, g: 0.2, bp: 3000, q: 2, pan: p }); } },
+  { name: 'Finger taps', fn: t => { const s = sgn(); for (let i = 0; i < 4; i++) { const f = rnd(1000, 1300) * (1 + i * 0.04);
+      M(t + i * rnd(0.05, 0.065), { fs: [f, f * 2.2, f * 3.6], d: 0.03, g: 0.3, hit: 1.3, hf: 3500, pan: s * (-0.5 + i * 0.33) }); } } },
+  { name: 'Marble drop', fn: t => { const f = rnd(3300, 3900), p = rnd(-0.6, 0.3); let u = t, iv = rnd(0.16, 0.2), g = 0.3;
+      for (let i = 0; i < 8; i++) { M(u, { fs: [f, f * 1.52, f * 2.4], d: 0.04, g, hit: 1, hf: 6000, pan: p + i * 0.04 }); u += iv; iv *= 0.72; g *= 0.8; }
+      N(u, { c: 'crk3', dur: 0.25, bell: 1, g: 0.08, bp: 3000, q: 1, pan: p + 0.3 }); } },
+  { name: 'Zip', fn: t => { const s = sgn(), o = { dur: rnd(0.4, 0.55), pan: -0.6 * s, pan2: 0.6 * s };
+      T(t, { ...o, w: 'sawtooth', f: rnd(70, 90), f2: rnd(190, 240), a: 0.02, r: 0.04, g: 0.45, bp: 1800, bp2: 3600, q: 2.5 });
+      N(t, { ...o, c: 'crk3', bell: 1, g: 0.3, bp: 4000, q: 1 }); } },
+  { name: 'Stapler', fn: t => { const p = rnd(-0.3, 0.3), u = t + 0.13;
+      N(t, { dur: 0.035, g: 0.6, bp: rnd(500, 650), q: 2, pan: p });
+      T(t, { f: 210, f2: 110, dur: 0.07, g: 0.7, pan: p });
+      N(t, { dur: 0.006, g: 0.4, hp: 3500, pan: p });
+      M(t + 0.012, { fs: [2100, 3300], d: 0.05, g: 0.06, hit: 0, pan: p });
+      N(u, { dur: 0.02, g: 0.3, bp: 1200, q: 3, pan: p });
+      T(u, { f: 1500, dur: 0.06, g: 0.03, pan: p }); } }
+] },
+{ id: 'water', name: 'Water World', blurb: 'Drips, fizz and rain', hue: 235, pads: [
+  { name: 'Drip', fn: t => D(t, rnd(800, 1200), 0.5, rnd(-0.4, 0.4)) },
+  { name: 'Plink plonk', fn: t => { D(t, rnd(1200, 1500), 0.45, -0.35); D(t + rnd(0.16, 0.24), rnd(650, 850), 0.5, 0.35); } },
+  { name: 'Pour', fn: t => { const d = rnd(1.2, 1.6), p = rnd(-0.3, 0.3);
+      N(t, { c: 'water', dur: d, bell: 1, g: 0.8, pan: p });
+      N(t, { c: 'pink', dur: d, bell: 1, g: 0.2, bp: 1800, q: 0.6, pan: p }); } },
+  { name: 'Fizz', fn: t => { const p = rnd(-0.3, 0.3);
+      N(t, { dur: 0.12, a: 0.005, g: 0.35, hp: 3000, pan: p });
+      N(t, { c: 'crk3', dur: 1.8, a: 0.05, g: 0.7, hp: 5000, pan: p });
+      N(t, { c: 'crk2', dur: 1.5, a: 0.02, g: 0.5, bp: 7000, q: 1, pan: -p });
+      N(t, { dur: 1.2, a: 0.05, g: 0.06, hp: 7000, pan: p }); } },
+  { name: 'Bubbles', fn: t => { const d = rnd(0.8, 1.1), p = rnd(-0.3, 0.3);
+      N(t, { c: 'water', rate: rnd(0.3, 0.4), dur: d, bell: 1, g: 1, lp: 1800, pan: p });
+      N(t, { c: 'pink', dur: d, bell: 1, g: 0.25, lp: 500, pan: p }); } },
+  { name: 'Ice clink', fn: t => { const p = rnd(-0.4, 0.4), n = 2 + Math.floor(rnd(0, 2));
+      for (let i = 0; i < n; i++) { const f = rnd(2000, 2600) * (1 + i * 0.12);
+        M(t + i * rnd(0.08, 0.16), { fs: [f, f * 2.14, f * 3.3], d: 0.09, g: 0.25, hit: 1, hf: 5000, pan: p + i * 0.15, rev: 0.15 }); }
+      N(t + 0.02, { c: 'water', rate: 0.8, dur: 0.3, bell: 1, g: 0.2, pan: p }); } },
+  { name: 'Splash', fn: t => { const p = rnd(-0.3, 0.3);
+      N(t, { dur: 0.35, a: 0.005, g: 0.5, lp: 3500, lp2: 500, pan: p });
+      N(t, { c: 'water', dur: 0.7, a: 0.03, g: 0.7, pan: p });
+      N(t, { c: 'pink', dur: 0.2, a: 0.003, g: 0.6, lp: 400, pan: p });
+      for (let i = 0; i < 4; i++) D(t + 0.25 + rnd(0, 0.5), rnd(700, 1600), rnd(0.1, 0.25), rnd(-0.8, 0.8)); } },
+  { name: 'Sponge', fn: t => { const d = rnd(0.45, 0.6), p = rnd(-0.4, 0.4);
+      N(t, { c: 'water', rate: rnd(0.55, 0.7), dur: d, bell: 1, g: 1, bp: 900, q: 0.6, pan: p });
+      N(t, { c: 'crk3', dur: d, bell: 1, g: 0.4, bp: 1600, q: 1.2, lp: 3000, pan: p });
+      N(t, { c: 'pink', dur: d, bell: 1, g: 0.3, lp: 450, pan: p });
+      D(t + d + rnd(0.05, 0.2), rnd(900, 1400), 0.2, p); D(t + d + rnd(0.3, 0.5), rnd(700, 1100), 0.15, p); } },
+  { name: 'Mist', fn: t => { const p = rnd(-0.6, 0.6); for (let i = 0; i < 2; i++) { const u = t + i * 0.22;
+      K(u, { f: 1100, q: 2, g: 0.12, pan: p });
+      N(u + 0.01, { dur: 0.13, a: 0.01, r: 0.08, g: 0.35, hp: 4500, pan: p }); } } },
+  { name: 'Glug', fn: t => { const p = rnd(-0.3, 0.3), n = 4 + Math.floor(rnd(0, 2));
+      for (let i = 0; i < n; i++) { const u = t + i * rnd(0.15, 0.19), f = rnd(170, 210) * (1 + i * 0.1);
+        T(u, { f, f2: f * 1.9, ft: 0.07, dur: 0.13, bell: 1, g: 0.7, pan: p });
+        N(u, { c: 'water', rate: 0.5, dur: 0.12, bell: 1, g: 0.5, lp: 1500, pan: p }); } } },
+  { name: 'Rain', loop: () => {
+      H({ c: 'pink', g: 0.22, hp: 900, lp: 7000 }); H({ c: 'crk2', g: 0.8, bp: 3600, q: 0.4 }); H({ c: 'crk1', g: 0.5, lp: 1500, rate: 1.4 });
+      return t => { D(t, rnd(900, 1900), rnd(0.05, 0.14), rnd(-0.9, 0.9)); return t + rnd(0.15, 0.7); }; } },
+  { name: 'Waves', loop: () => {
+      H({ c: 'brown', g: 0.7, lp: 500, am: [['sine', 0.09, 0.42]] });
+      H({ c: 'pink', g: 0.4, bp: 900, q: 0.4, am: [['sine', 0.09, 0.46], ['sine', 0.23, 0.15]] });
+      H({ c: 'crk3', g: 0.25, hp: 3000, am: [['sine', 0.09, 0.5]] }); } }
+] },
+{ id: 'crinkle', name: 'Crinkle Corner', blurb: 'Foil, slime and sand', hue: 160, pads: [
+  { name: 'Foil', fn: t => { const p = rnd(-0.4, 0.4), d = rnd(0.5, 0.8);
+      N(t, { c: 'foil', rate: rnd(1, 1.6), dur: d, bell: 1, g: 1, hp: 2000, pan: p });
+      N(t, { c: 'crk1', rate: rnd(1.5, 2.5), dur: d, bell: 1, g: 0.5, hp: 2500, pan: -p });
+      N(t, { c: 'crk2', dur: d, bell: 1, g: 0.3, hp: 4500, pan: -p }); } },
+  { name: 'Plastic bag', fn: t => { const p = rnd(-0.4, 0.4), d = rnd(0.6, 0.9);
+      N(t, { c: 'crk2', rate: rnd(0.8, 1.2), dur: d, bell: 1, g: 1, bp: rnd(2200, 3200), q: 0.5, pan: p });
+      N(t, { c: 'foil', rate: rnd(0.5, 0.7), dur: d, bell: 1, g: 0.4, lp: 6000, pan: -p });
+      N(t, { c: 'rub', dur: d, bell: 1, g: 0.12, bp: 3500, q: 0.5, pan: -p }); } },
+  { name: 'Paper tear', fn: t => { const s = sgn(), o = { dur: rnd(0.35, 0.45), a: 0.02, r: 0.03, pan: -0.5 * s, pan2: 0.5 * s };
+      T(t, { ...o, w: 'sawtooth', f: 40, f2: 110, g: 0.25, bp: 2400, q: 1.2 });
+      N(t, { ...o, c: 'crk3', g: 1, bp: rnd(2500, 3300), q: 0.7 });
+      N(t, { ...o, g: 0.12, hp: 3000 }); } },
+  { name: 'Page turn', fn: t => { const s = sgn();
+      N(t, { c: 'rub', dur: 0.3, bell: 1, g: 0.5, bp: 1500, bp2: 3200, q: 0.8, pan: -0.5 * s, pan2: 0.5 * s });
+      N(t, { c: 'crk2', dur: 0.3, bell: 1, g: 0.4, hp: 2500, pan: -0.5 * s, pan2: 0.5 * s });
+      K(t + 0.27, { f: 1800, q: 1.5, g: 0.2, pan: 0.5 * s });
+      N(t + 0.3, { c: 'pink', dur: 0.06, g: 0.3, lp: 900, pan: 0.5 * s }); } },
+  { name: 'Bubble wrap', fn: t => popWrap(t, rnd(-0.5, 0.5)) },
+  { name: 'Velcro', fn: t => { const s = sgn(), o = { dur: rnd(0.35, 0.5), a: 0.02, r: 0.04, pan: -0.5 * s, pan2: 0.5 * s };
+      N(t, { ...o, c: 'crk3', rate: rnd(1.2, 1.6), g: 1, bp: rnd(2600, 3400), q: 0.6 });
+      T(t, { ...o, w: 'sawtooth', f: rnd(55, 65), f2: rnd(95, 120), g: 0.25, bp: 3200, q: 1 }); } },
+  { name: 'Mic scratch', fn: t => { const s = sgn(); for (let i = 0; i < 4; i++) { const u = t + i * 0.14, p = s * (i % 2 ? 0.7 : 0.3);
+      N(u, { c: 'scratch', dur: 0.13, bell: 1, g: 1, bp: rnd(900, 1300), q: 1.5, pan: p });
+      N(u, { c: 'crk3', rate: 0.6, dur: 0.13, bell: 1, g: 0.3, bp: 1800, q: 1, pan: p });
+      N(u, { c: 'pink', dur: 0.13, bell: 1, g: 0.4, lp: 500, pan: p }); } } },
+  { name: 'Slime', fn: t => { const p = rnd(-0.4, 0.4), d = rnd(0.5, 0.7);
+      N(t, { c: 'water', rate: rnd(0.35, 0.5), dur: d, bell: 1, g: 1, lp: 1800, pan: p });
+      N(t, { c: 'crk2', rate: 0.5, dur: d, bell: 1, g: 0.5, bp: 700, q: 1.5, pan: p });
+      N(t, { c: 'pink', dur: d, bell: 1, g: 0.35, lp: 400, pan: p });
+      T(t + d * 0.85, { f: 300, f2: 700, ft: 0.03, dur: 0.06, g: 0.3, pan: p }); } },
+  { name: 'Kinetic sand', fn: t => { const p = rnd(-0.4, 0.4), o = { dur: rnd(0.4, 0.55), a: 0.01, r: 0.2, pan: p };
+      N(t, { ...o, c: 'crk3', rate: rnd(0.8, 1.1), g: 1, lp: 3000, hp: 500 });
+      N(t, { ...o, c: 'pink', g: 0.2, bp: 1200, q: 0.5 }); } },
+  { name: 'Soap cutting', fn: t => { const p = rnd(-0.4, 0.4), n = 5 + Math.floor(rnd(0, 3));
+      for (let i = 0; i < n; i++) { const u = t + i * rnd(0.07, 0.1);
+        N(u, { c: 'crk2', dur: 0.05, g: 0.9, bp: rnd(2600, 3600), q: 1, pan: p });
+        K(u, { f: rnd(1600, 2200), q: 2, g: 0.25, pan: p }); } } },
+  { name: 'Tape peel', fn: t => { const s = sgn(), d = rnd(0.5, 0.7), o = { dur: d, a: 0.03, r: 0.05, pan: -0.5 * s, pan2: 0.5 * s };
+      T(t, { ...o, w: 'sawtooth', f: rnd(38, 48), f2: rnd(70, 90), g: 0.5, bp: 1500, bp2: 2800, q: 2 });
+      N(t, { ...o, c: 'crk3', g: 0.5, bp: 2200, q: 1 });
+      K(t + d, { f: 2000, q: 2, g: 0.25, pan: 0.5 * s }); } },
+  { name: 'Tissue paper', fn: t => { const s = sgn(), o = { dur: rnd(0.55, 0.8), bell: 1, pan: -0.5 * s, pan2: 0.5 * s };
+      N(t, { ...o, c: 'crk3', g: 0.7, hp: 4000 });
+      N(t, { ...o, c: 'foil', rate: 1.3, g: 0.3, hp: 5000 });
+      N(t, { ...o, c: 'rub', g: 0.25, hp: 3000 }); } }
+] },
+{ id: 'snack', name: 'Snack Bar', blurb: 'Crunch, slurp and sizzle', hue: 50, pads: [
+  { name: 'Crisp crunch', fn: t => { const p = rnd(-0.3, 0.3);
+      N(t, { c: 'crk2', rate: 1.5, dur: 0.14, a: 0.003, g: 1.2, hp: 900, pan: p });
+      N(t, { dur: 0.05, a: 0.002, g: 0.4, bp: 2500, q: 0.5, pan: p });
+      for (let i = 0; i < 3; i++) N(t + 0.28 + i * 0.22, { c: 'crk2', rate: rnd(0.8, 1.2), dur: 0.12, bell: 1, g: 0.6 - i * 0.12, lp: 4000, hp: 600, pan: p }); } },
+  { name: 'Apple bite', fn: t => { const p = rnd(-0.3, 0.3);
+      N(t, { dur: 0.03, a: 0.001, g: 0.7, bp: rnd(1600, 2100), q: 1.2, pan: p });
+      N(t + 0.01, { c: 'crk2', rate: 0.9, dur: 0.2, a: 0.004, g: 1, bp: 1800, q: 0.5, pan: p });
+      N(t + 0.02, { c: 'water', rate: 0.9, dur: 0.22, bell: 1, g: 0.4, pan: p });
+      for (let i = 0; i < 2; i++) N(t + 0.36 + i * 0.24, { c: 'crk2', rate: 0.7, dur: 0.13, bell: 1, g: 0.5 - i * 0.1, lp: 3000, hp: 400, pan: p }); } },
+  { name: 'Slurp', fn: t => { const p = rnd(-0.3, 0.3), d = rnd(0.45, 0.6);
+      N(t, { dur: d, a: d * 0.6, g: 0.5, bp: 700, bp2: 2400, q: 3, pan: p });
+      N(t, { c: 'water', rate: 1.1, dur: d, a: d * 0.55, g: 0.6, hp: 600, pan: p });
+      T(t + d * 0.92, { f: 380, f2: 800, ft: 0.03, dur: 0.05, g: 0.2, pan: p }); } },
+  { name: 'Chewing', fn: t => { const p = rnd(-0.3, 0.3); for (let i = 0; i < 4; i++) { const u = t + i * rnd(0.26, 0.3);
+      N(u, { c: 'water', rate: rnd(0.45, 0.6), dur: 0.16, bell: 1, g: 0.9, lp: 1800, pan: p });
+      N(u, { c: 'pink', dur: 0.14, bell: 1, g: 0.4, lp: 600, pan: p });
+      N(u + 0.02, { c: 'crk2', rate: 0.6, dur: 0.1, bell: 1, g: 0.3, lp: 2500, pan: p }); } } },
+  { name: 'Can open', fn: t => { const p = rnd(-0.3, 0.3);
+      M(t, { fs: [rnd(1100, 1300), 2700, 4300], d: 0.05, g: 0.3, hit: 1.4, hf: 3000, pan: p });
+      N(t + 0.02, { dur: 0.35, a: 0.01, g: 0.5, hp: 3500, pan: p });
+      N(t + 0.05, { c: 'crk3', dur: 1.3, a: 0.05, g: 0.6, hp: 5000, pan: p });
+      M(t + rnd(0.2, 0.25), { fs: [900, 2100], d: 0.04, g: 0.18, hit: 1, pan: p }); } },
+  { name: 'Cereal pour', fn: t => { const p = rnd(-0.3, 0.3), d = rnd(0.9, 1.2);
+      N(t, { c: 'crk2', rate: 1.6, dur: d, bell: 1, g: 1, bp: rnd(2200, 2800), q: 0.9, pan: p });
+      N(t, { c: 'crk1', rate: 3, dur: d, bell: 1, g: 0.6, bp: 4200, q: 1.5, pan: -p });
+      N(t, { c: 'pink', dur: d, bell: 1, g: 0.15, bp: 1500, q: 0.5, pan: p }); } },
+  { name: 'Chopping', fn: t => { const p = rnd(-0.3, 0.3), iv = rnd(0.15, 0.18), n = 5 + Math.floor(rnd(0, 3));
+      for (let i = 0; i < n; i++) { const u = t + i * iv + rnd(0, 0.012), f = rnd(380, 440);
+        N(u, { dur: 0.03, a: 0.012, g: 0.25, hp: 3000, pan: p });
+        M(u + 0.02, { fs: [f, f * 2.3], d: 0.05, g: 0.45, hit: 0.5, hf: 1200, damp: 1.2, pan: p }); } } },
+  { name: 'Whisk', fn: t => { const s = sgn(); for (let i = 0; i < 7; i++) { const u = t + i * 0.105, p = s * (i % 2 ? 0.45 : -0.45);
+      N(u, { dur: 0.09, bell: 1, g: 0.4, bp: rnd(3200, 3900), q: 2, pan: p });
+      T(u, { f: rnd(2700, 2900), dur: 0.08, g: 0.03, pan: p });
+      N(u, { c: 'water', rate: 1.2, dur: 0.09, bell: 1, g: 0.2, pan: p }); } } },
+  { name: 'Tea stir', fn: t => { const n = 6 + Math.floor(rnd(0, 3)), f = rnd(1900, 2200);
+      N(t, { c: 'water', rate: 0.9, dur: n * 0.17, bell: 1, g: 0.3, pan: 0 });
+      for (let i = 0; i < n; i++) M(t + i * 0.17 + rnd(0, 0.02), { fs: [f * rnd(0.98, 1.02), f * 2.21, f * 3.4], d: 0.11, g: 0.2, hit: 0.9, hf: 4500, pan: Math.sin(i * 1.3) * 0.6, rev: 0.15 }); } },
+  { name: 'Sizzle', loop: () => {
+      H({ c: 'crk3', g: 0.8, hp: 3000 }); H({ c: 'crk2', g: 0.5, bp: 5200, q: 0.6 }); H({ c: 'pink', g: 0.12, hp: 2000 });
+      return t => { N(t, { dur: rnd(0.015, 0.04), g: rnd(0.2, 0.5), bp: rnd(1800, 3500), q: 1, a: 0.0005, pan: rnd(-0.6, 0.6) }); return t + rnd(0.2, 1.1); }; } },
+  { name: 'Kettle', loop: () => {
+      H({ c: 'water', rate: 0.45, g: 0.8, lp: 1300 }); H({ c: 'brown', g: 0.6, lp: 320, am: [['sine', 0.3, 0.15]] });
+      H({ c: 'white', g: 0.05, hp: 4000 }); H({ c: 'pink', g: 0.15, bp: 700, q: 0.6 }); } },
+  { name: 'Popcorn', loop: () => t => { const p = rnd(-0.7, 0.7), f = rnd(260, 380);
+      N(t, { dur: 0.025, g: rnd(0.4, 0.8), lp: rnd(1600, 2600), a: 0.0005, pan: p });
+      T(t, { f, f2: f * 0.5, dur: 0.04, g: 0.4, pan: p });
+      N(t, { dur: 0.005, g: 0.3, hp: 3500, pan: p });
+      return t + (Math.random() < 0.3 ? rnd(0.03, 0.09) : rnd(0.12, 0.55)); } }
+] },
+{ id: 'fidget', name: 'Fidget Factory', blurb: 'Pops, squeaks and boings', hue: 195, pads: [
+  { name: 'Pop it', fn: t => popIt(t, rnd(-0.5, 0.5), rnd(420, 620)) },
+  { name: 'Clicky cube', fn: t => { const p = rnd(-0.4, 0.4), n = 3 + Math.floor(rnd(0, 2)); let u = t;
+      for (let i = 0; i < n; i++) { const f = rnd(1900, 2600);
+        M(u, { fs: [f, f * 1.7], d: 0.018, g: 0.3, hit: 1.4, hf: 4500, pan: p });
+        T(u, { f: 520, f2: 320, dur: 0.015, g: 0.15, pan: p });
+        u += rnd(0.07, 0.13); } } },
+  { name: 'Slinky', fn: t => { const s = sgn(), o = { dur: rnd(0.8, 1.1), pan: -0.6 * s, pan2: 0.6 * s };
+      T(t, { ...o, w: 'sawtooth', f: rnd(30, 36), f2: rnd(11, 14), a: 0.02, r: 0.1, g: 0.5, bp: 2300, q: 6 });
+      T(t, { ...o, w: 'sawtooth', f: rnd(31, 37), f2: rnd(12, 15), a: 0.02, r: 0.1, g: 0.3, bp: 3900, q: 8 });
+      N(t, { ...o, c: 'crk2', bell: 1, g: 0.2, bp: 5000, q: 1 }); } },
+  { name: 'Brick rattle', fn: t => { const n = 9 + Math.floor(rnd(0, 5));
+      for (let i = 0; i < n; i++) { const f = rnd(1000, 2400);
+        M(t + Math.pow(Math.random(), 1.5) * 0.55, { fs: [f, f * 1.9, f * 3.1], d: 0.02, g: rnd(0.12, 0.3), hit: 1.5, hf: 3500, pan: rnd(-0.8, 0.8) }); } } },
+  { name: 'Squishy', fn: t => { const p = rnd(-0.4, 0.4), d = rnd(0.55, 0.75);
+      N(t, { c: 'rub', dur: d, bell: 1, g: 0.8, lp: rnd(1000, 1400), hp: 250, pan: p });
+      N(t, { c: 'pink', dur: d, bell: 1, g: 0.3, lp: 500, pan: p });
+      T(t + d * 0.3, { f: rnd(850, 1000), f2: 700, dur: d * 0.5, bell: 1, g: 0.03, pan: p }); } },
+  { name: 'Balloon rub', fn: t => { const s = sgn(), d = rnd(0.45, 0.6), o = { dur: d, pan: -0.5 * s, pan2: 0.5 * s };
+      T(t, { ...o, w: 'sawtooth', f: rnd(85, 100), f2: rnd(150, 180), ft: d * 0.5, f3: rnd(60, 75), a: 0.02, r: 0.06, g: 0.5, bp: rnd(1600, 2000), q: 5 });
+      N(t, { ...o, c: 'pink', bell: 1, g: 0.25, bp: 1200, q: 1.2 }); } },
+  { name: 'Spring boing', fn: t => { const p = rnd(-0.4, 0.4), f = rnd(140, 170);
+      T(t, { f, f2: f * 0.75, dur: 0.8, g: 0.5, a: 0.002, pan: p });
+      T(t, { f: f * 1.09, f2: f * 0.8, dur: 0.8, g: 0.45, a: 0.002, pan: p });
+      T(t, { f: f * 3.02, f2: f * 2.2, dur: 0.4, g: 0.12, pan: p });
+      K(t, { f: 1800, q: 2, g: 0.2, pan: p }); } },
+  { name: 'Dice roll', fn: t => { const p0 = rnd(-0.6, 0.2); let u = t, iv = rnd(0.11, 0.14);
+      for (let i = 0; i < 7; i++) { const f = rnd(800, 1200), g = Math.pow(0.86, i), p = p0 + i * 0.07;
+        M(u, { fs: [f, f * 1.8, f * 2.9], d: 0.025, g: 0.3 * g, hit: 1.3, hf: 2500, pan: p });
+        T(u, { f: 260, f2: 160, dur: 0.03, g: 0.25 * g, pan: p });
+        u += iv * rnd(0.8, 1.2); iv *= 0.8; } } },
+  { name: 'Rain stick', fn: t => { const s = sgn(), o = { dur: rnd(1.6, 2.1), bell: 1, pan: -0.7 * s, pan2: 0.7 * s };
+      N(t, { ...o, c: 'crk2', rate: 1.3, g: 0.9, bp: rnd(3000, 3800), q: 1.2 });
+      N(t, { ...o, c: 'foil', rate: 0.7, g: 0.4, bp: 5000, q: 0.8 });
+      N(t, { ...o, c: 'crk1', rate: 2.5, g: 0.5, bp: 1800, q: 2 }); } },
+  { name: 'Ruler twang', fn: t => { const p = rnd(-0.4, 0.4);
+      T(t, { w: 'sawtooth', f: rnd(42, 52), f2: rnd(150, 190), dur: 0.7, g: 0.5, a: 0.002, lp: 1400, pan: p });
+      T(t, { w: 'triangle', f: 95, f2: 320, dur: 0.6, g: 0.2, pan: p });
+      N(t, { dur: 0.02, g: 0.4, bp: 900, q: 1.5, pan: p }); } },
+  { name: 'Squeaky toy', fn: t => { const p = rnd(-0.4, 0.4), f = rnd(1100, 1400);
+      T(t, { w: 'square', f: f * 0.8, f2: f * 1.25, ft: 0.06, f3: f * 1.1, dur: 0.16, bell: 1, g: 0.18, lp: 3200, pan: p });
+      N(t, { dur: 0.16, bell: 1, g: 0.12, bp: 2400, q: 1, pan: p });
+      T(t + 0.2, { w: 'square', f: f * 0.9, f2: f * 0.62, dur: 0.2, bell: 1, g: 0.14, lp: 2800, pan: p });
+      N(t + 0.2, { c: 'pink', dur: 0.22, bell: 1, g: 0.2, lp: 1200, pan: p }); } },
+  { name: 'Spinner', loop: () => {
+      H({ c: 'white', g: 0.25, bp: 2600, q: 4, am: [['sine', 0.6, 0.15]] });
+      H({ w: 'sawtooth', f: 96, g: 0.4, bp: 4200, q: 2 });
+      H({ c: 'pink', g: 0.12, lp: 900 }); } }
+] },
+{ id: 'art', name: 'Art Desk', blurb: 'Pencils, chalk and paint', hue: 270, pads: [
+  { name: 'Pencil scribble', fn: t => { const s = sgn(), n = 6 + Math.floor(rnd(0, 3));
+      for (let i = 0; i < n; i++) { const u = t + i * rnd(0.08, 0.1), p = s * (i % 2 ? 0.4 : 0.1);
+        N(u, { c: 'scratch', dur: 0.085, bell: 1, g: 0.8, bp: rnd(2000, 2600), q: 0.9, pan: p });
+        N(u, { c: 'rub', dur: 0.085, bell: 1, g: 0.3, bp: 1100, q: 0.8, pan: p }); } } },
+  { name: 'Marker squeak', fn: t => { const s = sgn(); for (let i = 0; i < 2; i++) { const u = t + i * 0.26, o = { dur: rnd(0.18, 0.24), pan: s * (i ? 0.4 : -0.4), pan2: s * (i ? -0.2 : 0.2) };
+      T(u, { ...o, w: 'sawtooth', f: rnd(210, 260), f2: rnd(290, 360), a: 0.02, r: 0.04, g: 0.35, bp: rnd(2400, 2900), q: 7 });
+      N(u, { ...o, c: 'rub', bell: 1, g: 0.3, bp: 1800, q: 0.7 }); } } },
+  { name: 'Eraser rub', fn: t => { const s = sgn(); for (let i = 0; i < 5; i++) { const u = t + i * 0.1, p = s * (i % 2 ? 0.35 : 0.05);
+      N(u, { c: 'rub', dur: 0.09, bell: 1, g: 0.8, bp: rnd(650, 850), q: 1, pan: p });
+      N(u, { c: 'crk3', dur: 0.09, bell: 1, g: 0.2, lp: 1600, pan: p }); }
+      N(t + 0.55, { c: 'rub', dur: 0.2, bell: 1, g: 0.25, hp: 2500, pan: s * 0.3 }); } },
+  { name: 'Sharpener', fn: t => { const p = rnd(-0.3, 0.3); for (let i = 0; i < 2; i++) { const u = t + i * 0.42, o = { dur: rnd(0.3, 0.36), a: 0.03, r: 0.06, pan: p };
+      N(u, { ...o, c: 'scratch', g: 0.8, bp: rnd(1400, 1700), q: 1.2 });
+      T(u, { ...o, w: 'sawtooth', f: rnd(46, 54), f2: rnd(60, 70), g: 0.3, bp: 2300, q: 1.5 });
+      N(u, { ...o, c: 'crk2', g: 0.4, bp: 3200, q: 0.8 }); } } },
+  { name: 'Chalk', fn: t => { const p = sgn() * 0.3;
+      K(t, { f: 1900, q: 2.5, g: 0.35, pan: p });
+      for (let i = 0; i < 2; i++) { const o = { dur: rnd(0.2, 0.26), a: 0.02, r: 0.05, pan: i ? -p : p, pan2: i ? p : -p }, u = t + 0.03 + i * 0.3;
+        N(u, { ...o, c: 'scratch', g: 0.9, bp: rnd(2600, 3200), q: 1.6 });
+        N(u, { ...o, c: 'rub', g: 0.3, bp: 1200, q: 0.8 }); }
+      K(t + 0.62, { f: 1700, q: 2.5, g: 0.3, pan: p }); } },
+  { name: 'Paint water', fn: t => { const p = rnd(-0.3, 0.3), f = rnd(2400, 2900);
+      N(t, { c: 'water', rate: 1.1, dur: 0.6, bell: 1, g: 0.8, pan: p });
+      N(t, { c: 'pink', dur: 0.6, bell: 1, g: 0.15, bp: 1400, q: 0.6, pan: p });
+      for (let i = 0; i < 2; i++) M(t + 0.62 + i * 0.13, { fs: [f, f * 2.3, f * 3.7], d: 0.1, g: 0.2, hit: 0.8, hf: 5000, pan: p, rev: 0.15 }); } },
+  { name: 'Paper cut', fn: t => { const p = rnd(-0.4, 0.4); for (let i = 0; i < 2; i++) { const u = t + i * 0.34;
+      N(u, { c: 'crk3', dur: 0.2, a: 0.12, g: 0.9, bp: 3000, bp2: 4200, q: 0.7, pan: p });
+      N(u, { c: 'rub', dur: 0.2, a: 0.12, g: 0.3, hp: 3500, pan: p });
+      M(u + 0.19, { fs: [rnd(2900, 3300), 5100], d: 0.05, g: 0.2, hit: 0.9, hf: 6000, pan: p }); } } },
+  { name: 'Book close', fn: t => { const p = rnd(-0.3, 0.3);
+      N(t, { c: 'rub', dur: 0.14, a: 0.08, g: 0.3, bp: 1500, q: 0.6, pan: p });
+      N(t + 0.12, { c: 'pink', dur: 0.12, g: 0.9, lp: 500, a: 0.002, pan: p });
+      T(t + 0.12, { f: 130, f2: 70, dur: 0.1, g: 0.5, pan: p });
+      N(t + 0.12, { dur: 0.02, g: 0.3, bp: 1200, q: 1, pan: p }); } },
+  { name: 'Cap pop', fn: t => { const p = rnd(-0.4, 0.4), f = rnd(650, 800);
+      N(t, { dur: 0.008, g: 0.5, bp: 2800, q: 2, pan: p });
+      T(t, { f, f2: f * 0.62, dur: 0.045, g: 0.5, a: 0.0008, pan: p });
+      N(t, { c: 'pink', dur: 0.02, g: 0.4, lp: 1400, pan: p }); } },
+  { name: 'Sticky note', fn: t => { const s = sgn(), d = rnd(0.22, 0.3), o = { dur: d, a: 0.02, r: 0.03, pan: -0.3 * s, pan2: 0.3 * s };
+      T(t, { ...o, w: 'sawtooth', f: rnd(55, 65), f2: rnd(110, 130), g: 0.4, bp: 2000, bp2: 3000, q: 2 });
+      N(t, { ...o, c: 'crk3', g: 0.5, bp: 2600, q: 1 });
+      N(t + d, { c: 'rub', dur: 0.08, bell: 1, g: 0.25, hp: 2500, pan: 0.3 * s }); } },
+  { name: 'Spray can', fn: t => { const p = rnd(-0.3, 0.3); let u = t;
+      for (let i = 0; i < 5; i++) { const f = rnd(1300, 1500); M(u, { fs: [f, f * 2.4, f * 3.9], d: 0.035, g: 0.28, hit: 1.2, hf: 3000, pan: p + (i % 2 ? 0.15 : -0.15) }); u += rnd(0.07, 0.1); }
+      N(u + 0.08, { dur: 0.55, a: 0.02, r: 0.12, g: 0.45, hp: 3200, pan: p });
+      N(u + 0.08, { c: 'pink', dur: 0.55, a: 0.02, r: 0.12, g: 0.2, bp: 2200, q: 0.5, pan: p }); } },
+  { name: 'Rubber stamp', fn: t => { const p = rnd(-0.3, 0.3);
+      N(t, { c: 'water', rate: 0.6, dur: 0.1, bell: 1, g: 0.5, lp: 1800, pan: p });
+      N(t, { c: 'pink', dur: 0.06, g: 0.5, lp: 500, pan: p });
+      N(t + 0.32, { c: 'pink', dur: 0.09, g: 1, lp: 420, a: 0.002, pan: p });
+      T(t + 0.32, { f: 150, f2: 80, dur: 0.09, g: 0.6, pan: p });
+      N(t + 0.32, { dur: 0.012, g: 0.3, bp: 1500, q: 1, pan: p }); } }
+] },
+{ id: 'woods', name: 'Wild Woods', blurb: 'Leaves, birds and weather', hue: 125, pads: [
+  { name: 'Leaf crunch', fn: t => { const s = sgn(); for (let i = 0; i < 2; i++) { const u = t + i * rnd(0.42, 0.5), p = s * (i ? 0.35 : -0.35);
+      N(u, { c: 'crk2', rate: rnd(0.8, 1.1), dur: 0.24, a: 0.01, g: 1, bp: rnd(1800, 2500), q: 0.5, pan: p });
+      N(u, { c: 'foil', rate: 0.45, dur: 0.22, a: 0.01, g: 0.5, lp: 5000, pan: p });
+      N(u, { c: 'pink', dur: 0.1, g: 0.5, lp: 350, pan: p }); } } },
+  { name: 'Twig snap', fn: t => { const p = rnd(-0.4, 0.4), f = rnd(800, 1100);
+      N(t, { dur: 0.012, g: 0.8, bp: rnd(1800, 2400), q: 1, a: 0.0004, pan: p });
+      M(t, { fs: [f, f * 1.9, f * 3.3], d: 0.03, g: 0.35, hit: 0, damp: 1, pan: p });
+      N(t + 0.008, { c: 'crk2', dur: 0.09, g: 0.4, bp: 2600, q: 0.6, pan: p }); } },
+  { name: 'Songbird', fn: t => { const p = rnd(-0.7, 0.7), n = 4 + Math.floor(rnd(0, 4)), base = rnd(2800, 3800); let u = t;
+      for (let i = 0; i < n; i++) { const d = rnd(0.05, 0.11), f = base * rnd(0.85, 1.3);
+        T(u, { f, f2: f * rnd(1.15, 1.5), ft: d * 0.5, f3: f * rnd(0.8, 1.1), dur: d, bell: 1, g: 0.25, pan: p, rev: 0.3 });
+        u += d + rnd(0.02, 0.09); } } },
+  { name: 'Owl', fn: t => { const p = rnd(-0.6, 0.6), f = rnd(360, 420);
+      [[0, 0.16], [0.24, 0.16], [0.52, 0.5]].forEach(([at, d]) => {
+        T(t + at, { f: f * 1.03, f2: f * 0.94, dur: d, bell: 1, g: 0.5, pan: p, rev: 0.4 });
+        T(t + at, { f: f * 2.06, f2: f * 1.88, dur: d, bell: 1, g: 0.06, pan: p, rev: 0.4 });
+        N(t + at, { c: 'pink', dur: d, bell: 1, g: 0.08, bp: f * 2, q: 2, pan: p }); }); } },
+  { name: 'Woodpecker', fn: t => { const p = rnd(-0.6, 0.6), n = 10 + Math.floor(rnd(0, 6)), iv = rnd(0.05, 0.06), f = rnd(650, 800);
+      for (let i = 0; i < n; i++) M(t + i * iv, { fs: [f, f * 2.1, f * 3.4], d: 0.03, g: 0.4 * (0.6 + 0.4 * Math.sin(Math.PI * i / n)), hit: 0.9, hf: 1800, damp: 1, pan: p, rev: 0.25 }); } },
+  { name: 'Frog', fn: t => { const p = rnd(-0.5, 0.5);
+      T(t, { w: 'sawtooth', f: rnd(52, 60), f2: rnd(70, 80), dur: 0.2, a: 0.02, r: 0.04, g: 0.5, bp: rnd(1000, 1200), q: 4, pan: p });
+      T(t + 0.24, { w: 'sawtooth', f: rnd(75, 85), f2: rnd(100, 115), dur: 0.13, a: 0.01, r: 0.04, g: 0.5, bp: rnd(1500, 1800), q: 4, pan: p }); } },
+  { name: 'Bee', fn: t => { const s = sgn(), o = { dur: rnd(1.1, 1.5), bell: 1, pan: -0.9 * s, pan2: 0.9 * s }, f = rnd(215, 245);
+      T(t, { ...o, w: 'sawtooth', f: f * 1.06, f2: f * 0.92, g: 0.3, lp: 1800 });
+      T(t, { ...o, w: 'sawtooth', f: f * 1.075, f2: f * 0.93, g: 0.2, lp: 2400 });
+      N(t, { ...o, c: 'rub', g: 0.08, bp: 1500, q: 1 }); } },
+  { name: 'Snow steps', fn: t => { const s = sgn(); for (let i = 0; i < 2; i++) { const u = t + i * rnd(0.48, 0.56), p = s * (i ? 0.3 : -0.3);
+      N(u, { c: 'crk3', rate: 0.7, dur: 0.26, a: 0.03, g: 0.9, lp: 2600, hp: 300, pan: p });
+      N(u, { c: 'scratch', dur: 0.2, a: 0.04, g: 0.35, bp: rnd(800, 1000), q: 3, pan: p });
+      N(u, { c: 'pink', dur: 0.12, g: 0.5, lp: 300, pan: p }); } } },
+  { name: 'Bush rustle', fn: t => { const s = sgn(), o = { dur: rnd(0.7, 1), bell: 1, pan: -0.6 * s, pan2: 0.6 * s };
+      N(t, { ...o, c: 'crk2', rate: 0.8, g: 0.9, bp: rnd(2600, 3400), q: 0.5 });
+      N(t, { ...o, c: 'rub', g: 0.35, hp: 3000 });
+      N(t, { ...o, c: 'foil', rate: 0.5, g: 0.25, lp: 6000 }); } },
+  { name: 'Thunder', fn: t => { const p = rnd(-0.4, 0.4);
+      N(t, { c: 'pink', dur: 0.25, a: 0.004, g: 0.5, lp: 1800, lp2: 300, pan: p, rev: 0.5 });
+      for (let i = 0; i < 5; i++) N(t + 0.05 + i * rnd(0.3, 0.55), { c: 'brown', dur: rnd(0.9, 1.5), bell: 1, g: 0.9 - i * 0.13, lp: rnd(180, 420), pan: p + rnd(-0.4, 0.4), rev: 0.5 });
+      N(t + 0.1, { c: 'pink', dur: 2.6, a: 0.3, g: 0.3, lp: 500, pan: p, rev: 0.4 }); } },
+  { name: 'Wind', loop: () => {
+      H({ c: 'pink', g: 0.5, bp: 480, q: 0.7, am: [['sine', 0.13, 0.4], ['sine', 0.31, 0.2]] });
+      H({ c: 'pink', g: 0.2, bp: 1100, q: 1.2, am: [['sine', 0.09, 0.45]] });
+      H({ c: 'crk3', g: 0.3, hp: 3200, am: [['sine', 0.13, 0.5], ['sine', 0.47, 0.25]] }); } },
+  { name: 'Stream', loop: () => {
+      H({ c: 'water', g: 0.8 }); H({ c: 'water', g: 0.5, rate: 0.62, lp: 2200, pan: -0.4 });
+      H({ c: 'pink', g: 0.12, bp: 1600, q: 0.5, pan: 0.4 }); } }
+] },
+{ id: 'sleepy', name: 'Sleepy Zone', blurb: 'Bowls, chimes and night sounds', hue: 310, pads: [
+  { name: 'Singing bowl', fn: t => { const f = pick([196, 220, 246.94, 261.63]), p = rnd(-0.3, 0.3);
+      [[1, 1, 6], [1.004, 0.7, 6], [2.71, 0.35, 3.5], [2.72, 0.2, 3.5], [5.15, 0.12, 1.8]].forEach(([m, g, d]) => T(t, { f: f * m, dur: d, g: g * 0.3, a: 0.01, pan: p, rev: 0.5 }));
+      N(t, { c: 'pink', dur: 0.05, g: 0.2, lp: 1200, pan: p }); } },
+  { name: 'Wind chime', fn: t => { const n = 4 + Math.floor(rnd(0, 3));
+      for (let i = 0; i < n; i++) { const f = pick(PENTA) * 2, u = t + (i ? rnd(0, 1) : 0), p = rnd(-0.8, 0.8);
+        T(u, { f, dur: 1.6, g: 0.16, a: 0.002, pan: p, rev: 0.5 });
+        T(u, { f: f * 2.76, dur: 0.6, g: 0.05, pan: p, rev: 0.5 });
+        T(u, { f: f * 5.4, dur: 0.2, g: 0.02, pan: p }); } } },
+  { name: 'Tuning fork', fn: t => { const f = pick([880, 1046.5, 1318.51]), p = rnd(-0.5, 0.5);
+      T(t, { f, dur: 3.5, g: 0.25, a: 0.003, pan: p, rev: 0.4 });
+      T(t, { f: f * 6.27, dur: 0.25, g: 0.05, pan: p });
+      K(t, { f: 2500, q: 2, g: 0.1, pan: p }); } },
+  { name: 'Kalimba', fn: t => kalimba(t, pick(PENTA)) },
+  { name: 'Music box', fn: t => { const f = SCALE[TUNE[tune++ % TUNE.length]] * 2, p = rnd(-0.3, 0.3);
+      T(t, { f, dur: 1.3, g: 0.3, a: 0.001, pan: p, rev: 0.4 });
+      T(t, { f: f * 3.01, dur: 0.35, g: 0.06, pan: p, rev: 0.3 });
+      T(t, { f: f * 6.3, dur: 0.1, g: 0.03, pan: p });
+      K(t, { f: 5000, q: 2, g: 0.06, pan: p }); } },
+  { name: 'Sparkle', fn: t => { const s = sgn();
+      for (let i = 0; i < 8; i++) { const f = PENTA[i] * 2, u = t + i * 0.045;
+        T(u, { f, dur: 0.5, g: 0.14, a: 0.001, pan: s * (-0.7 + i * 0.2), rev: 0.5 });
+        T(u, { f: f * 2.76, dur: 0.12, g: 0.03, pan: s * (-0.7 + i * 0.2) }); } } },
+  { name: 'Heartbeat', loop: () => t => {
+      const th = (u, g) => { T(u, { f: 95, f2: 55, dur: 0.14, g, a: 0.008, pan: 0 }); N(u, { c: 'pink', dur: 0.1, g: g * 0.8, lp: 260, a: 0.008, pan: 0 }); };
+      th(t, 0.9); th(t + 0.27, 0.65); return t + rnd(1, 1.08); } },
+  { name: 'Cat purr', loop: () => {
+      H({ c: 'brown', g: 1, lp: 260, am: [['sawtooth', 24, 0.5], ['sine', 0.38, 0.3]] });
+      H({ c: 'pink', g: 0.3, bp: 620, q: 1.2, am: [['sawtooth', 24, 0.5], ['sine', 0.38, 0.35]] }); } },
+  { name: 'Fireplace', loop: () => {
+      H({ c: 'brown', g: 0.5, lp: 420, am: [['sine', 0.17, 0.2]] }); H({ c: 'crk1', g: 0.9, bp: 2600, q: 0.35, rate: 0.8 }); H({ c: 'crk2', g: 0.12, hp: 4000 });
+      return t => { const p = rnd(-0.7, 0.7);
+        N(t, { c: 'pink', dur: rnd(0.02, 0.05), g: rnd(0.3, 0.7), lp: rnd(900, 1800), a: 0.0005, pan: p });
+        K(t, { f: rnd(2200, 4200), q: 1.5, g: rnd(0.1, 0.3), pan: p });
+        return t + rnd(0.25, 1.6); }; } },
+  { name: 'Crickets', loop: () => { H({ c: 'pink', g: 0.03, hp: 2500 }); let k = 0;
+      return t => { const [f, p] = k++ % 2 ? [4750, 0.6] : [4250, -0.55];
+        for (let i = 0; i < 3; i++) T(t + i * 0.042, { f: f * rnd(0.995, 1.005), dur: 0.03, bell: 1, g: 0.14, pan: p });
+        return t + rnd(0.3, 0.4); }; } },
+  { name: 'Brown noise', loop: () => { H({ c: 'brown', g: 0.9, lp: 700 }); H({ c: 'pink', g: 0.1, lp: 1500 }); } },
+  { name: 'Clock', loop: () => { let k = 0;
+      return t => { const tk = k++ % 2;
+        M(t, { fs: [tk ? 1650 : 2150, tk ? 2900 : 3600], d: 0.02, g: 0.25, hit: 1.2, hf: 3000, pan: 0.1 });
+        T(t, { f: tk ? 240 : 300, f2: 150, dur: 0.02, g: 0.12, pan: 0.1 });
+        return t + 0.5; }; } }
+] }
+];
+
+/* Loudness balance for every pad, measured by rendering each one offline. */
+const TRIMS = /*T0*/{
+  salon: [0.42, 1, 1.16, 0.55, 0.42, 0.71, 0.43, 1.15, 0.87, 0.5, 0.33, 1.3],
+  mouth: [1.92, 1.06, 2.4, 1.5, 0.89, 0.5, 1, 1.17, 0.39, 1.45, 0.57, 1.56],
+  clicks: [1.2, 2.2, 1.46, 0.78, 3.21, 1, 0.86, 2.42, 1.13, 1.25, 1.07, 0.91],
+  water: [1.19, 1.13, 0.58, 1.06, 0.45, 1.4, 0.75, 0.27, 0.83, 0.28, 0.79, 0.34],
+  crinkle: [1.08, 1.16, 0.87, 0.57, 0.9, 0.96, 0.31, 0.45, 0.82, 4.34, 0.8, 0.65],
+  snack: [1.44, 1.67, 0.62, 0.48, 0.9, 1.31, 1.08, 1.13, 1.38, 0.4, 0.29, 0.87],
+  fidget: [1.33, 1.45, 1.55, 1.16, 0.49, 1.03, 0.58, 1.11, 1.08, 1.51, 0.86, 0.79],
+  art: [0.41, 1.05, 0.59, 0.43, 0.3, 0.56, 0.75, 1.38, 1.21, 0.95, 0.65, 1.14],
+  woods: [2.16, 0.84, 0.68, 0.39, 0.85, 1.49, 0.62, 1, 0.58, 0.61, 0.41, 0.32],
+  sleepy: [0.37, 0.76, 0.86, 0.67, 0.78, 1.28, 0.66, 0.62, 0.69, 1.31, 0.29, 1.38]
+}/*T1*/;
+ZONES.forEach(z => z.pads.forEach((p, i) => { p.trim = (TRIMS[z.id] || [])[i] || 1; }));
+
+/* What you can touch the mic with. Each is a few held layers (ranges run from a slow stroke to a fast one) plus the tap it makes on landing. */
+const MATS = [
+  { id: 'fingers', name: 'Fingers', vol: 1, layers: [
+      { c: 'rub', lp: [650, 1700], g: 0.9 },
+      { c: 'brown', lp: [200, 320], g: 0.45, body: 1 },
+      { c: 'crk3', bp: [1200, 2000], q: 0.7, g: 0.15, pw: 1.4 }],
+    tap: (t, p) => { T(t, { f: 150, f2: 75, dur: 0.09, g: 0.6, pan: p }); N(t, { c: 'pink', dur: 0.05, g: 0.5, lp: 600, pan: p }); } },
+  { id: 'nails', name: 'Nails', vol: 1, layers: [
+      { c: 'scratch', bp: [1100, 2300], q: 1.4, g: 1, pw: 0.9 },
+      { c: 'crk2', bp: [2400, 3600], q: 1, g: 0.35, pw: 1.3 },
+      { c: 'brown', lp: [220, 300], g: 0.35, body: 1 }],
+    tap: (t, p) => { K(t, { f: rnd(2300, 2900), q: 3, g: 0.45, pan: p }); N(t, { dur: 0.004, g: 0.3, hp: 3500, pan: p }); T(t, { f: 170, f2: 85, dur: 0.06, g: 0.4, pan: p }); } },
+  // Brushing hair: hair hissing over the bristles, strands ticking free, the bristles dragging, the brush head thumping.
+  { id: 'hairbrush', name: 'Hairbrush', vol: 1, layers: [
+      { c: 'rub', bp: [2600, 4600], q: 0.5, g: 0.9 },
+      { c: 'crk3', hp: [3000, 4200], g: 0.55, pw: 1.2 },
+      { c: 'scratch', bp: [1300, 2100], q: 0.8, g: 0.35, pw: 0.9 },
+      { c: 'pink', lp: [260, 340], g: 0.3, body: 1 }],
+    tap: (t, p) => { N(t, { c: 'crk3', dur: 0.07, a: 0.004, g: 0.8, hp: 3000, pan: p }); N(t, { c: 'pink', dur: 0.07, g: 0.5, lp: 380, pan: p }); N(t + 0.02, { c: 'scratch', dur: 0.06, bell: 1, g: 0.3, bp: 1700, q: 0.8, pan: p }); } },
+  { id: 'comb', name: 'Comb', vol: 0.9, layers: [
+      { w: 'sawtooth', f: [14, 150], bp: [3000, 3900], q: 2.5, g: 0.6, pw: 0.6 },
+      { c: 'crk3', bp: [4500, 5500], q: 0.8, g: 0.2, pw: 1.3 }],
+    tap: (t, p) => { M(t, { fs: [rnd(1700, 2000), 3300], d: 0.025, g: 0.3, hit: 1.2, pan: p }); } },
+  { id: 'brush', name: 'Soft brush', vol: 0.9, layers: [
+      { c: 'crk3', bp: [2400, 4400], q: 0.7, g: 0.7 },
+      { c: 'rub', bp: [1300, 2400], q: 0.6, g: 0.6 }],
+    tap: (t, p) => { N(t, { c: 'crk3', dur: 0.1, bell: 1, g: 0.6, bp: 3200, q: 0.7, pan: p }); N(t, { c: 'pink', dur: 0.06, g: 0.25, lp: 700, pan: p }); } },
+  { id: 'feather', name: 'Feather', vol: 0.6, layers: [
+      { c: 'white', hp: [5500, 7000], g: 0.5 },
+      { c: 'crk2', hp: [4500, 5500], g: 0.5, pw: 1.5 },
+      { c: 'rub', bp: [3500, 4500], q: 0.5, g: 0.3 }],
+    tap: (t, p) => { N(t, { dur: 0.06, bell: 1, g: 0.3, hp: 5000, pan: p }); } },
+  { id: 'foam', name: 'Foam cover', vol: 1, layers: [
+      { c: 'crk2', rate: [0.5, 0.8], lp: [800, 1700], g: 1 },
+      { c: 'rub', lp: [450, 1000], g: 0.5 },
+      { c: 'brown', lp: [220, 320], g: 0.45, body: 1 }],
+    tap: (t, p) => { T(t, { f: 120, f2: 62, dur: 0.11, g: 0.7, pan: p }); N(t, { c: 'crk2', dur: 0.09, g: 0.5, lp: 1400, pan: p }); } },
+  { id: 'glove', name: 'Latex glove', vol: 0.9, layers: [
+      { w: 'sawtooth', f: [70, 260], bp: [1500, 2600], q: 3.5, g: 0.5, pw: 0.8 },
+      { c: 'rub', bp: [900, 1600], q: 1.2, g: 0.5 },
+      { c: 'crk3', bp: [2500, 3200], q: 1, g: 0.25, pw: 1.4 }],
+    tap: (t, p) => { N(t, { dur: 0.02, g: 0.5, bp: 1800, q: 2, pan: p }); T(t, { f: 420, f2: 900, ft: 0.02, dur: 0.045, g: 0.25, pan: p }); } },
+  { id: 'foil', name: 'Foil', vol: 1, layers: [
+      { c: 'foil', rate: [0.8, 1.6], hp: [2000, 3000], g: 1, pw: 0.7 },
+      { c: 'crk1', rate: [1.2, 3], hp: [2300, 3200], g: 0.5, pw: 0.7 },
+      { c: 'crk2', hp: [4200, 5000], g: 0.3 }],
+    tap: (t, p) => { N(t, { c: 'foil', rate: 1.3, dur: 0.14, g: 1, hp: 2200, pan: p }); N(t, { c: 'crk2', dur: 0.08, g: 0.4, hp: 4000, pan: p }); } },
+  { id: 'slime', name: 'Slime', vol: 1, layers: [
+      { c: 'water', rate: [0.32, 0.6], lp: [1400, 2600], g: 1, pw: 0.8 },
+      { c: 'crk2', rate: [0.4, 0.6], bp: [600, 900], q: 1.5, g: 0.35 },
+      { c: 'brown', lp: [250, 380], g: 0.5, body: 1 }],
+    tap: (t, p) => { N(t, { c: 'water', rate: 0.45, dur: 0.15, bell: 1, g: 0.9, lp: 1800, pan: p }); T(t, { f: 260, f2: 520, ft: 0.03, dur: 0.06, g: 0.3, pan: p }); } },
+  { id: 'bud', name: 'Cotton bud', vol: 0.8, layers: [
+      { c: 'rub', lp: [700, 1300], g: 0.9 },
+      { c: 'rub', bp: [1900, 2600], q: 1.5, g: 0.15, pw: 1.5 },
+      { c: 'brown', lp: [200, 300], g: 0.4, body: 1 }],
+    tap: (t, p) => { N(t, { c: 'pink', dur: 0.05, g: 0.6, lp: 700, pan: p }); T(t, { f: 180, f2: 100, dur: 0.05, g: 0.3, pan: p }); } },
+  { id: 'towel', name: 'Towel', vol: 1, layers: [
+      { c: 'rub', lp: [1400, 2600], g: 0.9 },
+      { c: 'crk3', bp: [1200, 1800], q: 0.6, g: 0.25, pw: 1.3 },
+      { c: 'brown', lp: [220, 320], g: 0.4, body: 1 }],
+    tap: (t, p) => { N(t, { c: 'rub', dur: 0.09, bell: 1, g: 0.7, lp: 1500, pan: p }); N(t, { c: 'pink', dur: 0.06, g: 0.5, lp: 400, pan: p }); } }
+];
+const MTRIM = /*M0*/{ fingers: [0.32, 0.88], nails: [0.28, 1.42], hairbrush: [0.31, 1.11], comb: [0.5, 1.49], brush: [0.43, 1.69], feather: [0.25, 0.97], foam: [0.3, 0.92], glove: [0.35, 1.74], foil: [0.62, 2.99], slime: [0.43, 0.61], bud: [0.29, 0.95], towel: [0.32, 0.53] }/*M1*/;
+MATS.forEach(m => { const v = MTRIM[m.id] || [1, 1]; m.trim = v[0]; m.tapTrim = v[1]; });
+const LETTER_NOTES = [523.25, 659.25, 783.99, 1046.5];
+const LETTER_PAD = n => ({ trim: ZONES.find(z => z.id === 'sleepy').pads[3].trim, fn: t => kalimba(t, LETTER_NOTES[n]) });
+
+/* =====================================================================
+   The machine
+   ===================================================================== */
+const $ = s => document.querySelector(s);
+const KEYS = 'qwertyasdfgh'.split('');
+const SHIFT = [-9, 5, 13, -3, 9, -13, 1, 11, -6, 15, -15, 7];
+const DL = [0, 0.02, -0.02, 0.012, -0.012, 0.02, -0.02, 0, 0.015, -0.015, 0.02, -0.01];
+const STORE = 'world-of-asmr';
+const state = { zone: 0, vol: 0.8, ear: 'both', sens: 0, mat: 0 };
+const mic = { on: false, level: 0 };
+// The Home Screen build sets this flag. Only there can the page hear the real microphone.
+const STANDALONE = !!window.WOA_STANDALONE;
+const running = new Map();   // "area:pad" -> live loop
+let E = null, actx = null;
+
+const padsEl = $('#pads'), areasEl = $('#areas'), nowEl = $('#now'), loopEl = $('#loopcount');
+const stopEl = $('#stop'), volEl = $('#vol'), earsEl = $('#ears'), cv = $('#scope'), g2 = cv.getContext('2d');
+const autoEl = $('#auto'), powerEl = $('#mic-power'), matsEl = $('#mats'), sensEl = $('#sens');
+const micStage = $('#mic-stage'), micCv = $('#mic-cv'), mc = micCv.getContext('2d');
+
+const snap = () => ({ area: ZONES[state.zone].id, vol: state.vol, ear: state.ear, sens: state.sens, mat: MATS[state.mat].id });
+function save() { try { localStorage.setItem(STORE, JSON.stringify(snap())); } catch (e) {} }
+
+function audio() {
+  if (!E) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return null;
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+    try { actx = new AC({ latencyHint: 'interactive' }); } catch (e) { actx = new AC(); }
+    E = makeEngine(actx); use(E);
+    E.setVol(state.vol); E.setEar(state.ear); E.setMic(mic.on, state.sens);
+    fL = new Uint8Array(E.anL.frequencyBinCount); fR = new Uint8Array(E.anR.frequencyBinCount);
+    edges = binEdges(actx.sampleRate, fL.length);
+  }
+  if (actx.state !== 'running') actx.resume().catch(() => {});
+  return E;
+}
+// Phones only let sound start on the lift of a finger, so keep nudging until it runs.
+['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'].forEach(ev =>
+  window.addEventListener(ev, () => { if (actx && actx.state !== 'running') actx.resume().catch(() => {}); }, { capture: true, passive: true }));
+
+function fire(zi, pi) {
+  const e = audio();
+  if (!e) { nowEl.textContent = 'This browser cannot play sound'; return; }
+  const pad = ZONES[zi].pads[pi], key = zi + ':' + pi;
+  let note = pad.name;
+  if (pad.loop) {
+    if (running.has(key)) { e.stopLoop(running.get(key)); running.delete(key); note += ' off'; }
+    else { running.set(key, e.startLoop(pad)); note += ' on'; }
+    syncLoops();
+  } else e.play(pad);
+  nowEl.textContent = note;
+  wake();
+}
+
+function syncLoops() {
+  const n = running.size;
+  [...padsEl.children].forEach((b, i) => {
+    if (!b.classList.contains('is-loop')) return;
+    const on = running.has(state.zone + ':' + i);
+    b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  stopEl.disabled = !(n || autoT);
+  loopEl.textContent = n ? n + (n > 1 ? ' loops on' : ' loop on') : '';
+}
+
+function setZone(i, quiet) {
+  if (!ZONES[i]) return;
+  state.zone = i; autoLast = -1;
+  const z = ZONES[i];
+  document.documentElement.style.setProperty('--h', z.hue);
+  [...areasEl.children].forEach((b, k) => { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.tabIndex = k === i ? 0 : -1; });
+  $('#zname').textContent = z.name;
+  $('#zblurb').textContent = z.blurb;
+  $('#deck').setAttribute('aria-labelledby', 'area-' + z.id);
+  padsEl.innerHTML = z.pads.map((p, k) =>
+    '<button type="button" class="cap hue pad' + (p.loop ? ' is-loop' : '') + '" id="pad-' + z.id + '-' + k + '" data-p="' + k + '" style="--h:' + (z.hue + SHIFT[k]) + ';--dl:' + DL[k] + '"' +
+    (p.loop ? ' aria-pressed="false"' : '') + '><span class="hint">' + KEYS[k] + '</span>' +
+    (p.loop ? '<span class="led"></span>' : '') + '<span class="pad-name">' + p.name + '</span>' +
+    (p.loop ? '<span class="tag"></span>' : '') + '</button>').join('');
+  syncLoops();
+  if (!quiet) { try { history.replaceState(null, '', '#' + z.id); } catch (e) {} save(); }
+  redraw();
+}
+
+function setEar(mode) {
+  state.ear = mode;
+  [...earsEl.children].forEach(b => b.setAttribute('aria-checked', b.dataset.ear === mode ? 'true' : 'false'));
+  if (E) E.setEar(mode);
+}
+
+/* ---------- stereo meter: left ear on the left, right ear on the right ---------- */
+const NB = 22;
+let fL = null, fR = null, edges = null, raf = 0, lastHit = 0;
+function binEdges(sr, n) {
+  const e = [];
+  for (let i = 0; i <= NB; i++) e.push(Math.max(1, Math.min(n - 1, Math.round(90 * Math.pow(13000 / 90, i / NB) / (sr / 2) * n))));
+  return e;
+}
+function band(arr, i) {
+  let m = 0;
+  for (let k = edges[i]; k <= Math.max(edges[i], edges[i + 1] - 1); k++) if (arr[k] > m) m = arr[k];
+  return Math.pow(m / 255, 1.3);
+}
+function fit() {
+  const r = cv.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1);
+  if (!r.width) return;
+  cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d);
+  if (!raf) draw();
+}
+function draw() {
+  raf = 0;
+  const w = cv.width, h = cv.height, unit = w / 2 / NB, bw = Math.max(2, unit * 0.6);
+  g2.clearRect(0, 0, w, h);
+  g2.fillStyle = getComputedStyle(cv).color;
+  if (E) { E.anL.getByteFrequencyData(fL); E.anR.getByteFrequencyData(fR); }
+  let live = false;
+  const bar = (x, v) => {
+    const bh = Math.max(bw, v * h * 0.94);
+    g2.globalAlpha = 0.3 + 0.7 * Math.min(1, v * 1.7);
+    g2.beginPath();
+    if (g2.roundRect) g2.roundRect(x, (h - bh) / 2, bw, bh, bw / 2); else g2.rect(x, (h - bh) / 2, bw, bh);
+    g2.fill();
+  };
+  for (let i = 0; i < NB; i++) {
+    const a = E ? band(fL, i) : 0, b = E ? band(fR, i) : 0;
+    if (a > 0.02 || b > 0.02) live = true;
+    bar(w / 2 - (i + 1) * unit + (unit - bw) / 2, a);
+    bar(w / 2 + i * unit + (unit - bw) / 2, b);
+  }
+  g2.globalAlpha = 1;
+  if (!document.hidden && (live || running.size || performance.now() - lastHit < 1500)) raf = requestAnimationFrame(draw);
+}
+function wake() { lastHit = performance.now(); if (!raf) raf = requestAnimationFrame(draw); }
+
+/* ---------- auto play: the area taps itself so you can sit back ---------- */
+let autoT = 0, autoLast = -1;
+function autoStep() {
+  const pool = ZONES[state.zone].pads.map((p, i) => (p.loop || i === autoLast ? -1 : i)).filter(i => i >= 0);
+  const i = pick(pool), b = padsEl.children[i];
+  autoLast = i;
+  if (b) { b.classList.add('down'); setTimeout(() => b.classList.remove('down'), 170); }
+  fire(state.zone, i);
+  autoT = setTimeout(autoStep, rnd(420, 1300));
+}
+function setAuto(on) {
+  clearTimeout(autoT); autoT = 0;
+  autoEl.setAttribute('aria-pressed', on ? 'true' : 'false');
+  if (on) autoStep();
+  syncLoops();
+}
+
+/* ---------- the mic: touch turned into sound ---------- */
+const ptrs = new Map();          // one entry for every finger on the mic
+const trail = [];
+let micRaf = 0;
+const REF = [2.2, 1.4, 0.8];     // how fast a stroke must be to reach full loudness
+const POW = [0.9, 0.7, 0.5];     // how quickly quiet strokes come up
+const FLOOR = [0, 0.02, 0.07];   // what a resting finger still gives away
+const TAP = [0.8, 1.15, 1.6];
+
+function geom() {
+  const W = micCv.clientWidth, H = micCv.clientHeight, pad = Math.max(14, W * 0.04), R = Math.min(H * 0.4, W * 0.19);
+  return { W, H, R, cx: [pad + R, W - pad - R], cy: H / 2 };
+}
+// 1 on a capsule, falling to 0 out on the body of the mic.
+function nearOf(g, x, y) {
+  const d = Math.min(Math.hypot(x - g.cx[0], y - g.cy), Math.hypot(x - g.cx[1], y - g.cy));
+  return Math.max(0, Math.min(1, 1 - (d - g.R * 0.85) / (g.R * 0.6)));
+}
+const panOf = (g, x) => Math.max(-0.95, Math.min(0.95, (x / g.W * 2 - 1) * 0.95));
+const levelOf = sp => Math.max(FLOOR[state.sens], Math.pow(Math.min(1, sp / REF[state.sens]), POW[state.sens]));
+function spot(e) { const r = micCv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+function endPtr(id) { const p = ptrs.get(id); if (p) { p.voice.stop(); ptrs.delete(id); } }
+
+function micDown(e) {
+  if (!mic.on || (e.pointerType === 'mouse' && e.button !== 0)) return;
+  const en = audio();
+  if (!en) return;
+  e.preventDefault();
+  try { micStage.setPointerCapture(e.pointerId); } catch (err) {}
+  endPtr('hover');
+  if (ptrs.size >= 5) return;
+  const g = geom(), [x, y] = spot(e), near = nearOf(g, x, y), pan = panOf(g, x), mat = MATS[state.mat];
+  const p = { voice: en.micVoice(mat), x, y, t: e.timeStamp, speed: 0, last: performance.now(), soft: 1, near, pan };
+  ptrs.set(e.pointerId, p);
+  en.micTap(mat, pan, TAP[state.sens] * (0.6 + 0.4 * near));
+  p.voice.set(FLOOR[state.sens], pan, near);
+  trail.push({ x, y, t: p.last });
+  nowEl.textContent = 'Mic: ' + mat.name;
+  wake(); micWake();
+}
+function micMove(e) {
+  let p = ptrs.get(e.pointerId);
+  if (!p) {
+    // An ULTRA sensitive mic even hears a mouse passing over it.
+    if (!(mic.on && E && state.sens === 2 && e.pointerType === 'mouse' && !e.buttons)) return;
+    p = ptrs.get('hover');
+    if (!p) {
+      const [x, y] = spot(e);
+      p = { voice: E.micVoice(MATS[state.mat]), x, y, t: e.timeStamp, speed: 0, last: performance.now(), soft: 0.35, near: 0, pan: 0 };
+      ptrs.set('hover', p);
+    }
+  }
+  const g = geom(), [x, y] = spot(e), dt = Math.max(4, e.timeStamp - p.t);
+  const sp = Math.hypot(x - p.x, y - p.y) / dt * 1000 / Math.min(g.W, 520);
+  p.speed = p.speed * 0.55 + sp * 0.45;
+  p.x = x; p.y = y; p.t = e.timeStamp; p.last = performance.now();
+  p.near = nearOf(g, x, y); p.pan = panOf(g, x);
+  p.voice.set(levelOf(p.speed) * p.soft, p.pan, p.near);
+  trail.push({ x, y, t: p.last });
+  wake(); micWake();
+}
+function micFrame() {
+  micRaf = 0;
+  const now = performance.now();
+  // A finger that stops moving goes quiet.
+  ptrs.forEach(p => { if (now - p.last > 45) { p.speed *= 0.82; p.voice.set(levelOf(p.speed) * p.soft, p.pan, p.near); } });
+  while (trail.length && now - trail[0].t > 500) trail.shift();
+  drawMic(now);
+  if (!document.hidden && (ptrs.size || trail.length)) micRaf = requestAnimationFrame(micFrame);
+}
+function micWake() { if (!micRaf) micRaf = requestAnimationFrame(micFrame); }
+
+function drawMic(now) {
+  const g = geom(), d = Math.min(2, window.devicePixelRatio || 1);
+  if (!g.W) return;
+  const w = Math.round(g.W * d), h = Math.round(g.H * d);
+  if (micCv.width !== w || micCv.height !== h) { micCv.width = w; micCv.height = h; }
+  const ink = getComputedStyle(micCv).color, hot = getComputedStyle(cv).color, dim = mic.on || mic.level ? 1 : 0.45;
+  const dot = (x, y, r) => { mc.beginPath(); mc.arc(x, y, r, 0, 6.2832); mc.fill(); };
+  mc.setTransform(d, 0, 0, d, 0, 0);
+  mc.clearRect(0, 0, g.W, g.H);
+  // the body that joins the two capsules, with its power light
+  const bh = g.R * 0.46, x0 = g.cx[0] + g.R, x1 = g.cx[1] - g.R;
+  mc.fillStyle = ink; mc.globalAlpha = 0.14 * dim;
+  mc.fillRect(x0 - 2, g.cy - bh / 2, x1 - x0 + 4, bh);
+  mc.globalAlpha = mic.on ? 1 : 0.3; mc.fillStyle = mic.on ? hot : ink;
+  dot(g.W / 2, g.cy, Math.max(3, g.R * 0.06));
+  const pts = [...ptrs.values()], step = Math.max(7, g.R / 9), reach = Math.max(34, g.R * 0.55), mesh = g.R * 0.8;
+  g.cx.forEach(cx => {
+    mc.fillStyle = ink; mc.globalAlpha = 0.09 * dim; dot(cx, g.cy, g.R);
+    mc.strokeStyle = ink; mc.lineWidth = 2.5; mc.globalAlpha = 0.6 * dim;
+    mc.beginPath(); mc.arc(cx, g.cy, g.R - 1.5, 0, 6.2832); mc.stroke();
+    mc.lineWidth = 1; mc.globalAlpha = 0.28 * dim;
+    mc.beginPath(); mc.arc(cx, g.cy, g.R * 0.87, 0, 6.2832); mc.stroke();
+    // the grille: a honeycomb of dots that lights up under a finger
+    let row = 0;
+    for (let y = -mesh; y <= mesh; y += step * 0.866, row++) {
+      for (let x = -mesh + (row % 2 ? step / 2 : 0); x <= mesh; x += step) {
+        if (x * x + y * y > mesh * mesh) continue;
+        const px = cx + x, py = g.cy + y;
+        let glow = mic.level * 0.9;
+        for (const p of pts) {
+          const dd = Math.hypot(px - p.x, py - p.y);
+          if (dd < reach) glow = Math.max(glow, (1 - dd / reach) * (0.35 + 0.65 * Math.min(1, p.speed / 1.2)) * (p.soft < 1 ? 0.5 : 1));
+        }
+        mc.globalAlpha = (0.36 + glow * 0.64) * dim;
+        mc.fillStyle = glow > 0.05 ? hot : ink;
+        dot(px, py, step * 0.17 * (1 + glow * 1.3));
+      }
+    }
+  });
+  mc.fillStyle = hot;
+  for (const q of trail) { const a = 1 - (now - q.t) / 500; if (a > 0) { mc.globalAlpha = a * 0.26; dot(q.x, q.y, 6 + 14 * (1 - a)); } }
+  mc.globalAlpha = 1;
+}
+function redraw() { if (!raf) draw(); drawMic(performance.now()); }
+
+function syncMic() {
+  micStage.classList.toggle('on', mic.on);
+  micStage.classList.toggle('ultra', state.sens === 2);
+  $('#mic-off').hidden = mic.on;
+  powerEl.setAttribute('aria-checked', mic.on ? 'true' : 'false');
+  $('#mic-power-t').textContent = mic.on ? 'Mic on' : 'Mic off';
+  [...matsEl.children].forEach((b, i) => b.setAttribute('aria-checked', i === state.mat ? 'true' : 'false'));
+  [...sensEl.children].forEach((b, i) => b.setAttribute('aria-checked', i === state.sens ? 'true' : 'false'));
+  if (E) E.setMic(mic.on, state.sens);
+  if (!mic.on) [...ptrs.keys()].forEach(endPtr);
+  drawMic(performance.now());
+}
+function setMicOn(on) {
+  mic.on = on;
+  if (on) audio();
+  syncMic();
+  nowEl.textContent = on ? 'Mic on: ' + MATS[state.mat].name : 'Mic off';
+  wake();
+}
+
+/* ---------- say it in ASMR: a spoken recording comes back as a close-up whisper ---------- */
+async function asmrVoice(raw, sr, mode) {
+  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  // 1. Measure loudness every 8 ms, find where the talking starts and stops.
+  const hop = Math.max(1, Math.floor(sr * 0.008)), F = Math.ceil(raw.length / hop), env = new Float32Array(F);
+  for (let f = 0; f < F; f++) {
+    let sq = 0, c = 0;
+    for (let i = f * hop; i < Math.min(raw.length, (f + 1) * hop); i++) { sq += raw[i] * raw[i]; c++; }
+    env[f] = Math.sqrt(sq / (c || 1));
+  }
+  for (let f = 1; f < F; f++) env[f] = Math.max(env[f], env[f - 1] * 0.85);
+  let top = 0;
+  for (let f = 0; f < F; f++) if (env[f] > top) top = env[f];
+  if (top < 0.004) return { quiet: true };
+  const gate = top * 0.05;
+  let a = 0, b = F - 1;
+  while (a < F && env[a] < gate) a++;
+  while (b > a && env[b] < gate) b--;
+  a = Math.max(0, a - 6); b = Math.min(F - 1, b + 12);
+  const start = a * hop, n = Math.min(raw.length, (b + 1) * hop) - start, dur = n / sr;
+  // 2. Even it out. A close mic hears the quiet syllables nearly as well as the loud ones.
+  const x = new Float32Array(n), gainAt = e => (e < gate ? Math.pow(e / gate, 2) : 1) * Math.min(4, Math.pow(0.4 * top / Math.max(e, gate), 0.45)) / top * 0.5;
+  for (let i = 0; i < n; i++) {
+    const pos = (start + i) / hop - 0.5, f0 = Math.max(0, Math.min(F - 1, Math.floor(pos))), f1 = Math.min(F - 1, f0 + 1), w = Math.max(0, Math.min(1, pos - f0));
+    x[i] = raw[start + i] * (gainAt(env[f0]) * (1 - w) + gainAt(env[f1]) * w);
+  }
+  // 3. Find the words: stretches of talking with a real gap before them.
+  const thr = top * 0.09, segs = [];
+  let segStart = -1, quietFor = 99, active = 0;
+  for (let f = a; f <= b; f++) {
+    const on = env[f] > thr;
+    if (on) { active++; if (segStart < 0 && quietFor >= 14) segStart = f; quietFor = 0; }
+    else { quietFor++; if (segStart >= 0 && quietFor === 14) { segs.push([(segStart - a) * hop / sr, (f - 14 - a) * hop / sr]); segStart = -1; } }
+  }
+  if (segStart >= 0) segs.push([(segStart - a) * hop / sr, dur]);
+
+  const ctx = new OAC(4, Math.ceil((dur + 0.5) * sr), sr);
+  const play = data => { const bf = ctx.createBuffer(1, data.length, sr); bf.getChannelData(0).set(data); const src = ctx.createBufferSource(); src.buffer = bf; src.start(0); return src; };
+  const biq = (type, f, q) => { const bq = ctx.createBiquadFilter(); bq.type = type; bq.frequency.value = f; bq.Q.value = q; return bq; };
+  const gain = v => { const g = ctx.createGain(); g.gain.value = v; return g; };
+  const breath = new Float32Array(n);
+  for (let i = 0; i < n; i++) breath[i] = Math.random() * 2 - 1;
+  const voice = play(x), noise = play(breath), hp = biq('highpass', 110, 0.7), sum = gain(1);
+  voice.connect(hp);
+  // 4. The whisper. Split the voice into bands, follow how loud each band is, and let that shape plain breath noise.
+  //    The pitch of the voice is thrown away; the shape of the mouth is kept.
+  const rectify = new Float32Array(257);
+  for (let i = 0; i < 257; i++) rectify[i] = Math.abs(i / 128 - 1);
+  const BANDS = 20, soft = mode === 'soft';
+  for (let k = 0; k < BANDS; k++) {
+    const f = 180 * Math.pow(8200 / 180, k / (BANDS - 1));
+    const a1 = biq('bandpass', f, 5), a2 = biq('bandpass', f, 5), rect = ctx.createWaveShaper(), smooth = biq('lowpass', 40, 0.5);
+    const depth = gain(30 * Math.pow(1000 / f, 0.15) * (soft ? 0.6 : 1)), carrier = biq('bandpass', f, 5), vca = gain(0);
+    rect.curve = rectify;
+    hp.connect(a1); a1.connect(a2); a2.connect(rect); rect.connect(smooth); smooth.connect(depth); depth.connect(vca.gain);
+    noise.connect(carrier); carrier.connect(vca); vca.connect(sum);
+  }
+  // the real consonants ride on top, so every s, t and k stays crisp
+  const crisp = biq('highpass', 3800, 0.7), crispGain = gain(0.5);
+  hp.connect(crisp); crisp.connect(crispGain); crispGain.connect(sum);
+  if (soft) { const body = biq('lowpass', 5000, 0.7), bodyGain = gain(0.55); hp.connect(body); body.connect(bodyGain); bodyGain.connect(sum); }
+  const air = ctx.createBiquadFilter(); air.type = 'highshelf'; air.frequency.value = 5000; air.gain.value = 3;
+  sum.connect(air);
+  let last = air;
+  if (ctx.createStereoPanner) {   // start in the left ear, wander to the right and back
+    const pan = ctx.createStereoPanner(), pts = Math.max(8, Math.ceil(dur * 16)), curve = new Float32Array(pts);
+    for (let i = 0; i < pts; i++) curve[i] = 0.7 * Math.sin(2 * Math.PI * 0.13 * (i / (pts - 1)) * (dur + 0.4) - Math.PI / 2);
+    pan.pan.setValueCurveAtTime(curve, 0, dur + 0.4);
+    air.connect(pan); last = pan;
+  }
+  const merge = ctx.createChannelMerger(4), s1 = ctx.createChannelSplitter(2), s2 = ctx.createChannelSplitter(2), wide = gain(1);
+  wide.channelCount = 2; wide.channelCountMode = 'explicit';
+  last.connect(wide); wide.connect(s1); s1.connect(merge, 0, 0); s1.connect(merge, 1, 1);
+  // 5. Mouth noises: lips parting just before a word, a sticky tick in the middle of a long one, a breath in each pause.
+  const E2 = makeEngine(ctx, { flat: true }), clicksBus = gain(1);
+  clicksBus.channelCount = 2; clicksBus.channelCountMode = 'explicit';
+  E2.bus.connect(clicksBus); clicksBus.connect(s2); s2.connect(merge, 0, 2); s2.connect(merge, 1, 3);
+  use(E2);
+  let clicks = 0;
+  const tick = (t, kind, g) => { E2.playAt({ trim: g, fn: tt => mouthTick(tt, rnd(-0.6, 0.6), kind) }, Math.max(0.005, t)); clicks++; };
+  segs.forEach(([t0, t1], i) => {
+    if (Math.random() < 0.85) tick(t0 - rnd(0.05, 0.11), Math.random() < 0.55 ? 1 : 0, rnd(0.7, 1.1));
+    for (let t = t0 + rnd(0.35, 0.6); t < t1 - 0.12; t += rnd(0.45, 0.9)) tick(t, 2, rnd(0.4, 0.7));
+    const next = segs[i + 1], gap = (next ? next[0] : dur + 0.45) - t1;
+    if (gap > 0.4) { const d = Math.min(0.45, gap - 0.12), p = rnd(-0.6, 0.6);
+      E2.playAt({ trim: 0.6, fn: tt => { N(tt, { c: 'pink', dur: d, bell: 1, g: 0.35, lp: 900, hp: 200, pan: p }); N(tt, { c: 'rub', dur: d, bell: 1, g: 0.1, bp: 1500, q: 0.6, pan: p }); } }, t1 + 0.06); }
+  });
+  if (E) use(E);   // hand the pads back to the live engine before waiting for the render
+  merge.connect(ctx.destination);
+  const done = await new Promise((res, rej) => { ctx.oncomplete = e => res(e.renderedBuffer); const pr = ctx.startRendering(); if (pr && pr.then) pr.then(res, rej); });
+  // 6. Balance the whisper against the clicks and hand back plain stereo.
+  const L = done.getChannelData(0), R = done.getChannelData(1), cL = done.getChannelData(2), cR = done.getChannelData(3);
+  let sq = 0, pk = 0;
+  for (let i = 0; i < L.length; i++) { const m = Math.max(Math.abs(L[i]), Math.abs(R[i])); if (m > pk) pk = m; sq += L[i] * L[i] + R[i] * R[i]; }
+  const rms = Math.sqrt(sq / Math.max(1, active * hop)), gw = Math.min(0.8 / (pk || 1), 0.12 / (rms || 1)), gc = 0.55;
+  const out = ctx.createBuffer(2, L.length, sr), oL = out.getChannelData(0), oR = out.getChannelData(1);
+  for (let i = 0; i < L.length; i++) { oL[i] = L[i] * gw + cL[i] * gc; oR[i] = R[i] * gw + cR[i] * gc; }
+  return { buffer: out, clicks, words: segs.length, seconds: dur };
+}
+
+const voice = { raw: null, sr: 0, buf: null, stop: null, mode: 'whisper', rec: null, tick: 0, busy: false };
+const vStatus = $('#voice-status'), vPlay = $('#voice-play'), vRec = $('#voice-rec'), vFile = $('#voice-file');
+const vSay = t => { vStatus.textContent = t; };
+async function voiceLoad(bytes) {
+  if (!audio()) { vSay('This browser cannot play sound.'); return; }
+  vSay('Listening to it…');
+  let dec;
+  try { dec = await new Promise((res, rej) => { const pr = actx.decodeAudioData(bytes, res, rej); if (pr && pr.catch) pr.catch(rej); }); }
+  catch (e) { vSay('That file is not a sound this browser can read. Try an m4a, mp3 or wav.'); return; }
+  const n = Math.min(dec.length, Math.floor(dec.sampleRate * 15)), mono = new Float32Array(n);
+  for (let c = 0; c < dec.numberOfChannels; c++) { const d = dec.getChannelData(c); for (let i = 0; i < n; i++) mono[i] += d[i] / dec.numberOfChannels; }
+  voice.raw = mono; voice.sr = dec.sampleRate;
+  await voiceMake(true);
+}
+async function voiceMake(andPlay) {
+  if (!voice.raw || voice.busy) return;
+  voice.busy = true;
+  vSay(voice.mode === 'soft' ? 'Softening it…' : 'Whispering it…');
+  await new Promise(r => setTimeout(r, 30));
+  try {
+    const res = await asmrVoice(voice.raw, voice.sr, voice.mode);
+    if (res.quiet) vSay('That recording is almost silent. Try again, a little closer.');
+    else {
+      voice.buf = res.buffer; vPlay.disabled = false;
+      vSay('Done. ' + res.seconds.toFixed(1) + ' seconds, with ' + res.clicks + ' mouth sounds added.');
+      if (andPlay) voicePlay();
+    }
+  } catch (e) { if (E) use(E); vSay('That did not work. Try a shorter recording.'); }
+  voice.busy = false;
+}
+function voicePlay() {
+  const en = audio();
+  if (!voice.buf || !en) return;
+  if (voice.stop) voice.stop();
+  const me = en.playBuffer(voice.buf, () => { if (voice.stop === me) { voice.stop = null; vPlay.textContent = 'Play it back'; } });
+  voice.stop = me; vPlay.textContent = 'Stop';
+  nowEl.textContent = voice.mode === 'soft' ? 'Your soft voice' : 'Your whisper';
+  wake();
+}
+function recStop() { if (voice.rec && voice.rec.state !== 'inactive') voice.rec.stop(); }
+async function recToggle() {
+  if (voice.rec) { recStop(); return; }
+  if (!audio()) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) { vSay('This browser cannot record here. Choose a recording instead.'); return; }
+  let stream;
+  try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: true } }); }
+  catch (e) { vSay(e && e.name === 'NotAllowedError' ? 'The microphone is blocked. Allow it for this app in your settings, then try again.' : 'No microphone was found.'); return; }
+  try { if (navigator.audioSession) navigator.audioSession.type = 'play-and-record'; } catch (e) {}
+  if (voice.stop) voice.stop();
+  const chunks = [], mr = new MediaRecorder(stream), t0 = performance.now();
+  const src = actx.createMediaStreamSource(stream), an = actx.createAnalyser(), td = new Uint8Array(512);
+  an.fftSize = 512; src.connect(an);
+  mr.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  mr.onstop = async () => {
+    clearInterval(voice.tick); voice.rec = null;
+    stream.getTracks().forEach(tr => tr.stop());
+    try { src.disconnect(); } catch (e) {}
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
+    vRec.textContent = 'Record my voice'; vRec.classList.remove('on');
+    mic.level = 0; drawMic(performance.now());
+    voiceLoad(await new Blob(chunks, { type: mr.mimeType || 'audio/webm' }).arrayBuffer());
+  };
+  voice.tick = setInterval(() => {
+    an.getByteTimeDomainData(td);
+    let m = 0;
+    for (let i = 0; i < td.length; i++) m = Math.max(m, Math.abs(td[i] - 128));
+    mic.level = Math.min(1, m / 60); drawMic(performance.now());
+    const secs = (performance.now() - t0) / 1000;
+    vSay('Recording, ' + Math.floor(secs) + ' s. Press stop when you are done.');
+    if (secs >= 12) recStop();
+  }, 80);
+  voice.rec = mr; mr.start();
+  vRec.textContent = 'Stop recording'; vRec.classList.add('on');
+  vSay('Recording. Say something.');
+}
+
+/* ---------- games ---------- */
+const gameEl = $('#game-body'), gameTabs = $('#game-tabs'), BEST = 'world-of-asmr-best';
+let best = {}, game = 'pop', gameTimers = [];
+try { best = JSON.parse(localStorage.getItem(BEST) || '{}') || {}; } catch (e) {}
+['pop', 'cat', 'quiz'].forEach(k => { if (typeof best[k] !== 'number') delete best[k]; });
+const saveBest = () => { try { localStorage.setItem(BEST, JSON.stringify(best)); } catch (e) {} };
+const later = (fn, ms) => { gameTimers.push(setTimeout(fn, ms)); };
+const padOf = (zid, name) => ZONES.find(z => z.id === zid).pads.find(q => q.name === name);
+const sfx = (pad, fn) => { const e = audio(); if (e) { e.play({ trim: pad.trim, fn }); wake(); } };
+const gSay = t => { const el = $('#g-status'); if (el) el.textContent = t; };
+const gActions = html => { const el = $('#g-actions'); if (el) el.innerHTML = html; };
+const gShell = (status, board, actions) => {
+  gameEl.innerHTML = '<p class="g-status" id="g-status" role="status">' + status + '</p>' + board + '<div class="g-actions" id="g-actions">' + actions + '</div>';
+};
+const gBtn = (id, label) => '<button type="button" class="cap blank" id="' + id + '">' + label + '</button>';
+
+// Bubble Wrap: pop the whole sheet as fast as you can.
+const POP_N = 36;
+let pop = null;
+function popNew() {
+  pop = { left: POP_N, t0: 0 };
+  gShell(POP_N + ' bubbles. Pop every one as fast as you can.' + (best.pop ? ' Your best is ' + best.pop.toFixed(1) + ' seconds.' : ''),
+    '<div class="bubs" id="bubs">' + Array.from({ length: POP_N }, (_, i) => '<button type="button" class="bub" data-b="' + i + '" aria-label="Bubble ' + (i + 1) + '"></button>').join('') + '</div>',
+    gBtn('g-new', 'New sheet'));
+}
+function popOne(b) {
+  if (!b || !pop || b.classList.contains('popped')) return;
+  b.classList.add('popped'); b.setAttribute('aria-label', 'Popped');
+  const r = b.getBoundingClientRect(), pan = Math.max(-0.8, Math.min(0.8, (r.left + r.width / 2) / window.innerWidth * 1.8 - 0.9));
+  sfx(padOf('crinkle', 'Bubble wrap'), t => popWrap(t, pan));
+  if (!pop.t0) pop.t0 = performance.now();
+  pop.left--;
+  if (pop.left) { gSay(pop.left + ' left'); return; }
+  const secs = (performance.now() - pop.t0) / 1000, record = !best.pop || secs < best.pop;
+  if (record) { best.pop = secs; saveBest(); }
+  gSay('All ' + POP_N + ' popped in ' + secs.toFixed(1) + ' seconds.' + (record ? ' That is your best yet.' : ' Your best is ' + best.pop.toFixed(1) + '.'));
+  later(() => sfx(padOf('sleepy', 'Sparkle'), padOf('sleepy', 'Sparkle').fn), 250);
+}
+
+// Copy Cat: the machine plays a run of sounds and you play it back. It grows by one each round.
+const CAT = [
+  { name: 'Chime', hue: 350, pad: () => padOf('sleepy', 'Kalimba'), fn: t => kalimba(t, 659.25) },
+  { name: 'Drip', hue: 235, pad: () => padOf('water', 'Drip'), fn: t => D(t, 1000, 0.5, 0.3) },
+  { name: 'Click', hue: 50, pad: () => padOf('mouth', 'Tongue click'), fn: t => mouthTick(t, -0.3, 0, 1250) },
+  { name: 'Pop', hue: 195, pad: () => padOf('fidget', 'Pop it'), fn: t => popIt(t, 0.3, 520) }
+];
+let cat = null;
+function catNew() {
+  cat = { seq: [], at: 0, turn: 'idle' };
+  gShell('Listen to the sounds, then press them back in the same order.' + (best.cat ? ' Your best is ' + best.cat + ' in a row.' : ''),
+    '<div class="cats">' + CAT.map((c, i) => '<button type="button" class="cap hue catkey" style="--h:' + c.hue + '" data-c="' + i + '">' + c.name + '</button>').join('') + '</div>',
+    gBtn('g-start', 'Start'));
+}
+function catKey(i, ms) {
+  const b = gameEl.querySelector('[data-c="' + i + '"]');
+  if (b) { b.classList.add('down'); later(() => b.classList.remove('down'), ms); }
+  sfx(CAT[i].pad(), CAT[i].fn);
+}
+function catRound() {
+  cat.seq.push(Math.floor(Math.random() * CAT.length)); cat.at = 0; cat.turn = 'listen';
+  const len = cat.seq.length, gap = Math.max(340, 640 - len * 25);
+  gSay('Round ' + len + '. Listen.'); gActions('');
+  cat.seq.forEach((k, i) => later(() => catKey(k, gap * 0.55), 550 + i * gap));
+  later(() => { cat.turn = 'play'; gSay('Your turn. ' + len + (len > 1 ? ' sounds.' : ' sound.')); }, 550 + len * gap);
+}
+function catPress(i) {
+  if (!cat || cat.turn === 'listen' || cat.turn === 'wait') return;
+  catKey(i, 170);
+  if (cat.turn !== 'play') return;
+  if (i !== cat.seq[cat.at]) {
+    const got = cat.seq.length - 1;
+    cat.turn = 'idle'; cat.seq = [];
+    if (got > (best.cat || 0)) { best.cat = got; saveBest(); }
+    gSay('Not that one. You copied ' + got + ' in a row.' + (best.cat ? ' Your best is ' + best.cat + '.' : ''));
+    gActions(gBtn('g-start', 'Try again'));
+    return;
+  }
+  cat.at++;
+  if (cat.at < cat.seq.length) { gSay(cat.at + ' of ' + cat.seq.length); return; }
+  cat.turn = 'wait'; gSay('Yes. Here comes one more.');
+  later(catRound, 900);
+}
+
+// Mystery Sound: hear one sound from anywhere in the world and say which it was.
+const QUIZ_N = 10;
+let quiz = null;
+function quizNew() {
+  quiz = { n: 0, score: 0, cur: null, locked: true };
+  gShell('You hear one sound and pick what it was. ' + QUIZ_N + ' sounds.' + (best.quiz != null ? ' Your best is ' + best.quiz + ' of ' + QUIZ_N + '.' : ''), '<div class="opts" id="opts"></div>', gBtn('g-start', 'Start'));
+}
+function quizPlay() { const e = audio(); if (e && quiz.cur) { e.play(quiz.cur.ans.p); wake(); } }
+function quizNext() {
+  const all = ZONES.flatMap(z => z.pads.filter(q => !q.loop).map(q => ({ z, p: q })));
+  const ans = pick(all), opts = [ans];
+  // one wrong answer from the same category, two from elsewhere
+  while (opts.length < 4) {
+    const c = pick(all.filter(o => (opts.length === 1 ? o.z === ans.z : o.z !== ans.z)));
+    if (!opts.some(o => o.p.name === c.p.name)) opts.push(c);
+  }
+  opts.sort(() => Math.random() - 0.5);
+  quiz.cur = { ans, opts }; quiz.n++; quiz.locked = false;
+  gSay('Sound ' + quiz.n + ' of ' + QUIZ_N + '. What is it?');
+  $('#opts').innerHTML = opts.map((o, i) => '<button type="button" class="cap blank opt" data-o="' + i + '">' + o.p.name + '</button>').join('');
+  gActions(gBtn('g-again', 'Hear it again'));
+  quizPlay();
+}
+function quizPick(i) {
+  if (!quiz || quiz.locked || !quiz.cur) return;
+  quiz.locked = true;
+  const { ans, opts } = quiz.cur, ok = opts[i] === ans;
+  if (ok) quiz.score++;
+  [...$('#opts').children].forEach((b, k) => {
+    if (opts[k] === ans) { b.classList.add('right'); b.insertAdjacentHTML('beforeend', '<span class="mark">' + (ok ? 'Correct' : 'It was this') + '</span>'); }
+    else if (k === i) { b.classList.add('wrong'); b.insertAdjacentHTML('beforeend', '<span class="mark">Your pick</span>'); }
+  });
+  const end = quiz.n >= QUIZ_N;
+  if (end && (best.quiz == null || quiz.score > best.quiz)) { best.quiz = quiz.score; saveBest(); }
+  gSay((ok ? 'Yes, ' + ans.p.name + '.' : 'It was ' + ans.p.name + ', from ' + ans.z.name + '.') + (end ? ' You got ' + quiz.score + ' of ' + QUIZ_N + '.' : ''));
+  gActions(gBtn('g-again', 'Hear it again') + (end ? gBtn('g-start', 'Play again') : gBtn('g-next', 'Next sound')));
+}
+
+function setGame(id) {
+  gameTimers.forEach(clearTimeout); gameTimers = [];
+  game = id;
+  [...gameTabs.children].forEach(b => b.setAttribute('aria-checked', b.dataset.g === id ? 'true' : 'false'));
+  if (id === 'cat') catNew(); else if (id === 'quiz') quizNew(); else popNew();
+}
+
+/* ---------- wiring ---------- */
+function start(data) {
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(STORE) || '{}') || {}; } catch (e) {}
+  const src = Object.assign({}, saved, data || {});
+  if (typeof src.vol === 'number') state.vol = Math.max(0, Math.min(1, src.vol));
+  if (['left', 'both', 'right', 'drift'].includes(src.ear)) state.ear = src.ear;
+  if ([0, 1, 2].includes(src.sens)) state.sens = src.sens;
+  const mi = MATS.findIndex(m => m.id === src.mat);
+  if (mi >= 0) state.mat = mi;
+  let zi = Math.max(0, ZONES.findIndex(z => z.id === src.area));
+  const hash = ZONES.findIndex(z => '#' + z.id === location.hash);
+  if (hash >= 0 && !(data && data.area)) zi = hash;
+
+  areasEl.innerHTML = ZONES.map((z, i) =>
+    '<button type="button" class="cap blank hue area" role="tab" id="area-' + z.id + '" data-z="' + i + '" style="--h:' + z.hue + '" aria-selected="false" aria-controls="deck">' +
+    '<span class="dot"></span><span class="name">' + z.name + '</span><span class="hint">' + (i + 1) % 10 + '</span></button>').join('');
+  matsEl.innerHTML = MATS.map((m, i) =>
+    '<button type="button" class="cap blank" role="radio" id="mat-' + m.id + '" data-m="' + i + '" aria-checked="false">' + m.name + '</button>').join('');
+  volEl.value = Math.round(state.vol * 100);
+  setEar(state.ear);
+  setZone(zi, true);
+  syncMic();
+
+  areasEl.addEventListener('click', e => { const b = e.target.closest('.area'); if (b) setZone(+b.dataset.z); });
+  areasEl.addEventListener('keydown', e => {
+    const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+    if (!d) return;
+    e.preventDefault();
+    setZone((state.zone + d + ZONES.length) % ZONES.length);
+    areasEl.children[state.zone].focus();
+  });
+
+  padsEl.addEventListener('pointerdown', e => {
+    const b = e.target.closest('.pad');
+    if (!b || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    b.classList.add('down');
+    fire(state.zone, +b.dataset.p);
+  });
+  ['pointerup', 'pointercancel', 'pointerout'].forEach(ev => padsEl.addEventListener(ev, e => {
+    const b = e.target.closest && e.target.closest('.pad'); if (b) b.classList.remove('down');
+  }));
+  // Enter or Space on a focused pad arrives as a click with no pointer behind it.
+  padsEl.addEventListener('click', e => { const b = e.target.closest('.pad'); if (b && e.detail === 0) fire(state.zone, +b.dataset.p); });
+
+  const letter = b => { const e = audio(); if (!e) return; e.play(LETTER_PAD(+b.dataset.n)); nowEl.textContent = 'Letter ' + b.textContent; wake(); };
+  $('#letters').addEventListener('pointerdown', e => { const b = e.target.closest('.lk'); if (b && !(e.pointerType === 'mouse' && e.button !== 0)) letter(b); });
+  $('#letters').addEventListener('click', e => { const b = e.target.closest('.lk'); if (b && e.detail === 0) letter(b); });
+
+  window.addEventListener('keydown', e => {
+    if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
+    const k = e.key.toLowerCase(), i = KEYS.indexOf(k);
+    if (i >= 0 && padsEl.children[i]) { padsEl.children[i].classList.add('down'); fire(state.zone, i); }
+    else if (k.length === 1 && k >= '0' && k <= '9') setZone(k === '0' ? 9 : +k - 1);
+  });
+  window.addEventListener('keyup', e => {
+    const i = KEYS.indexOf(e.key.toLowerCase());
+    if (i >= 0 && padsEl.children[i]) padsEl.children[i].classList.remove('down');
+  });
+
+  earsEl.addEventListener('click', e => { const b = e.target.closest('[data-ear]'); if (b) { setEar(b.dataset.ear); save(); } });
+  volEl.addEventListener('input', () => { state.vol = volEl.value / 100; if (E) E.setVol(state.vol); save(); });
+  stopEl.addEventListener('click', () => {
+    if (E) running.forEach(L => E.stopLoop(L));
+    running.clear(); setAuto(false); if (voice.stop) voice.stop(); recStop(); nowEl.textContent = 'All stopped';
+  });
+  autoEl.addEventListener('click', () => setAuto(!autoT));
+
+  powerEl.addEventListener('click', () => setMicOn(!mic.on));
+  $('#mic-wake').addEventListener('click', () => setMicOn(true));
+  matsEl.addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (b) { state.mat = +b.dataset.m; syncMic(); save(); if (mic.on) nowEl.textContent = 'Mic: ' + MATS[state.mat].name; } });
+  sensEl.addEventListener('click', e => { const b = e.target.closest('[data-s]'); if (b) { state.sens = +b.dataset.s; syncMic(); save(); } });
+  micStage.addEventListener('pointerdown', micDown, { passive: false });
+  micStage.addEventListener('pointermove', micMove);
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(ev => micStage.addEventListener(ev, e => endPtr(e.pointerId)));
+  micStage.addEventListener('pointerleave', () => endPtr('hover'));
+  micStage.addEventListener('contextmenu', e => { if (mic.on) e.preventDefault(); });
+  window.addEventListener('blur', () => [...ptrs.keys()].forEach(endPtr));
+  if (window.matchMedia) { const mq = window.matchMedia('(prefers-color-scheme: dark)'); if (mq.addEventListener) mq.addEventListener('change', redraw); }
+  if (window.MutationObserver) new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+  if (window.ResizeObserver) new ResizeObserver(() => drawMic(performance.now())).observe(micCv);
+
+  // say it in ASMR
+  $('#voice-note').textContent = STANDALONE
+    ? 'Press record and say something. It comes back as a close-up whisper with the little mouth clicks added. Your voice stays on this device.'
+    : 'Choose a voice recording and it comes back as a close-up whisper with the little mouth clicks added. This page cannot listen through the real microphone while it lives inside Claude. The Home Screen app can. Your recording stays on this device.';
+  vRec.hidden = !STANDALONE;
+  vRec.addEventListener('click', recToggle);
+  $('#voice-pick').addEventListener('click', () => { audio(); vFile.click(); });
+  vFile.addEventListener('change', async () => { const f = vFile.files && vFile.files[0]; vFile.value = ''; if (f) voiceLoad(await f.arrayBuffer()); });
+  vPlay.addEventListener('click', () => { if (voice.stop) voice.stop(); else voicePlay(); });
+  $('#voice-mode').addEventListener('click', e => {
+    const b = e.target.closest('[data-v]');
+    if (!b) return;
+    voice.mode = b.dataset.v;
+    [...$('#voice-mode').children].forEach(k => k.setAttribute('aria-checked', k === b ? 'true' : 'false'));
+    if (voice.stop) voice.stop();
+    voiceMake(true);
+  });
+
+  // games
+  gameTabs.addEventListener('click', e => { const b = e.target.closest('[data-g]'); if (b) setGame(b.dataset.g); });
+  gameEl.addEventListener('pointerdown', e => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    const bub = e.target.closest('.bub'), key = e.target.closest('.catkey');
+    if (bub) popOne(bub); else if (key) catPress(+key.dataset.c);
+  });
+  // drag a finger across the sheet to pop a whole row
+  gameEl.addEventListener('pointermove', e => {
+    if (game !== 'pop' || !(e.buttons || e.pointerType === 'touch')) return;
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    if (el && el.closest) popOne(el.closest('.bub'));
+  });
+  gameEl.addEventListener('click', e => {
+    const t = e.target, byKey = e.detail === 0;
+    if (t.closest('#g-new')) popNew();
+    else if (t.closest('#g-start')) { if (game === 'cat') { cat.seq = []; catRound(); } else { quiz.n = 0; quiz.score = 0; quizNext(); } }
+    else if (t.closest('#g-again')) quizPlay();
+    else if (t.closest('#g-next')) quizNext();
+    else if (t.closest('.opt')) quizPick(+t.closest('.opt').dataset.o);
+    else if (byKey && t.closest('.bub')) popOne(t.closest('.bub'));
+    else if (byKey && t.closest('.catkey')) catPress(+t.closest('.catkey').dataset.c);
+  });
+  setGame('pop');
+
+  document.querySelector('.jump').addEventListener('click', e => {
+    const b = e.target.closest('[data-go]');
+    if (!b) return;
+    const calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    $('#' + b.dataset.go).scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' });
+  });
+
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(cv); else window.addEventListener('resize', fit);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) wake(); });
+  fit();
+  // Make the noise textures while the page is idle, so the first press is instant.
+  setTimeout(genRaw, 60);
+}
+
+const hot = window.claude && window.claude.hot;
+if (hot && hot.snapshot) hot.snapshot(snap);
+if (hot && hot.ready) hot.ready(start); else start((hot && hot.data) || {});
+</script>
+<script>if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });</script>
+</body>
+</html>
