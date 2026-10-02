@@ -217,8 +217,8 @@ body {
 .readout span:last-child { text-align: right; opacity: .75; }
 
 /* ---------- categories ---------- */
-.areas { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px 6px; }
-@media (min-width: 860px) { .areas { grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 10px 8px; } }
+.areas { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px 6px; }
+@media (min-width: 860px) { .areas { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px 8px; } }
 .cap.area {
   min-width: 0;
   min-height: 60px;
@@ -229,7 +229,7 @@ body {
   justify-content: center;
   gap: 6px;
   text-align: center;
-  font-size: .7rem;
+  font-size: .76rem;
   overflow-wrap: anywhere;
 }
 @media (min-width: 560px) { .cap.area { font-size: .86rem; } }
@@ -356,7 +356,12 @@ body {
 .seg.grid .cap { min-width: 0; min-height: 46px; padding: 9px 5px; text-wrap: balance; overflow-wrap: anywhere; }
 .seg.sens .cap b { display: block; font: 400 1.02em/1.1 var(--display); letter-spacing: .04em; }
 
-.voice { margin-top: 4px; padding-top: 14px; border-top: 1px solid var(--rim); }
+.voice { padding-bottom: 14px; border-bottom: 1px solid var(--rim); }
+.speak { display: inline-flex; align-items: center; gap: 9px; font-size: 1rem; }
+.voice-row .speak { padding: 13px 18px; }
+.voice-row a.speak { display: inline-flex; }
+.speak .lamp { background: var(--label); opacity: .55; }
+.speak.on .lamp { background: var(--hot); opacity: 1; box-shadow: 0 0 0 4px color-mix(in oklch, var(--hot) 30%, transparent); }
 .voice-note { margin: 0; color: var(--soft); font-size: .88rem; max-width: 62ch; }
 .voice-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .voice-row .cap { padding: 11px 14px; }
@@ -402,7 +407,8 @@ body {
   text-transform: uppercase;
   color: var(--soft);
 }
-.seg { display: flex; gap: 6px; }
+.seg { display: flex; flex-wrap: wrap; gap: 8px 6px; }
+a.cap { text-decoration: none; }
 .seg .cap, .stop { padding: 10px 13px; }
 .vol { flex: 1 1 180px; max-width: 300px; flex-wrap: nowrap; }
 .vol input { flex: 1 1 auto; min-width: 0; height: 28px; accent-color: var(--hot); }
@@ -421,12 +427,12 @@ body {
         <span class="mark-over">World of</span>
         <span class="letters" id="letters">
           <button type="button" class="cap hue lk" style="--h:350" data-n="0">A</button>
-          <button type="button" class="cap hue lk" style="--h:85" data-n="1">S</button>
-          <button type="button" class="cap hue lk" style="--h:235" data-n="2">M</button>
-          <button type="button" class="cap hue lk" style="--h:310" data-n="3">R</button>
+          <button type="button" class="cap hue lk" style="--h:76" data-n="1">S</button>
+          <button type="button" class="cap hue lk" style="--h:222" data-n="2">M</button>
+          <button type="button" class="cap hue lk" style="--h:315" data-n="3">R</button>
         </span>
       </h1>
-      <p class="lede">Ten categories, 120 sounds, three games and a mic you can stroke. Put headphones on, then press everything.</p>
+      <p class="lede">Twelve categories, 144 sounds, three games and a mic you can stroke and speak into. Put headphones on, then press everything.</p>
       <nav class="jump" aria-label="Jump to">
         <button type="button" class="cap blank" data-go="deck">Sounds</button>
         <button type="button" class="cap blank" data-go="mic">The Mic</button>
@@ -459,6 +465,23 @@ body {
       <span class="mic-tag r">Right ear</span>
       <div class="mic-off" id="mic-off"><button type="button" class="cap" id="mic-wake">Turn the mic on</button></div>
     </div>
+    <div class="ctl stack voice">
+      <span class="ctl-label" id="voicelab">Speak into it</span>
+      <div class="voice-row">
+        <button type="button" class="cap speak" id="voice-rec" hidden><span class="lamp"></span><span id="voice-rec-t">Speak into the mic</span></button>
+        <button type="button" class="cap blank speak" id="voice-live" hidden><span class="lamp"></span><span id="voice-live-t">Live whisper</span></button>
+        <a class="cap speak" id="voice-open" href="https://lewisfromsparks.github.io/world-of-asmr/" target="_blank" rel="noopener" hidden>Open the app that can hear you</a>
+        <button type="button" class="cap blank" id="voice-play" hidden>Play it back</button>
+        <div class="seg" role="radiogroup" aria-labelledby="voicelab" id="voice-mode">
+          <button type="button" class="cap blank" role="radio" id="voice-whisper" data-v="whisper" aria-checked="true">Whisper</button>
+          <button type="button" class="cap blank" role="radio" id="voice-soft" data-v="soft" aria-checked="false">Soft voice</button>
+        </div>
+        <button type="button" class="cap blank" id="voice-pick">Choose a recording</button>
+        <input type="file" id="voice-file" accept="audio/*" hidden>
+      </div>
+      <p class="voice-status" id="voice-status" role="status"></p>
+      <p class="voice-note" id="voice-note"></p>
+    </div>
     <div class="ctl stack">
       <span class="ctl-label" id="matlab">Touch it with</span>
       <div class="seg grid mats" role="radiogroup" aria-labelledby="matlab" id="mats"></div>
@@ -470,21 +493,6 @@ body {
         <button type="button" class="cap blank" role="radio" id="sens-1" data-s="1" aria-checked="false">Very sensitive</button>
         <button type="button" class="cap blank" role="radio" id="sens-2" data-s="2" aria-checked="false"><b>ULTRA</b> sensitive</button>
       </div>
-    </div>
-    <div class="ctl stack voice">
-      <span class="ctl-label" id="voicelab">Say it in ASMR</span>
-      <p class="voice-note" id="voice-note"></p>
-      <div class="voice-row">
-        <button type="button" class="cap" id="voice-rec" hidden>Record my voice</button>
-        <button type="button" class="cap blank" id="voice-pick">Choose a recording</button>
-        <input type="file" id="voice-file" accept="audio/*" hidden>
-        <button type="button" class="cap blank" id="voice-play" disabled>Play it back</button>
-        <div class="seg" role="radiogroup" aria-labelledby="voicelab" id="voice-mode">
-          <button type="button" class="cap blank" role="radio" id="voice-whisper" data-v="whisper" aria-checked="true">Whisper</button>
-          <button type="button" class="cap blank" role="radio" id="voice-soft" data-v="soft" aria-checked="false">Soft voice</button>
-        </div>
-      </div>
-      <p class="voice-status" id="voice-status" role="status"></p>
     </div>
   </section>
 
@@ -516,9 +524,22 @@ body {
       <input id="vol" type="range" min="0" max="100" value="80">
     </div>
     <button type="button" id="stop" class="cap blank stop" disabled>Stop all</button>
+    <div class="ctl">
+      <span class="ctl-label" id="mixlab">Mixes</span>
+      <div class="seg" role="group" aria-labelledby="mixlab" id="mixes"></div>
+    </div>
+    <div class="ctl">
+      <span class="ctl-label" id="sleeplab">Sleep timer</span>
+      <div class="seg" role="radiogroup" aria-labelledby="sleeplab" id="sleep">
+        <button type="button" class="cap blank" role="radio" id="sleep-0" data-min="0" aria-checked="true">Off</button>
+        <button type="button" class="cap blank" role="radio" id="sleep-10" data-min="10" aria-checked="false">10 min</button>
+        <button type="button" class="cap blank" role="radio" id="sleep-20" data-min="20" aria-checked="false">20 min</button>
+        <button type="button" class="cap blank" role="radio" id="sleep-30" data-min="30" aria-checked="false">30 min</button>
+      </div>
+    </div>
   </section>
 
-  <p class="foot">Quiet on a phone? Switch silent mode off and turn the volume up. Nothing here is a recording. Every sound is made fresh in your browser, so no two presses are quite the same. The mic is drawn on the screen. It feels your touch and never listens to the room.</p>
+  <p class="foot">Quiet on a phone? Switch silent mode off and turn the volume up. Nothing here is a recording. Every sound is made fresh in your browser, so no two presses are quite the same. The mic is drawn on the screen and feels your touch. Anything you record stays on this device. <span id="ver">Version 5</span></p>
 </div>
 
 <script>
@@ -798,6 +819,37 @@ function makeEngine(ctx, opt) {
     src.start(ctx.currentTime + 0.02);
     return () => { try { src.stop(); } catch (e) {} };
   }
+  /* Live whisper: the whisper machine running as you talk. The voice only steers the breath noise, so no pitch comes through. */
+  function liveWhisper(stream) {
+    const nodes = [], keep = n => { nodes.push(n); return n; };
+    const biq = (type, f, q) => { const b = keep(ctx.createBiquadFilter()); b.type = type; b.frequency.value = f; b.Q.value = q; return b; };
+    const gain = v => { const g = keep(ctx.createGain()); g.gain.value = v; return g; };
+    const src = keep(ctx.createMediaStreamSource(stream)), hp = biq('highpass', 130, 0.7), sum = gain(1), noise = keep(ctx.createBufferSource());
+    noise.buffer = bufs.white; noise.loop = true; noise.start();
+    src.connect(hp);
+    const rectify = new Float32Array(257), gateCurve = new Float32Array(4097);
+    for (let i = 0; i < 257; i++) rectify[i] = Math.abs(i / 128 - 1);
+    // a gate, so room hum and the phone's own speaker cannot keep the whisper going by themselves
+    for (let i = 0; i < 4097; i++) { const x = i / 2048 - 1; gateCurve[i] = x > 0.0015 ? x - 0.0015 : 0; }
+    const BANDS = 16;
+    for (let k = 0; k < BANDS; k++) {
+      const f = 200 * Math.pow(7500 / 200, k / (BANDS - 1));
+      const a1 = biq('bandpass', f, 5), a2 = biq('bandpass', f, 5), rect = keep(ctx.createWaveShaper()), smooth = biq('lowpass', 35, 0.5), gate = keep(ctx.createWaveShaper());
+      const depth = gain(70 * Math.pow(1000 / f, 0.15)), carrier = biq('bandpass', f, 5), vca = gain(0);
+      rect.curve = rectify; gate.curve = gateCurve;
+      hp.connect(a1); a1.connect(a2); a2.connect(rect); rect.connect(smooth); smooth.connect(gate); gate.connect(depth); depth.connect(vca.gain);
+      noise.connect(carrier); carrier.connect(vca); vca.connect(sum);
+    }
+    const air = biq('highshelf', 5000, 0.7), out = gain(0), an = keep(ctx.createAnalyser());
+    air.gain.value = 3; an.fftSize = 512;
+    out.gain.setTargetAtTime(1, ctx.currentTime, 0.2);
+    sum.connect(air); air.connect(out); out.connect(bus); hp.connect(an);
+    return { an, stop() {
+      out.gain.setTargetAtTime(0, ctx.currentTime, 0.05);
+      setTimeout(() => { try { noise.stop(); } catch (e) {} nodes.forEach(n => { try { n.disconnect(); } catch (e) {} }); }, 300);
+    } };
+  }
+  function fadeOut(sec) { if (vol) vol.gain.setTargetAtTime(0, ctx.currentTime, sec / 4); }
   function setVol(v) { if (vol) vol.gain.setTargetAtTime(v, ctx.currentTime, 0.02); }
   function setEar(mode) {
     if (!ear || !ear.pan) return;
@@ -856,7 +908,7 @@ function makeEngine(ctx, opt) {
     }
     if (hiss) hiss.gain.setTargetAtTime(want, t, 0.2);
   }
-  return { ctx, bus, vol, anL, anR, micOut, api: { N, T, M, K, D, H }, play, playAt, startLoop, stopLoop, pumpTo, setVol, setEar, micVoice, micTap, setMic, playBuffer };
+  return { ctx, bus, vol, anL, anR, micOut, api: { N, T, M, K, D, H }, play, playAt, startLoop, stopLoop, pumpTo, setVol, setEar, micVoice, micTap, setMic, playBuffer, liveWhisper, fadeOut };
 }
 
 /* The pads below call these directly; use() points them at the live engine. */
@@ -864,7 +916,7 @@ let N, T, M, K, D, H;
 function use(E) { ({ N, T, M, K, D, H } = E.api); }
 
 /* =====================================================================
-   The world: ten categories, twelve pads each.
+   The world: twelve categories, twelve pads each.
    ===================================================================== */
 const SCALE = [523.25, 587.33, 659.25, 698.46, 783.99, 880];          // C D E F G A
 const PENTA = [523.25, 587.33, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51];
@@ -897,6 +949,19 @@ function mouthTick(t, p, kind, f) {
     N(t, { c: 'water', rate: rnd(1.4, 2), dur: 0.035, g: 0.45, hp: 1500, a: 0.001, pan: p });
     N(t, { dur: 0.008, g: 0.2, hp: 4000, pan: p });
   }
+}
+// A run of quick taps from two alternating fingers: the classic ASMR tapping.
+function taps(t, o) {
+  const n = o.n || 6, s = sgn(), spread = o.spread == null ? 1 : o.spread;
+  let u = t;
+  for (let i = 0; i < n; i++) {
+    const k = (i % 2 ? 1.06 : 1), p = s * (i % 2 ? 0.45 : -0.45) * spread;
+    M(u, { fs: o.fs.map(x => x * k * rnd(0.985, 1.015)), d: o.d, g: (o.g || 0.3) * rnd(0.75, 1), hit: o.hit, hf: o.hf, damp: o.damp, pan: p, rev: o.rev });
+    if (o.low) T(u, { f: o.low, f2: o.low * 0.6, dur: 0.035, g: o.lowg || 0.2, pan: p });
+    if (o.thud) N(u, { c: 'pink', dur: 0.03, g: o.thud, lp: o.thudf || 700, a: 0.0005, pan: p });
+    u += (o.iv || 0.09) * rnd(0.85, 1.15);
+  }
+  return u;
 }
 function kalimba(t, f) {
   const p = rnd(-0.3, 0.3);
@@ -998,7 +1063,7 @@ const ZONES = [
       for (let i = 0; i < n; i++) N(t + i * iv, { c: 'pink', dur: 0.03, g: 0.5 * (1 - i / n * 0.5), bp: rnd(650, 850), q: 4, pan: p });
       T(t, { w: 'triangle', f: 190, dur: n * iv, bell: 1, g: 0.12, pan: p }); } }
 ] },
-{ id: 'clicks', name: 'Click City', blurb: 'Keys, taps and switches', hue: 85, pads: [
+{ id: 'clicks', name: 'Click City', blurb: 'Keys, taps and switches', hue: 76, pads: [
   { name: 'Keyboard', fn: t => { const p = rnd(-0.4, 0.4), u = t + rnd(0.075, 0.1);
       N(t, { dur: 0.02, g: 0.5, bp: rnd(1100, 1400), q: 2.5, pan: p });
       T(t, { f: 190, f2: 110, dur: 0.05, g: 0.5, pan: p });
@@ -1049,7 +1114,28 @@ const ZONES = [
       N(u, { dur: 0.02, g: 0.3, bp: 1200, q: 3, pan: p });
       T(u, { f: 1500, dur: 0.06, g: 0.03, pan: p }); } }
 ] },
-{ id: 'water', name: 'Water World', blurb: 'Drips, fizz and rain', hue: 235, pads: [
+{ id: 'taps', name: 'Tap Tap', blurb: 'Fast fingers on everything', hue: 104, pads: [
+  { name: 'Wood block', fn: t => { taps(t, { n: 6, iv: 0.085, fs: [520, 1150, 1900], d: 0.05, g: 0.4, hit: 0.7, hf: 1400, damp: 1 }); } },
+  { name: 'Glass jar', fn: t => { taps(t, { n: 6, iv: 0.09, fs: [1800, 3900, 6100], d: 0.09, g: 0.25, hit: 1.1, hf: 5000, rev: 0.12 }); } },
+  { name: 'Plastic lid', fn: t => { taps(t, { n: 7, iv: 0.075, fs: [900, 1700, 2600], d: 0.025, g: 0.32, hit: 1.4, hf: 3200 }); } },
+  { name: 'Book cover', fn: t => { taps(t, { n: 6, iv: 0.09, fs: [240, 470], d: 0.03, g: 0.4, hit: 0.5, hf: 900, damp: 1.2, thud: 0.5, thudf: 600 }); } },
+  { name: 'Metal tin', fn: t => { taps(t, { n: 5, iv: 0.11, fs: [1300, 2900, 4700, 6800], d: 0.13, g: 0.22, hit: 0.9, hf: 4500, damp: 0.4, rev: 0.15 }); } },
+  { name: 'Ceramic mug', fn: t => { taps(t, { n: 6, iv: 0.09, fs: [2100, 4600, 7100], d: 0.07, g: 0.25, hit: 1, hf: 4500, low: 620, lowg: 0.1 }); } },
+  { name: 'Cardboard box', fn: t => { taps(t, { n: 6, iv: 0.1, fs: [180, 330, 560], d: 0.06, g: 0.45, hit: 0.4, hf: 800, damp: 0.9, thud: 0.5, thudf: 800 }); } },
+  { name: 'Phone screen', fn: t => { taps(t, { n: 8, iv: 0.065, fs: [3100, 5200], d: 0.02, g: 0.28, hit: 1.5, hf: 5500, low: 320, lowg: 0.12, spread: 0.5 }); } },
+  { name: 'Bottle cap', fn: t => { taps(t, { n: 6, iv: 0.08, fs: [4200, 6900], d: 0.03, g: 0.22, hit: 1.3, hf: 6000, spread: 0.4 }); } },
+  { name: 'Leather', fn: t => { const s = sgn(); for (let i = 0; i < 5; i++) { const u = t + i * rnd(0.09, 0.11), p = s * (i % 2 ? 0.4 : -0.4);
+      N(u, { c: 'pink', dur: 0.04, g: 0.8, lp: rnd(1000, 1400), a: 0.0006, pan: p });
+      N(u, { c: 'rub', dur: 0.03, g: 0.25, bp: 2200, q: 1, a: 0.0006, pan: p });
+      T(u, { f: 170, f2: 90, dur: 0.04, g: 0.3, pan: p }); } } },
+  { name: 'Nail roll', fn: t => { const s = sgn(); for (let r = 0; r < 3; r++) for (let i = 0; i < 4; i++) { const f = rnd(1450, 1600) * (1 + i * 0.05);
+      M(t + r * 0.3 + i * rnd(0.04, 0.05), { fs: [f, f * 2.1, f * 3.3], d: 0.025, g: 0.3, hit: 1.4, hf: 4000, pan: s * (-0.6 + i * 0.4) }); } } },
+  { name: 'Tap and scratch', fn: t => { const s = sgn(), u = taps(t, { n: 4, iv: 0.09, fs: [700, 1500, 2300], d: 0.03, g: 0.32, hit: 1, hf: 2000, damp: 1 });
+      for (let i = 0; i < 3; i++) { const v = u + 0.04 + i * 0.16, p = s * (i % 2 ? 0.5 : -0.5);
+        N(v, { c: 'scratch', dur: 0.14, bell: 1, g: 0.8, bp: rnd(1600, 2100), q: 1.2, pan: p, pan2: -p });
+        N(v, { c: 'crk3', dur: 0.14, bell: 1, g: 0.25, bp: 3200, q: 1, pan: p, pan2: -p }); } } }
+] },
+{ id: 'water', name: 'Water World', blurb: 'Drips, fizz and rain', hue: 222, pads: [
   { name: 'Drip', fn: t => D(t, rnd(800, 1200), 0.5, rnd(-0.4, 0.4)) },
   { name: 'Plink plonk', fn: t => { D(t, rnd(1200, 1500), 0.45, -0.35); D(t + rnd(0.16, 0.24), rnd(650, 850), 0.5, 0.35); } },
   { name: 'Pour', fn: t => { const d = rnd(1.2, 1.6), p = rnd(-0.3, 0.3);
@@ -1139,7 +1225,7 @@ const ZONES = [
       N(t, { ...o, c: 'foil', rate: 1.3, g: 0.3, hp: 5000 });
       N(t, { ...o, c: 'rub', g: 0.25, hp: 3000 }); } }
 ] },
-{ id: 'snack', name: 'Snack Bar', blurb: 'Crunch, slurp and sizzle', hue: 50, pads: [
+{ id: 'snack', name: 'Snack Bar', blurb: 'Crunch, slurp and sizzle', hue: 48, pads: [
   { name: 'Crisp crunch', fn: t => { const p = rnd(-0.3, 0.3);
       N(t, { c: 'crk2', rate: 1.5, dur: 0.14, a: 0.003, g: 1.2, hp: 900, pan: p });
       N(t, { dur: 0.05, a: 0.002, g: 0.4, bp: 2500, q: 0.5, pan: p });
@@ -1189,7 +1275,7 @@ const ZONES = [
       N(t, { dur: 0.005, g: 0.3, hp: 3500, pan: p });
       return t + (Math.random() < 0.3 ? rnd(0.03, 0.09) : rnd(0.12, 0.55)); } }
 ] },
-{ id: 'fidget', name: 'Fidget Factory', blurb: 'Pops, squeaks and boings', hue: 195, pads: [
+{ id: 'fidget', name: 'Fidget Factory', blurb: 'Pops, squeaks and boings', hue: 190, pads: [
   { name: 'Pop it', fn: t => popIt(t, rnd(-0.5, 0.5), rnd(420, 620)) },
   { name: 'Clicky cube', fn: t => { const p = rnd(-0.4, 0.4), n = 3 + Math.floor(rnd(0, 2)); let u = t;
       for (let i = 0; i < n; i++) { const f = rnd(1900, 2600);
@@ -1238,7 +1324,7 @@ const ZONES = [
       H({ w: 'sawtooth', f: 96, g: 0.4, bp: 4200, q: 2 });
       H({ c: 'pink', g: 0.12, lp: 900 }); } }
 ] },
-{ id: 'art', name: 'Art Desk', blurb: 'Pencils, chalk and paint', hue: 270, pads: [
+{ id: 'art', name: 'Art Desk', blurb: 'Pencils, chalk and paint', hue: 252, pads: [
   { name: 'Pencil scribble', fn: t => { const s = sgn(), n = 6 + Math.floor(rnd(0, 3));
       for (let i = 0; i < n; i++) { const u = t + i * rnd(0.08, 0.1), p = s * (i % 2 ? 0.4 : 0.1);
         N(u, { c: 'scratch', dur: 0.085, bell: 1, g: 0.8, bp: rnd(2000, 2600), q: 0.9, pan: p });
@@ -1292,7 +1378,56 @@ const ZONES = [
       T(t + 0.32, { f: 150, f2: 80, dur: 0.09, g: 0.6, pan: p });
       N(t + 0.32, { dur: 0.012, g: 0.3, bp: 1500, q: 1, pan: p }); } }
 ] },
-{ id: 'woods', name: 'Wild Woods', blurb: 'Leaves, birds and weather', hue: 125, pads: [
+{ id: 'spa', name: 'Spa Day', blurb: 'Lotion, steam and soft taps', hue: 282, pads: [
+  { name: 'Lotion rub', fn: t => { const s = sgn(); for (let i = 0; i < 3; i++) { const u = t + i * 0.3, o = { dur: rnd(0.24, 0.3), bell: 1, pan: s * (i % 2 ? 0.5 : -0.5), pan2: s * (i % 2 ? -0.5 : 0.5) };
+      N(u, { ...o, c: 'rub', g: 0.8, lp: rnd(1500, 2000), hp: 250 });
+      N(u, { ...o, c: 'water', rate: 0.8, g: 0.2, lp: 2500 });
+      N(u, { ...o, c: 'crk3', g: 0.12, bp: 2400, q: 1 }); } } },
+  { name: 'Cream jar', fn: t => { const p = rnd(-0.3, 0.3), f = rnd(1500, 1800);
+      for (let i = 0; i < 3; i++) { const u = t + i * 0.16;
+        N(u, { c: 'scratch', dur: 0.11, bell: 1, g: 0.6, bp: rnd(1300, 1700), q: 2, pan: p });
+        N(u, { c: 'crk2', dur: 0.11, bell: 1, g: 0.25, bp: 2800, q: 1, pan: p }); }
+      T(t + 0.5, { f: 420, f2: 260, dur: 0.03, g: 0.2, pan: p });
+      M(t + 0.52, { fs: [f, f * 2.3, f * 3.6], d: 0.07, g: 0.22, hit: 1, hf: 4000, pan: p, rev: 0.12 }); } },
+  { name: 'Face roller', fn: t => { const s = sgn(), o = { dur: rnd(0.8, 1.1), bell: 1, pan: -0.7 * s, pan2: 0.7 * s };
+      N(t, { ...o, c: 'rub', g: 0.6, lp: rnd(600, 800) });
+      N(t, { ...o, c: 'pink', g: 0.4, lp: 350 });
+      T(t, { ...o, w: 'sawtooth', f: rnd(24, 30), f2: rnd(16, 20), g: 0.12, bp: 2400, q: 3 }); } },
+  { name: 'Nail file', fn: t => { const s = sgn(); for (let i = 0; i < 7; i++) { const u = t + i * rnd(0.065, 0.075), p = s * (i % 2 ? 0.4 : 0.15);
+      N(u, { c: 'scratch', dur: 0.065, bell: 1, g: 0.8, bp: i % 2 ? rnd(3400, 3800) : rnd(2800, 3200), q: 1.5, pan: p });
+      N(u, { c: 'rub', dur: 0.065, bell: 1, g: 0.2, hp: 4000, pan: p }); } } },
+  { name: 'Nail clipper', fn: t => { const p = rnd(-0.4, 0.4); for (let i = 0; i < 2; i++) { const u = t + i * rnd(0.42, 0.5);
+      N(u, { dur: 0.01, g: 0.7, bp: rnd(2400, 2900), q: 3, a: 0.0004, pan: p });
+      M(u, { fs: [rnd(3300, 3600), 5600, 8100], d: 0.045, g: 0.2, hit: 0, pan: p });
+      T(u, { f: 380, f2: 220, dur: 0.02, g: 0.25, pan: p });
+      K(u + rnd(0.07, 0.09), { f: 1900, q: 3, g: 0.2, pan: p }); } } },
+  { name: 'Cotton pad', fn: t => { const s = sgn(), o = { dur: rnd(0.45, 0.6), bell: 1, pan: -0.6 * s, pan2: 0.6 * s };
+      N(t, { ...o, c: 'rub', g: 0.8, lp: rnd(1000, 1300), hp: 200 });
+      N(t, { ...o, c: 'pink', g: 0.2, lp: 450 }); } },
+  { name: 'Perfume', fn: t => { const p = rnd(-0.5, 0.5); for (let i = 0; i < 2; i++) { const u = t + i * 0.3;
+      K(u, { f: 1500, q: 2.5, g: 0.2, pan: p });
+      N(u + 0.015, { dur: 0.16, a: 0.012, r: 0.11, g: 0.4, hp: 5200, pan: p });
+      N(u + 0.015, { c: 'crk3', dur: 0.15, a: 0.01, r: 0.1, g: 0.25, hp: 6000, pan: p });
+      K(u + 0.2, { f: 1900, q: 2.5, g: 0.12, pan: p }); } } },
+  { name: 'Compact snap', fn: t => { const p = rnd(-0.4, 0.4), f = rnd(1300, 1500);
+      M(t, { fs: [f, f * 2.05, f * 3.4], d: 0.03, g: 0.35, hit: 1.4, hf: 3500, pan: p });
+      T(t, { f: 340, f2: 190, dur: 0.035, g: 0.4, pan: p });
+      N(t + 0.004, { dur: 0.012, g: 0.2, bp: 900, q: 1.5, pan: p }); } },
+  { name: 'Brush on jar', fn: t => { const p = rnd(-0.4, 0.4), f = rnd(2300, 2700);
+      for (let i = 0; i < 3; i++) { const u = t + i * rnd(0.13, 0.16);
+        M(u, { fs: [f * rnd(0.99, 1.01), f * 2.2, f * 3.5], d: 0.08, g: 0.2, hit: 0.6, hf: 4500, pan: p, rev: 0.15 });
+        N(u, { c: 'crk3', dur: 0.05, bell: 1, g: 0.25, bp: 3400, q: 0.8, pan: p }); } } },
+  { name: 'Hot stones', fn: t => { const p = rnd(-0.4, 0.4); for (let i = 0; i < 2; i++) { const u = t + i * rnd(0.22, 0.3), f = rnd(850, 1000);
+      M(u, { fs: [f, f * 2.3, f * 3.9], d: 0.05, g: 0.4, hit: 0.9, hf: 2600, damp: 0.9, pan: p });
+      T(u, { f: 230, f2: 140, dur: 0.04, g: 0.3, pan: p }); }
+      N(t + 0.6, { c: 'rub', dur: 0.3, bell: 1, g: 0.3, bp: 1200, q: 0.8, pan: p }); } },
+  { name: 'Bubble bath', loop: () => {
+      H({ c: 'crk3', g: 0.6, hp: 2500, am: [['sine', 0.21, 0.2]] }); H({ c: 'crk2', g: 0.4, bp: 4200, q: 0.6 }); H({ c: 'water', g: 0.12, rate: 1.5, hp: 1500 }); } },
+  { name: 'Steam', loop: () => {
+      H({ c: 'white', g: 0.12, hp: 3000, am: [['sine', 0.15, 0.25]] }); H({ c: 'pink', g: 0.25, bp: 1300, q: 0.6, am: [['sine', 0.11, 0.3]] });
+      return t => { D(t, rnd(700, 1300), rnd(0.03, 0.08), rnd(-0.7, 0.7)); return t + rnd(0.8, 2.6); }; } }
+] },
+{ id: 'woods', name: 'Wild Woods', blurb: 'Leaves, birds and weather', hue: 132, pads: [
   { name: 'Leaf crunch', fn: t => { const s = sgn(); for (let i = 0; i < 2; i++) { const u = t + i * rnd(0.42, 0.5), p = s * (i ? 0.35 : -0.35);
       N(u, { c: 'crk2', rate: rnd(0.8, 1.1), dur: 0.24, a: 0.01, g: 1, bp: rnd(1800, 2500), q: 0.5, pan: p });
       N(u, { c: 'foil', rate: 0.45, dur: 0.22, a: 0.01, g: 0.5, lp: 5000, pan: p });
@@ -1339,7 +1474,7 @@ const ZONES = [
       H({ c: 'water', g: 0.8 }); H({ c: 'water', g: 0.5, rate: 0.62, lp: 2200, pan: -0.4 });
       H({ c: 'pink', g: 0.12, bp: 1600, q: 0.5, pan: 0.4 }); } }
 ] },
-{ id: 'sleepy', name: 'Sleepy Zone', blurb: 'Bowls, chimes and night sounds', hue: 310, pads: [
+{ id: 'sleepy', name: 'Sleepy Zone', blurb: 'Bowls, chimes and night sounds', hue: 315, pads: [
   { name: 'Singing bowl', fn: t => { const f = pick([196, 220, 246.94, 261.63]), p = rnd(-0.3, 0.3);
       [[1, 1, 6], [1.004, 0.7, 6], [2.71, 0.35, 3.5], [2.72, 0.2, 3.5], [5.15, 0.12, 1.8]].forEach(([m, g, d]) => T(t, { f: f * m, dur: d, g: g * 0.3, a: 0.01, pan: p, rev: 0.5 }));
       N(t, { c: 'pink', dur: 0.05, g: 0.2, lp: 1200, pan: p }); } },
@@ -1389,16 +1524,18 @@ const ZONES = [
 
 /* Loudness balance for every pad, measured by rendering each one offline. */
 const TRIMS = /*T0*/{
-  salon: [0.42, 1, 1.16, 0.55, 0.42, 0.71, 0.43, 1.15, 0.87, 0.5, 0.33, 1.3],
-  mouth: [1.92, 1.06, 2.4, 1.5, 0.89, 0.5, 1, 1.17, 0.39, 1.45, 0.57, 1.56],
-  clicks: [1.2, 2.2, 1.46, 0.78, 3.21, 1, 0.86, 2.42, 1.13, 1.25, 1.07, 0.91],
-  water: [1.19, 1.13, 0.58, 1.06, 0.45, 1.4, 0.75, 0.27, 0.83, 0.28, 0.79, 0.34],
-  crinkle: [1.08, 1.16, 0.87, 0.57, 0.9, 0.96, 0.31, 0.45, 0.82, 4.34, 0.8, 0.65],
-  snack: [1.44, 1.67, 0.62, 0.48, 0.9, 1.31, 1.08, 1.13, 1.38, 0.4, 0.29, 0.87],
-  fidget: [1.33, 1.45, 1.55, 1.16, 0.49, 1.03, 0.58, 1.11, 1.08, 1.51, 0.86, 0.79],
-  art: [0.41, 1.05, 0.59, 0.43, 0.3, 0.56, 0.75, 1.38, 1.21, 0.95, 0.65, 1.14],
-  woods: [2.16, 0.84, 0.68, 0.39, 0.85, 1.49, 0.62, 1, 0.58, 0.61, 0.41, 0.32],
-  sleepy: [0.37, 0.76, 0.86, 0.67, 0.78, 1.28, 0.66, 0.62, 0.69, 1.31, 0.29, 1.38]
+  salon: [0.44, 1, 1.15, 0.56, 0.42, 0.71, 0.41, 1.2, 0.96, 0.49, 0.34, 1.3],
+  mouth: [2.01, 1.1, 2.75, 1.51, 0.88, 0.53, 0.99, 1.19, 0.4, 1.33, 0.62, 1.68],
+  clicks: [1.34, 2.43, 1.48, 0.82, 3.48, 1.15, 0.97, 2.32, 1.16, 1.2, 1.04, 0.86],
+  taps: [1.02, 1.38, 1.14, 0.93, 1.44, 1.37, 0.68, 1.51, 2.24, 1.01, 0.94, 0.45],
+  water: [1.08, 1.14, 0.62, 0.99, 0.45, 1.36, 0.76, 0.28, 0.84, 0.29, 0.78, 0.34],
+  crinkle: [0.99, 0.87, 0.7, 0.56, 0.84, 1, 0.36, 0.53, 0.67, 1.73, 0.78, 0.68],
+  snack: [1.75, 1.69, 0.64, 0.58, 0.91, 1.01, 1.15, 1.16, 1.47, 0.39, 0.3, 0.8],
+  fidget: [1.34, 1.4, 1.5, 1.14, 0.44, 1.02, 0.56, 1.09, 0.94, 1.34, 0.89, 0.79],
+  art: [0.45, 0.94, 0.53, 0.35, 0.35, 0.69, 0.89, 1.32, 1.44, 1, 0.62, 0.91],
+  spa: [0.47, 0.66, 0.63, 0.49, 1.15, 0.45, 1.12, 1.01, 1.91, 0.9, 0.7, 0.76],
+  woods: [1.52, 0.86, 0.66, 0.39, 1.05, 1.49, 0.6, 1.15, 0.57, 0.53, 0.42, 0.34],
+  sleepy: [0.37, 0.79, 0.86, 0.67, 0.78, 1.28, 0.66, 0.63, 0.7, 1.39, 0.3, 1.17]
 }/*T1*/;
 ZONES.forEach(z => z.pads.forEach((p, i) => { p.trim = (TRIMS[z.id] || [])[i] || 1; }));
 
@@ -1465,7 +1602,7 @@ const MATS = [
       { c: 'brown', lp: [220, 320], g: 0.4, body: 1 }],
     tap: (t, p) => { N(t, { c: 'rub', dur: 0.09, bell: 1, g: 0.7, lp: 1500, pan: p }); N(t, { c: 'pink', dur: 0.06, g: 0.5, lp: 400, pan: p }); } }
 ];
-const MTRIM = /*M0*/{ fingers: [0.32, 0.88], nails: [0.28, 1.42], hairbrush: [0.31, 1.11], comb: [0.5, 1.49], brush: [0.43, 1.69], feather: [0.25, 0.97], foam: [0.3, 0.92], glove: [0.35, 1.74], foil: [0.62, 2.99], slime: [0.43, 0.61], bud: [0.29, 0.95], towel: [0.32, 0.53] }/*M1*/;
+const MTRIM = /*M0*/{ fingers: [0.33, 1.03], nails: [0.3, 1.21], hairbrush: [0.33, 1.32], comb: [0.48, 1.49], brush: [0.39, 1.55], feather: [0.25, 0.99], foam: [0.3, 0.77], glove: [0.36, 1.57], foil: [0.52, 1.51], slime: [0.44, 0.94], bud: [0.28, 0.97], towel: [0.33, 0.91] }/*M1*/;
 MATS.forEach(m => { const v = MTRIM[m.id] || [1, 1]; m.trim = v[0]; m.tapTrim = v[1]; });
 const LETTER_NOTES = [523.25, 659.25, 783.99, 1046.5];
 const LETTER_PAD = n => ({ trim: ZONES.find(z => z.id === 'sleepy').pads[3].trim, fn: t => kalimba(t, LETTER_NOTES[n]) });
@@ -1474,7 +1611,8 @@ const LETTER_PAD = n => ({ trim: ZONES.find(z => z.id === 'sleepy').pads[3].trim
    The machine
    ===================================================================== */
 const $ = s => document.querySelector(s);
-const KEYS = 'qwertyasdfgh'.split('');
+const KEYS = 'qwertyasdfgh'.split(''), CATKEYS = '1234567890-=';
+const APP_URL = 'https://lewisfromsparks.github.io/world-of-asmr/';
 const SHIFT = [-9, 5, 13, -3, 9, -13, 1, 11, -6, 15, -15, 7];
 const DL = [0, 0.02, -0.02, 0.012, -0.012, 0.02, -0.02, 0, 0.015, -0.015, 0.02, -0.01];
 const STORE = 'world-of-asmr';
@@ -1532,8 +1670,9 @@ function syncLoops() {
     const on = running.has(state.zone + ':' + i);
     b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
-  stopEl.disabled = !(n || autoT);
-  loopEl.textContent = n ? n + (n > 1 ? ' loops on' : ' loop on') : '';
+  stopEl.disabled = !(n || autoT || live);
+  const left = sleepEnd ? Math.max(1, Math.ceil((sleepEnd - Date.now()) / 60000)) : 0;
+  loopEl.textContent = [n ? n + (n > 1 ? ' loops on' : ' loop on') : '', left ? 'sleep in ' + left + ' min' : ''].filter(Boolean).join(', ');
 }
 
 function setZone(i, quiet) {
@@ -1762,6 +1901,7 @@ function setMicOn(on) {
 /* ---------- say it in ASMR: a spoken recording comes back as a close-up whisper ---------- */
 async function asmrVoice(raw, sr, mode) {
   const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  const render = c => new Promise((res, rej) => { c.oncomplete = e => res(e.renderedBuffer); const pr = c.startRendering(); if (pr && pr.then) pr.then(res, rej); });
   // 1. Measure loudness every 8 ms, find where the talking starts and stops.
   const hop = Math.max(1, Math.floor(sr * 0.008)), F = Math.ceil(raw.length / hop), env = new Float32Array(F);
   for (let f = 0; f < F; f++) {
@@ -1795,14 +1935,14 @@ async function asmrVoice(raw, sr, mode) {
   }
   if (segStart >= 0) segs.push([(segStart - a) * hop / sr, dur]);
 
-  const ctx = new OAC(4, Math.ceil((dur + 0.5) * sr), sr);
+  const len = Math.ceil((dur + 0.5) * sr), ctx = new OAC(2, len, sr);
   const play = data => { const bf = ctx.createBuffer(1, data.length, sr); bf.getChannelData(0).set(data); const src = ctx.createBufferSource(); src.buffer = bf; src.start(0); return src; };
   const biq = (type, f, q) => { const bq = ctx.createBiquadFilter(); bq.type = type; bq.frequency.value = f; bq.Q.value = q; return bq; };
   const gain = v => { const g = ctx.createGain(); g.gain.value = v; return g; };
   const breath = new Float32Array(n);
   for (let i = 0; i < n; i++) breath[i] = Math.random() * 2 - 1;
-  const voice = play(x), noise = play(breath), hp = biq('highpass', 110, 0.7), sum = gain(1);
-  voice.connect(hp);
+  const spoken = play(x), noise = play(breath), hp = biq('highpass', 110, 0.7), sum = gain(1);
+  spoken.connect(hp);
   // 4. The whisper. Split the voice into bands, follow how loud each band is, and let that shape plain breath noise.
   //    The pitch of the voice is thrown away; the shape of the mouth is kept.
   const rectify = new Float32Array(257);
@@ -1829,13 +1969,10 @@ async function asmrVoice(raw, sr, mode) {
     pan.pan.setValueCurveAtTime(curve, 0, dur + 0.4);
     air.connect(pan); last = pan;
   }
-  const merge = ctx.createChannelMerger(4), s1 = ctx.createChannelSplitter(2), s2 = ctx.createChannelSplitter(2), wide = gain(1);
-  wide.channelCount = 2; wide.channelCountMode = 'explicit';
-  last.connect(wide); wide.connect(s1); s1.connect(merge, 0, 0); s1.connect(merge, 1, 1);
-  // 5. Mouth noises: lips parting just before a word, a sticky tick in the middle of a long one, a breath in each pause.
-  const E2 = makeEngine(ctx, { flat: true }), clicksBus = gain(1);
-  clicksBus.channelCount = 2; clicksBus.channelCountMode = 'explicit';
-  E2.bus.connect(clicksBus); clicksBus.connect(s2); s2.connect(merge, 0, 2); s2.connect(merge, 1, 3);
+  last.connect(ctx.destination);
+  // 5. Mouth noises, rendered on their own: lips parting just before a word, a sticky tick in the middle of a long one, a breath in each pause.
+  const ctx2 = new OAC(2, len, sr), E2 = makeEngine(ctx2, { flat: true });
+  E2.bus.connect(ctx2.destination);
   use(E2);
   let clicks = 0;
   const tick = (t, kind, g) => { E2.playAt({ trim: g, fn: tt => mouthTick(tt, rnd(-0.6, 0.6), kind) }, Math.max(0.005, t)); clicks++; };
@@ -1846,20 +1983,24 @@ async function asmrVoice(raw, sr, mode) {
     if (gap > 0.4) { const d = Math.min(0.45, gap - 0.12), p = rnd(-0.6, 0.6);
       E2.playAt({ trim: 0.6, fn: tt => { N(tt, { c: 'pink', dur: d, bell: 1, g: 0.35, lp: 900, hp: 200, pan: p }); N(tt, { c: 'rub', dur: d, bell: 1, g: 0.1, bp: 1500, q: 0.6, pan: p }); } }, t1 + 0.06); }
   });
-  if (E) use(E);   // hand the pads back to the live engine before waiting for the render
-  merge.connect(ctx.destination);
-  const done = await new Promise((res, rej) => { ctx.oncomplete = e => res(e.renderedBuffer); const pr = ctx.startRendering(); if (pr && pr.then) pr.then(res, rej); });
-  // 6. Balance the whisper against the clicks and hand back plain stereo.
-  const L = done.getChannelData(0), R = done.getChannelData(1), cL = done.getChannelData(2), cR = done.getChannelData(3);
+  if (E) use(E);   // hand the pads back to the live engine before waiting for the renders
+  const whisper = await render(ctx), ticks = await render(ctx2);
+  // 6. Balance the whisper against the clicks.
+  const L = whisper.getChannelData(0), R = whisper.numberOfChannels > 1 ? whisper.getChannelData(1) : L;
+  const cL = ticks.getChannelData(0), cR = ticks.numberOfChannels > 1 ? ticks.getChannelData(1) : cL, N2 = Math.min(L.length, cL.length);
   let sq = 0, pk = 0;
-  for (let i = 0; i < L.length; i++) { const m = Math.max(Math.abs(L[i]), Math.abs(R[i])); if (m > pk) pk = m; sq += L[i] * L[i] + R[i] * R[i]; }
+  for (let i = 0; i < N2; i++) { const m = Math.max(Math.abs(L[i]), Math.abs(R[i])); if (m > pk) pk = m; sq += L[i] * L[i] + R[i] * R[i]; }
   const rms = Math.sqrt(sq / Math.max(1, active * hop)), gw = Math.min(0.8 / (pk || 1), 0.12 / (rms || 1)), gc = 0.55;
-  const out = ctx.createBuffer(2, L.length, sr), oL = out.getChannelData(0), oR = out.getChannelData(1);
-  for (let i = 0; i < L.length; i++) { oL[i] = L[i] * gw + cL[i] * gc; oR[i] = R[i] * gw + cR[i] * gc; }
+  const out = (E ? E.ctx : ctx).createBuffer(2, N2, sr), oL = out.getChannelData(0), oR = out.getChannelData(1);
+  for (let i = 0; i < N2; i++) { oL[i] = L[i] * gw + cL[i] * gc; oR[i] = R[i] * gw + cR[i] * gc; }
   return { buffer: out, clicks, words: segs.length, seconds: dur };
 }
 
 const voice = { raw: null, sr: 0, buf: null, stop: null, mode: 'whisper', rec: null, tick: 0, busy: false };
+// Phones choose a different sound route for talking and for listening. Say which one is wanted.
+const route = type => { try { if (navigator.audioSession) navigator.audioSession.type = type; } catch (e) {} };
+// Waking the sound engine can hang when no finger is on the screen, so never wait on it for long.
+const wakeEngine = () => Promise.race([actx.resume().catch(() => {}), new Promise(r => setTimeout(r, 500))]);
 const vStatus = $('#voice-status'), vPlay = $('#voice-play'), vRec = $('#voice-rec'), vFile = $('#voice-file');
 const vSay = t => { vStatus.textContent = t; };
 async function voiceLoad(bytes) {
@@ -1880,13 +2021,17 @@ async function voiceMake(andPlay) {
   await new Promise(r => setTimeout(r, 30));
   try {
     const res = await asmrVoice(voice.raw, voice.sr, voice.mode);
-    if (res.quiet) vSay('That recording is almost silent. Try again, a little closer.');
+    if (res.quiet) vSay('That was almost silent. Press Speak and talk a little closer to the phone.');
     else {
-      voice.buf = res.buffer; vPlay.disabled = false;
+      voice.buf = res.buffer; vPlay.hidden = false;
       vSay('Done. ' + res.seconds.toFixed(1) + ' seconds, with ' + res.clicks + ' mouth sounds added.');
-      if (andPlay) voicePlay();
+      if (andPlay) {
+        await wakeEngine();
+        if (actx.state === 'running') voicePlay();
+        else vSay('Ready. Press "Play it back" to hear it.');
+      }
     }
-  } catch (e) { if (E) use(E); vSay('That did not work. Try a shorter recording.'); }
+  } catch (e) { if (E) use(E); vSay('The whisper could not be made (' + ((e && e.name) || 'error') + '). Try a shorter one.'); }
   voice.busy = false;
 }
 function voicePlay() {
@@ -1898,41 +2043,169 @@ function voicePlay() {
   nowEl.textContent = voice.mode === 'soft' ? 'Your soft voice' : 'Your whisper';
   wake();
 }
-function recStop() { if (voice.rec && voice.rec.state !== 'inactive') voice.rec.stop(); }
+function recStop() { if (voice.rec) voice.rec.stop(); }
+function recLabel(on) { $('#voice-rec-t').textContent = on ? 'Stop' : 'Speak into the mic'; vRec.classList.toggle('on', on); $('#mic-off').hidden = mic.on || on || !!live; }
+const micWhy = e => { const why = e && e.name;
+  return why === 'NotAllowedError' || why === 'SecurityError' ? 'The microphone is blocked. Allow the microphone for this app in your settings, then try again.'
+    : why === 'NotFoundError' ? 'No microphone was found.' : 'The microphone would not start (' + (why || 'unknown') + ').'; };
+// Ask for the microphone. The phone has to be told it is about to listen before it is asked, or an iPhone hands over a silent microphone.
+async function askMic(wanted) {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { vSay('This browser cannot use the microphone here. Choose a recording instead.'); return null; }
+  voice.asking = true;
+  vSay('Asking for the microphone…');
+  route('play-and-record');
+  try {
+    try { return await navigator.mediaDevices.getUserMedia({ audio: wanted }); }
+    catch (e) { if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) throw e; return await navigator.mediaDevices.getUserMedia({ audio: true }); }
+  } catch (e) { route('playback'); vSay(micWhy(e)); return null; }
+  finally { voice.asking = false; }
+}
 async function recToggle() {
   if (voice.rec) { recStop(); return; }
-  if (!audio()) return;
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder) { vSay('This browser cannot record here. Choose a recording instead.'); return; }
-  let stream;
-  try { stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: true, autoGainControl: true } }); }
-  catch (e) { vSay(e && e.name === 'NotAllowedError' ? 'The microphone is blocked. Allow it for this app in your settings, then try again.' : 'No microphone was found.'); return; }
-  try { if (navigator.audioSession) navigator.audioSession.type = 'play-and-record'; } catch (e) {}
+  if (voice.busy || voice.asking) return;
+  if (!audio()) { vSay('This browser cannot play sound.'); return; }
+  if (live) liveStop();
   if (voice.stop) voice.stop();
-  const chunks = [], mr = new MediaRecorder(stream), t0 = performance.now();
-  const src = actx.createMediaStreamSource(stream), an = actx.createAnalyser(), td = new Uint8Array(512);
-  an.fftSize = 512; src.connect(an);
-  mr.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
-  mr.onstop = async () => {
-    clearInterval(voice.tick); voice.rec = null;
+  const stream = await askMic({ echoCancellation: false, noiseSuppression: true, autoGainControl: true });
+  if (!stream) return;
+  await wakeEngine();
+  if (E) E.setVol(0);   // keep the pads out of the recording
+  // Two recorders run side by side: the raw sound taken straight from the microphone, and the phone's own recorder as a spare.
+  const sr = actx.sampleRate, chunks = [], parts = [], t0 = performance.now();
+  let total = 0, heard = 0, src = null, tap = null, mute = null, mr = null;
+  try {
+    src = actx.createMediaStreamSource(stream);
+    tap = actx.createScriptProcessor(4096, 1, 1); mute = actx.createGain(); mute.gain.value = 0;
+    tap.onaudioprocess = ev => {
+      const d = ev.inputBuffer.getChannelData(0);
+      chunks.push(new Float32Array(d)); total += d.length;
+      let m = 0;
+      for (let i = 0; i < d.length; i += 4) { const v = Math.abs(d[i]); if (v > m) m = v; }
+      if (m > heard) heard = m;
+      mic.level = Math.min(1, m * 5);
+    };
+    src.connect(tap); tap.connect(mute); mute.connect(actx.destination);
+  } catch (e) { tap = null; }
+  try { if (window.MediaRecorder) { mr = new MediaRecorder(stream); mr.ondataavailable = e => { if (e.data && e.data.size) parts.push(e.data); }; mr.start(); } } catch (e) { mr = null; }
+  const tidy = () => {
     stream.getTracks().forEach(tr => tr.stop());
-    try { src.disconnect(); } catch (e) {}
-    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
-    vRec.textContent = 'Record my voice'; vRec.classList.remove('on');
+    try { if (tap) { tap.onaudioprocess = null; tap.disconnect(); mute.disconnect(); } if (src) src.disconnect(); } catch (e) {}
+    route('playback');
+    if (E) E.setVol(state.vol);
     mic.level = 0; drawMic(performance.now());
-    voiceLoad(await new Blob(chunks, { type: mr.mimeType || 'audio/webm' }).arrayBuffer());
   };
+  if (!tap && !mr) { tidy(); vSay('This browser cannot record here. Choose a recording instead.'); return; }
+  const finish = async () => {
+    clearInterval(voice.tick); voice.rec = null; voice.asking = true; recLabel(false);
+    let bytes = null;
+    if (mr && mr.state !== 'inactive') bytes = await new Promise(res => {
+      const giveUp = setTimeout(() => res(null), 2000);
+      mr.onstop = () => { clearTimeout(giveUp); new Blob(parts, { type: mr.mimeType || 'audio/mp4' }).arrayBuffer().then(res, () => res(null)); };
+      try { mr.stop(); } catch (e) { clearTimeout(giveUp); res(null); }
+    });
+    tidy(); voice.asking = false;
+    if ((performance.now() - t0) / 1000 < 0.6) { vSay('That was too short. Press Speak, say something, then press Stop.'); return; }
+    if (total >= sr * 0.4 && heard >= 0.003) {
+      const mono = new Float32Array(Math.min(total, Math.floor(sr * 15)));
+      let at = 0;
+      for (const c of chunks) { if (at >= mono.length) break; mono.set(c.subarray(0, Math.min(c.length, mono.length - at)), at); at += c.length; }
+      voice.raw = mono; voice.sr = sr;
+      voiceMake(true);
+    } else if (bytes && bytes.byteLength > 1500) voiceLoad(bytes);
+    else vSay(total || bytes ? 'The microphone only gave silence. Check this app is allowed to use the microphone, then try again.' : 'The microphone gave no sound at all. Close the app, open it again and press Speak.');
+  };
+  voice.rec = { stop: finish };
   voice.tick = setInterval(() => {
-    an.getByteTimeDomainData(td);
-    let m = 0;
-    for (let i = 0; i < td.length; i++) m = Math.max(m, Math.abs(td[i] - 128));
-    mic.level = Math.min(1, m / 60); drawMic(performance.now());
     const secs = (performance.now() - t0) / 1000;
-    vSay('Recording, ' + Math.floor(secs) + ' s. Press stop when you are done.');
+    drawMic(performance.now());
+    if (tap && !total && secs > 1) actx.resume().catch(() => {});
+    vSay('Listening, ' + Math.floor(secs) + ' s. Say something, then press Stop.');
     if (secs >= 12) recStop();
-  }, 80);
-  voice.rec = mr; mr.start();
-  vRec.textContent = 'Stop recording'; vRec.classList.add('on');
-  vSay('Recording. Say something.');
+  }, 90);
+  recLabel(true);
+  vSay('Listening. Say something, then press Stop.');
+}
+
+/* ---------- live whisper: talk, and hear it whispered as you go ---------- */
+let live = null;
+const vLive = $('#voice-live');
+function liveLabel(on) { $('#voice-live-t').textContent = on ? 'Stop live whisper' : 'Live whisper'; vLive.classList.toggle('on', on); $('#mic-off').hidden = mic.on || on || !!voice.rec; }
+function liveStop() {
+  if (!live) return;
+  clearInterval(live.tick); live.node.stop();
+  live.stream.getTracks().forEach(tr => tr.stop());
+  live = null;
+  route('playback');
+  mic.level = 0; drawMic(performance.now());
+  liveLabel(false); syncLoops();
+  vSay('Live whisper is off.');
+}
+async function liveToggle() {
+  if (live) { liveStop(); return; }
+  if (voice.rec || voice.busy || voice.asking) return;
+  const en = audio();
+  if (!en) { vSay('This browser cannot play sound.'); return; }
+  if (voice.stop) voice.stop();
+  // echo cancelling on, so the phone's own speaker is not whispered back again
+  const stream = await askMic({ echoCancellation: true, noiseSuppression: true, autoGainControl: true });
+  if (!stream) return;
+  await wakeEngine();
+  let node;
+  try { node = en.liveWhisper(stream); } catch (e) { stream.getTracks().forEach(tr => tr.stop()); route('playback'); vSay('Live whisper could not start (' + ((e && e.name) || 'error') + ').'); return; }
+  const td = new Uint8Array(512), trim = padOf('mouth', 'Tongue click').trim * 0.6;
+  let quiet = 999;
+  live = { stream, node, tick: setInterval(() => {
+    node.an.getByteTimeDomainData(td);
+    let m = 0;
+    for (let i = 0; i < td.length; i++) { const v = Math.abs(td[i] - 128); if (v > m) m = v; }
+    const lv = m / 128;
+    mic.level = Math.min(1, lv * 5); drawMic(performance.now()); wake();
+    // lips part as each new word starts
+    if (lv < 0.02) quiet += 70;
+    else { if (quiet >= 220 && Math.random() < 0.7) en.play({ trim, fn: t => mouthTick(t, rnd(-0.6, 0.6), Math.random() < 0.5 ? 1 : 0) }); quiet = 0; }
+  }, 70) };
+  liveLabel(true); syncLoops();
+  nowEl.textContent = 'Live whisper';
+  vSay('Live. Talk, and you hear it whispered. Headphones stop it echoing.');
+}
+
+/* ---------- mixes, the sleep timer, and stopping everything ---------- */
+const MIXES = [
+  { name: 'Rainy night', pads: [['water', 'Rain'], ['sleepy', 'Fireplace'], ['sleepy', 'Clock']] },
+  { name: 'Forest camp', pads: [['woods', 'Stream'], ['woods', 'Wind'], ['sleepy', 'Crickets']] },
+  { name: 'Sleepy cat', pads: [['sleepy', 'Cat purr'], ['sleepy', 'Heartbeat'], ['sleepy', 'Brown noise']] },
+  { name: 'Spa morning', pads: [['spa', 'Steam'], ['spa', 'Bubble bath'], ['woods', 'Stream']] }
+];
+function stopLoops() { if (E) running.forEach(L => E.stopLoop(L)); running.clear(); }
+function playMix(i) {
+  const e = audio();
+  if (!e) return;
+  stopLoops();
+  MIXES[i].pads.forEach(([zid, name]) => {
+    const zi = ZONES.findIndex(z => z.id === zid), pi = ZONES[zi].pads.findIndex(q => q.name === name);
+    running.set(zi + ':' + pi, e.startLoop(ZONES[zi].pads[pi]));
+  });
+  syncLoops(); nowEl.textContent = 'Mix: ' + MIXES[i].name; wake();
+}
+function stopEverything() {
+  stopLoops(); setAuto(false);
+  if (voice.stop) voice.stop();
+  recStop(); liveStop(); syncLoops();
+}
+let sleepEnd = 0, sleepT = 0, sleepTick = 0;
+function setSleep(min) {
+  clearTimeout(sleepT); clearInterval(sleepTick);
+  [...$('#sleep').children].forEach(b => b.setAttribute('aria-checked', +b.dataset.min === min ? 'true' : 'false'));
+  sleepEnd = min ? Date.now() + min * 60000 : 0;
+  if (min) {
+    sleepTick = setInterval(syncLoops, 20000);
+    // fade everything away over twenty seconds, then stop it and put the volume back
+    sleepT = setTimeout(() => {
+      if (E) E.fadeOut(20);
+      sleepT = setTimeout(() => { stopEverything(); if (E) E.setVol(state.vol); setSleep(0); nowEl.textContent = 'Sleep timer finished'; }, 21000);
+    }, min * 60000);
+  }
+  syncLoops();
 }
 
 /* ---------- games ---------- */
@@ -2079,7 +2352,7 @@ function start(data) {
 
   areasEl.innerHTML = ZONES.map((z, i) =>
     '<button type="button" class="cap blank hue area" role="tab" id="area-' + z.id + '" data-z="' + i + '" style="--h:' + z.hue + '" aria-selected="false" aria-controls="deck">' +
-    '<span class="dot"></span><span class="name">' + z.name + '</span><span class="hint">' + (i + 1) % 10 + '</span></button>').join('');
+    '<span class="dot"></span><span class="name">' + z.name + '</span><span class="hint">' + (CATKEYS[i] || '') + '</span></button>').join('');
   matsEl.innerHTML = MATS.map((m, i) =>
     '<button type="button" class="cap blank" role="radio" id="mat-' + m.id + '" data-m="' + i + '" aria-checked="false">' + m.name + '</button>').join('');
   volEl.value = Math.round(state.vol * 100);
@@ -2116,7 +2389,7 @@ function start(data) {
     if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
     const k = e.key.toLowerCase(), i = KEYS.indexOf(k);
     if (i >= 0 && padsEl.children[i]) { padsEl.children[i].classList.add('down'); fire(state.zone, i); }
-    else if (k.length === 1 && k >= '0' && k <= '9') setZone(k === '0' ? 9 : +k - 1);
+    else if (k.length === 1 && CATKEYS.indexOf(k) >= 0) setZone(CATKEYS.indexOf(k));
   });
   window.addEventListener('keyup', e => {
     const i = KEYS.indexOf(e.key.toLowerCase());
@@ -2125,10 +2398,7 @@ function start(data) {
 
   earsEl.addEventListener('click', e => { const b = e.target.closest('[data-ear]'); if (b) { setEar(b.dataset.ear); save(); } });
   volEl.addEventListener('input', () => { state.vol = volEl.value / 100; if (E) E.setVol(state.vol); save(); });
-  stopEl.addEventListener('click', () => {
-    if (E) running.forEach(L => E.stopLoop(L));
-    running.clear(); setAuto(false); if (voice.stop) voice.stop(); recStop(); nowEl.textContent = 'All stopped';
-  });
+  stopEl.addEventListener('click', () => { stopEverything(); nowEl.textContent = 'All stopped'; });
   autoEl.addEventListener('click', () => setAuto(!autoT));
 
   powerEl.addEventListener('click', () => setMicOn(!mic.on));
@@ -2147,9 +2417,14 @@ function start(data) {
 
   // say it in ASMR
   $('#voice-note').textContent = STANDALONE
-    ? 'Press record and say something. It comes back as a close-up whisper with the little mouth clicks added. Your voice stays on this device.'
-    : 'Choose a voice recording and it comes back as a close-up whisper with the little mouth clicks added. This page cannot listen through the real microphone while it lives inside Claude. The Home Screen app can. Your recording stays on this device.';
-  vRec.hidden = !STANDALONE;
+    ? 'Press Speak into the mic, say something, then press Stop. It comes back as a close-up whisper with the little mouth clicks added. Live whisper does it while you talk. Your voice stays on this device.'
+    : 'Inside Claude this page is not allowed to hear a microphone, so you cannot speak into it here. Open the app at its own address and the Speak button appears. Here you can still choose a voice recording and hear it whispered back. Your recording stays on this device.';
+  vRec.hidden = !STANDALONE; vLive.hidden = !STANDALONE; $('#voice-open').hidden = STANDALONE;
+  vLive.addEventListener('click', liveToggle);
+  $('#mixes').innerHTML = MIXES.map((m, i) => '<button type="button" class="cap blank" id="mix-' + i + '" data-mix="' + i + '">' + m.name + '</button>').join('');
+  $('#mixes').addEventListener('click', e => { const b = e.target.closest('[data-mix]'); if (b) playMix(+b.dataset.mix); });
+  $('#sleep').addEventListener('click', e => { const b = e.target.closest('[data-min]'); if (b) setSleep(+b.dataset.min); });
+  if (STANDALONE) $('#mic .deck-head p').textContent += ' Or press Speak into the mic and hear your own voice whispered back.';
   vRec.addEventListener('click', recToggle);
   $('#voice-pick').addEventListener('click', () => { audio(); vFile.click(); });
   vFile.addEventListener('change', async () => { const f = vFile.files && vFile.files[0]; vFile.value = ''; if (f) voiceLoad(await f.arrayBuffer()); });
@@ -2206,6 +2481,6 @@ const hot = window.claude && window.claude.hot;
 if (hot && hot.snapshot) hot.snapshot(snap);
 if (hot && hot.ready) hot.ready(start); else start((hot && hot.data) || {});
 </script>
-<script>if ('serviceWorker' in navigator) window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });</script>
+<script>if ('serviceWorker' in navigator) { var hadWorker = !!navigator.serviceWorker.controller, swapped = false; navigator.serviceWorker.addEventListener('controllerchange', function () { if (hadWorker && !swapped) { swapped = true; location.reload(); } }); window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); }); }</script>
 </body>
 </html>
