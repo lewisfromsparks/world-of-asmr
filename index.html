@@ -61,6 +61,8 @@
   --bar: oklch(var(--bar-l) .13 var(--h));
   --drop: oklch(.2 .05 var(--h) / var(--shade));
   --shine: oklch(1 0 0 / var(--gloss));
+  --night: oklch(0 0 0);
+  --night-ink: oklch(.34 .03 var(--h));
   --good: oklch(var(--good-l) .13 150);
   --good-edge: oklch(calc(var(--good-l) - .17) .13 150);
   --bad: oklch(var(--bad-l) .13 25);
@@ -251,10 +253,10 @@ body {
 .deck-head h2 { margin: 0; font: 400 1.75rem/1.05 var(--display); letter-spacing: .01em; text-wrap: balance; }
 .deck-head p { margin: 0; color: var(--soft); font-size: .92rem; order: 3; flex: 1 1 100%; }
 .deck-head h2 { order: 1; }
-.deck-head .auto, .deck-head .power, .deck-head .stroke { order: 2; }
+.deck-head .auto, .deck-head .power, .deck-head .stroke, .deck-head .pick { order: 2; }
 @media (min-width: 700px) {
   .deck-head p { order: 2; flex: 0 1 auto; }
-  .deck-head .auto, .deck-head .power, .deck-head .stroke { order: 3; }
+  .deck-head .auto, .deck-head .power, .deck-head .stroke, .deck-head .pick { order: 3; }
   .mic .deck-head p { flex: 1 1 220px; }
 }
 .pads { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
@@ -394,6 +396,60 @@ body {
 .cap.opt.right { --face: var(--good); --side: var(--good-edge); color: var(--label); }
 .cap.opt.wrong { --face: var(--bad); --side: var(--bad-edge); color: var(--label); }
 
+/* ---------- sleep ---------- */
+.sleep-face {
+  display: grid;
+  gap: 10px;
+  padding: 16px 16px 14px;
+  border-radius: 20px;
+  background: var(--screen);
+  color: var(--screen-ink);
+  box-shadow: inset 0 2px 10px oklch(0 0 0 / .4);
+  transition: background-color .5s;
+}
+.sleep-clock { font: 400 clamp(2.6rem, 13vw, 4rem)/1 var(--display); letter-spacing: .03em; font-variant-numeric: tabular-nums; color: var(--bar); }
+.sleep-bar { height: 8px; border-radius: 4px; background: oklch(1 0 0 / .12); overflow: hidden; }
+.sleep-bar span { display: block; width: 0; height: 100%; border-radius: 4px; background: var(--bar); transition: width 1s linear; }
+.sleep-say { margin: 0; font: 400 .74rem/1.3 var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.seg.mins { grid-template-columns: repeat(4, minmax(0, 1fr)); max-width: 560px; }
+.seg.mixes { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 560px; }
+@media (min-width: 560px) { .seg.mixes { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.seg.wind { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 560px; }
+.night { position: fixed; inset: 0; z-index: 50; background: var(--night); }
+.night-wake {
+  display: grid;
+  place-content: center;
+  gap: 12px;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: none;
+  color: var(--night-ink);
+  font: 500 .74rem/1.3 var(--mono);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  text-align: center;
+  cursor: pointer;
+}
+#night-clock { font: 400 3rem/1 var(--display); letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+
+/* ---------- favourites and the tape ---------- */
+/* on a phone the title gets its own line and the buttons sit together beneath it */
+#deck .deck-head h2, .mic .deck-head h2 { flex: 1 1 100%; }
+@media (min-width: 700px) { #deck .deck-head h2, .mic .deck-head h2 { flex: 0 1 auto; } }
+@media (max-width: 699px) { #deck .deck-head .pick, .mic .deck-head .stroke { margin-left: 0; } }
+.cap.favtab { grid-column: 1 / -1; flex-direction: row; min-height: 46px; gap: 8px; font-size: .86rem; }
+.favtab b { font: 500 .74rem/1 var(--mono); opacity: .7; }
+.pick { margin-left: auto; padding: 9px 13px; }
+.pick + .auto { margin-left: 0; }
+.pad .star { display: none; position: absolute; right: 9px; bottom: 6px; font-size: .82rem; line-height: 1; }
+.pads.picking .pad .star { display: block; opacity: .28; }
+.pads .pad.fav .star { display: block; opacity: 1; }
+.pads.picking .pad { outline: 2px dashed var(--edge); outline-offset: 2px; }
+.empty { grid-column: 1 / -1; margin: 0; padding: 18px 6px; color: var(--soft); }
+.tape { flex: 1 1 100%; }
+.tape-say { flex: 1 1 100%; color: var(--soft); font-size: .84rem; }
+
 /* ---------- controls ---------- */
 .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 26px; padding-inline: 4px; }
 .ctl { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 12px; min-width: 0; }
@@ -427,11 +483,12 @@ body {
           <button type="button" class="cap hue lk" style="--h:315" data-n="3">R</button>
         </span>
       </h1>
-      <p class="lede">Twelve categories, 144 sounds, four games and a mic you can stroke. Put headphones on, then press everything.</p>
+      <p class="lede">Twelve categories, 144 sounds, four games, a mic you can stroke and a sleep timer. Put headphones on, then press everything.</p>
       <nav class="jump" aria-label="Jump to">
         <button type="button" class="cap blank" data-go="deck">Sounds</button>
         <button type="button" class="cap blank" data-go="mic">The Mic</button>
         <button type="button" class="cap blank" data-go="games">Games</button>
+        <button type="button" class="cap blank" data-go="sleep">Sleep</button>
       </nav>
     </div>
     <div class="screen">
@@ -443,7 +500,7 @@ body {
   <nav class="areas" id="areas" role="tablist" aria-label="Categories"></nav>
 
   <main class="deck" id="deck" role="tabpanel">
-    <div class="deck-head"><h2 id="zname"></h2><p id="zblurb"></p><button type="button" class="cap blank auto" id="auto" aria-pressed="false">Auto play</button></div>
+    <div class="deck-head"><h2 id="zname"></h2><p id="zblurb"></p><button type="button" class="cap blank pick" id="pick" aria-pressed="false">Pick favourites</button><button type="button" class="cap blank auto" id="auto" aria-pressed="false">Auto play</button></div>
     <div class="pads" id="pads"></div>
     <p class="deck-note">Pads marked <i>loop</i> keep playing until you press them again. They carry on when you change category, so you can tap over the top of them.</p>
   </main>
@@ -489,6 +546,39 @@ body {
     <div class="g-body" id="game-body"></div>
   </section>
 
+  <section class="deck sleep" id="sleep" aria-labelledby="sleep-h">
+    <div class="deck-head">
+      <h2 id="sleep-h">Sleep timer</h2>
+      <p>Choose sounds to fall asleep to and how long they play. At the end everything fades away.</p>
+    </div>
+    <div class="sleep-face">
+      <div class="sleep-clock" id="sleep-clock">20:00</div>
+      <div class="sleep-bar"><span id="sleep-fill"></span></div>
+      <p class="sleep-say" id="sleep-say" role="status">Not running.</p>
+    </div>
+    <div class="ctl stack">
+      <span class="ctl-label" id="sleeplab">Play for</span>
+      <div class="seg grid mins" role="radiogroup" aria-labelledby="sleeplab" id="sleep-mins"></div>
+    </div>
+    <div class="ctl stack">
+      <span class="ctl-label" id="mixlab">Fall asleep to</span>
+      <div class="seg grid mixes" role="group" aria-labelledby="mixlab" id="mixes"></div>
+    </div>
+    <div class="ctl stack">
+      <span class="ctl-label" id="windlab">How it ends</span>
+      <div class="seg grid wind" role="radiogroup" aria-labelledby="windlab" id="sleep-wind">
+        <button type="button" class="cap blank" role="radio" id="wind-end" data-w="end" aria-checked="true">Fade out at the end</button>
+        <button type="button" class="cap blank" role="radio" id="wind-slow" data-w="slow" aria-checked="false">Get quieter all the way</button>
+      </div>
+    </div>
+    <div class="g-actions">
+      <button type="button" class="cap" id="sleep-go">Start timer</button>
+      <button type="button" class="cap blank" id="sleep-more" hidden>Add 5 minutes</button>
+      <button type="button" class="cap blank" id="sleep-dark">Night screen</button>
+    </div>
+    <p class="deck-note">Night screen turns the page black and asks the phone to stay awake, so the sounds carry on while the screen stays dark. Tap it to come back.</p>
+  </section>
+
   <section class="controls" aria-label="Sound controls">
     <div class="ctl">
       <span class="ctl-label" id="earlab">Ear</span>
@@ -503,23 +593,26 @@ body {
       <label class="ctl-label" for="vol">Volume</label>
       <input id="vol" type="range" min="0" max="100" value="80">
     </div>
-    <button type="button" id="stop" class="cap blank stop" disabled>Stop all</button>
-    <div class="ctl">
-      <span class="ctl-label" id="mixlab">Mixes</span>
-      <div class="seg" role="group" aria-labelledby="mixlab" id="mixes"></div>
+    <div class="ctl vol">
+      <label class="ctl-label" for="loopvol">Loops</label>
+      <input id="loopvol" type="range" min="0" max="100" value="80">
     </div>
-    <div class="ctl">
-      <span class="ctl-label" id="sleeplab">Sleep timer</span>
-      <div class="seg" role="radiogroup" aria-labelledby="sleeplab" id="sleep">
-        <button type="button" class="cap blank" role="radio" id="sleep-0" data-min="0" aria-checked="true">Off</button>
-        <button type="button" class="cap blank" role="radio" id="sleep-10" data-min="10" aria-checked="false">10 min</button>
-        <button type="button" class="cap blank" role="radio" id="sleep-20" data-min="20" aria-checked="false">20 min</button>
-        <button type="button" class="cap blank" role="radio" id="sleep-30" data-min="30" aria-checked="false">30 min</button>
+    <button type="button" id="stop" class="cap blank stop" disabled>Stop all</button>
+    <div class="ctl tape">
+      <span class="ctl-label" id="tapelab">My tape</span>
+      <div class="seg" role="group" aria-labelledby="tapelab">
+        <button type="button" class="cap blank" id="tape-rec" aria-pressed="false">Record</button>
+        <button type="button" class="cap blank" id="tape-play" aria-pressed="false" hidden>Play my tape</button>
+        <button type="button" class="cap blank" id="tape-clear" hidden>Clear</button>
       </div>
+      <span class="tape-say" id="tape-say"></span>
     </div>
   </section>
 
-  <p class="foot">Quiet on a phone? Switch silent mode off and turn the volume up. Nothing here is a recording. Every sound is made fresh in your browser, so no two presses are quite the same. The mic is drawn on the screen and only feels your touch. <span id="ver">Version 6</span></p>
+  <p class="foot">Quiet on a phone? Switch silent mode off and turn the volume up. Nothing here is a recording. Every sound is made fresh in your browser, so no two presses are quite the same. The mic is drawn on the screen and only feels your touch. <span id="ver">Version 7</span></p>
+</div>
+<div class="night" id="night" hidden>
+  <button type="button" class="night-wake" id="night-wake"><span id="night-clock"></span><span id="night-say">Tap to wake the screen</span></button>
 </div>
 
 <script>
@@ -627,8 +720,9 @@ function makeEngine(ctx, opt) {
     bufs[k] = b;
   }
   const hasPan = !!ctx.createStereoPanner;
-  const bus = ctx.createGain();
-  let verb = null, ear = null, lfoG = null, vol = null, anL = null, anR = null;
+  const bus = ctx.createGain(), loopBus = ctx.createGain();   // loops get a volume of their own
+  loopBus.connect(bus);
+  let verb = null, ear = null, lfoG = null, vol = null, nap = null, anL = null, anR = null;
   if (!flat) {
     // A small, soft room so the sounds sit somewhere.
     const sr = ctx.sampleRate, irLen = Math.floor(1.3 * sr), ir = ctx.createBuffer(2, irLen, sr);
@@ -646,8 +740,9 @@ function makeEngine(ctx, opt) {
     clip.curve = curve; clip.oversample = '2x';
     vol = ctx.createGain(); vol.gain.value = 0.8;
     bus.connect(ear); bus.connect(room); room.connect(verb); verb.connect(ear);
-    ear.connect(post); post.connect(clip); clip.connect(vol); vol.connect(ctx.destination);
-    const split = ctx.createChannelSplitter(2); vol.connect(split);
+    ear.connect(post); post.connect(clip); clip.connect(vol);
+    nap = ctx.createGain(); vol.connect(nap); nap.connect(ctx.destination);   // the sleep timer turns this one down
+    const split = ctx.createChannelSplitter(2); nap.connect(split);
     anL = ctx.createAnalyser(); anR = ctx.createAnalyser();
     [anL, anR].forEach((a, i) => { a.fftSize = 1024; a.smoothingTimeConstant = 0.72; a.minDecibels = -88; a.maxDecibels = -22; split.connect(a, i); });
     const lfo = ctx.createOscillator(); lfo.frequency.value = 0.07;
@@ -775,7 +870,7 @@ function makeEngine(ctx, opt) {
   }
   function startLoop(pad) {
     const now = ctx.currentTime, g = ctx.createGain();
-    g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(1, now + 0.5); g.connect(bus);
+    g.gain.setValueAtTime(0, now); g.gain.linearRampToValueAtTime(1, now + 0.5); g.connect(loopBus);
     const L = { g, srcs: [], next: now + 0.06, trim: pad.trim || 1, sched: null };
     dest = g; trim = L.trim; cur = L;
     L.sched = pad.loop() || null;
@@ -792,7 +887,8 @@ function makeEngine(ctx, opt) {
     setTimeout(() => { L.srcs.forEach(s => { try { s.stop(); } catch (e) {} }); try { L.g.disconnect(); } catch (e) {} }, 900);
     if (!loops.size && timer) { clearInterval(timer); timer = 0; }
   }
-  function fadeOut(sec) { if (vol) vol.gain.setTargetAtTime(0, ctx.currentTime, sec / 4); }
+  function setNap(v) { if (nap) nap.gain.setTargetAtTime(v, ctx.currentTime, 0.5); }
+  function setLoopVol(v) { loopBus.gain.setTargetAtTime(v, ctx.currentTime, 0.05); }
   function setVol(v) { if (vol) vol.gain.setTargetAtTime(v, ctx.currentTime, 0.02); }
   function setEar(mode) {
     if (!ear || !ear.pan) return;
@@ -851,7 +947,7 @@ function makeEngine(ctx, opt) {
     }
     if (hiss) hiss.gain.setTargetAtTime(want, t, 0.2);
   }
-  return { ctx, bus, vol, anL, anR, micOut, api: { N, T, M, K, D, H }, play, playAt, startLoop, stopLoop, pumpTo, setVol, setEar, micVoice, micTap, setMic, fadeOut };
+  return { ctx, bus, vol, nap, anL, anR, micOut, api: { N, T, M, K, D, H }, play, playAt, startLoop, stopLoop, pumpTo, setVol, setEar, micVoice, micTap, setMic, setNap, setLoopVol };
 }
 
 /* The pads below call these directly; use() points them at the live engine. */
@@ -1578,9 +1674,23 @@ const APP_URL = 'https://lewisfromsparks.github.io/world-of-asmr/';
 const SHIFT = [-9, 5, 13, -3, 9, -13, 1, 11, -6, 15, -15, 7];
 const DL = [0, 0.02, -0.02, 0.012, -0.012, 0.02, -0.02, 0, 0.015, -0.015, 0.02, -0.01];
 const STORE = 'world-of-asmr';
-const state = { zone: 0, vol: 0.8, ear: 'both', sens: 0, mat: 0 };
+const state = { zone: 0, vol: 0.8, loopVol: 0.8, ear: 'both', sens: 0, mat: 0 };
 const mic = { on: false };
-const running = new Map();   // "area:pad" -> live loop
+const running = new Map();   // pad -> live loop
+ZONES.forEach(z => z.pads.forEach(q => { q.z = z; }));   // every pad knows its home category
+// Favourites: a category you fill yourself.
+const FAVKEY = 'world-of-asmr-favs';
+let favs = [], picking = false;
+try {
+  favs = (JSON.parse(localStorage.getItem(FAVKEY) || '[]') || []).map(k => {
+    const [zid, name] = String(k).split('/'), z = ZONES.find(q => q.id === zid);
+    return z && z.pads.find(q => q.name === name);
+  }).filter(Boolean);
+} catch (e) {}
+const saveFavs = () => { try { localStorage.setItem(FAVKEY, JSON.stringify(favs.map(q => q.z.id + '/' + q.name))); } catch (e) {} };
+const FAV = { id: 'favs', name: 'My favourites', blurb: 'The sounds you starred', hue: 62, get pads() { return favs; } };
+const curZone = () => (state.zone < 0 ? FAV : ZONES[state.zone]);
+const buzz = e => { if (e.pointerType === 'touch' && navigator.vibrate) { try { navigator.vibrate(6); } catch (err) {} } };
 let E = null, actx = null;
 
 const padsEl = $('#pads'), areasEl = $('#areas'), nowEl = $('#now'), loopEl = $('#loopcount');
@@ -1588,7 +1698,7 @@ const stopEl = $('#stop'), volEl = $('#vol'), earsEl = $('#ears'), cv = $('#scop
 const autoEl = $('#auto'), powerEl = $('#mic-power'), matsEl = $('#mats'), sensEl = $('#sens');
 const micStage = $('#mic-stage'), micCv = $('#mic-cv'), mc = micCv.getContext('2d');
 
-const snap = () => ({ area: ZONES[state.zone].id, vol: state.vol, ear: state.ear, sens: state.sens, mat: MATS[state.mat].id });
+const snap = () => ({ area: curZone().id, vol: state.vol, loopVol: state.loopVol, ear: state.ear, sens: state.sens, mat: MATS[state.mat].id });
 function save() { try { localStorage.setItem(STORE, JSON.stringify(snap())); } catch (e) {} }
 
 function audio() {
@@ -1598,7 +1708,7 @@ function audio() {
     try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) {}
     try { actx = new AC({ latencyHint: 'interactive' }); } catch (e) { actx = new AC(); }
     E = makeEngine(actx); use(E);
-    E.setVol(state.vol); E.setEar(state.ear); E.setMic(mic.on, state.sens);
+    E.setVol(state.vol); E.setLoopVol(state.loopVol / 0.8); E.setEar(state.ear); E.setMic(mic.on, state.sens);
     fL = new Uint8Array(E.anL.frequencyBinCount); fR = new Uint8Array(E.anR.frequencyBinCount);
     edges = binEdges(actx.sampleRate, fL.length);
   }
@@ -1609,49 +1719,72 @@ function audio() {
 ['pointerdown', 'pointerup', 'touchend', 'click', 'keydown'].forEach(ev =>
   window.addEventListener(ev, () => { if (actx && actx.state !== 'running') actx.resume().catch(() => {}); }, { capture: true, passive: true }));
 
-function fire(zi, pi) {
+function fire(pad) {
   const e = audio();
   if (!e) { nowEl.textContent = 'This browser cannot play sound'; return; }
-  const pad = ZONES[zi].pads[pi], key = zi + ':' + pi;
   let note = pad.name;
   if (pad.loop) {
-    if (running.has(key)) { e.stopLoop(running.get(key)); running.delete(key); note += ' off'; }
-    else { running.set(key, e.startLoop(pad)); note += ' on'; }
+    if (running.has(pad)) { e.stopLoop(running.get(pad)); running.delete(pad); note += ' off'; }
+    else { running.set(pad, e.startLoop(pad)); note += ' on'; }
     syncLoops();
-  } else e.play(pad);
+  } else { e.play(pad); if (tape.rec) tapeNote(pad); }
   nowEl.textContent = note;
   wake();
 }
 
 function syncLoops() {
-  const n = running.size;
+  const n = running.size, pads = curZone().pads;
   [...padsEl.children].forEach((b, i) => {
     if (!b.classList.contains('is-loop')) return;
-    const on = running.has(state.zone + ':' + i);
+    const on = running.has(pads[i]);
     b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
-  stopEl.disabled = !(n || autoT || strokeT);
-  const left = sleepEnd ? Math.max(1, Math.ceil((sleepEnd - Date.now()) / 60000)) : 0;
+  stopEl.disabled = !(n || autoT || strokeT || tape.playing);
+  const left = sleep.end ? Math.max(1, Math.ceil((sleep.end - Date.now()) / 60000)) : 0;
   loopEl.textContent = [n ? n + (n > 1 ? ' loops on' : ' loop on') : '', left ? 'sleep in ' + left + ' min' : ''].filter(Boolean).join(', ');
 }
 
+function renderPads() {
+  const z = curZone();
+  padsEl.innerHTML = z.pads.length ? z.pads.map((q, k) =>
+    '<button type="button" class="cap hue pad' + (q.loop ? ' is-loop' : '') + (favs.includes(q) ? ' fav' : '') + '" id="pad-' + z.id + '-' + k + '" data-p="' + k + '" style="--h:' + (q.z.hue + SHIFT[k % 12]) + ';--dl:' + DL[k % 12] + '"' +
+    (q.loop ? ' aria-pressed="false"' : '') + '><span class="hint">' + (KEYS[k] || '') + '</span>' +
+    (q.loop ? '<span class="led"></span>' : '') + '<span class="pad-name">' + q.name + '</span>' +
+    (q.loop ? '<span class="tag"></span>' : '') + '<span class="star" aria-hidden="true">★</span></button>').join('')
+    : '<p class="empty">No favourites yet. Press Pick favourites in any category, then tap the sounds you love.</p>';
+  padsEl.classList.toggle('picking', picking);
+  const count = $('#favcount');
+  if (count) count.textContent = favs.length ? '(' + favs.length + ')' : '';
+  syncLoops();
+}
 function setZone(i, quiet) {
-  if (!ZONES[i]) return;
+  if (i !== -1 && !ZONES[i]) return;
   state.zone = i; autoLast = -1;
-  const z = ZONES[i];
+  const z = curZone();
   document.documentElement.style.setProperty('--h', z.hue);
-  [...areasEl.children].forEach((b, k) => { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.tabIndex = k === i ? 0 : -1; });
+  [...areasEl.children].forEach(b => { const on = +b.dataset.z === i; b.setAttribute('aria-selected', on ? 'true' : 'false'); b.tabIndex = on ? 0 : -1; });
   $('#zname').textContent = z.name;
   $('#zblurb').textContent = z.blurb;
   $('#deck').setAttribute('aria-labelledby', 'area-' + z.id);
-  padsEl.innerHTML = z.pads.map((p, k) =>
-    '<button type="button" class="cap hue pad' + (p.loop ? ' is-loop' : '') + '" id="pad-' + z.id + '-' + k + '" data-p="' + k + '" style="--h:' + (z.hue + SHIFT[k]) + ';--dl:' + DL[k] + '"' +
-    (p.loop ? ' aria-pressed="false"' : '') + '><span class="hint">' + KEYS[k] + '</span>' +
-    (p.loop ? '<span class="led"></span>' : '') + '<span class="pad-name">' + p.name + '</span>' +
-    (p.loop ? '<span class="tag"></span>' : '') + '</button>').join('');
-  syncLoops();
+  renderPads();
   if (!quiet) { try { history.replaceState(null, '', '#' + z.id); } catch (e) {} save(); }
   redraw();
+}
+// In pick mode a tap stars a sound (or takes the star away) instead of only playing it.
+function toggleFav(pad) {
+  const at = favs.indexOf(pad), e = audio();
+  if (at >= 0) favs.splice(at, 1); else favs.push(pad);
+  saveFavs();
+  if (at < 0 && e && !pad.loop) { e.play(pad); wake(); }
+  nowEl.textContent = (at >= 0 ? 'Star removed: ' : 'Starred: ') + pad.name;
+  renderPads();
+}
+function setPicking(on) {
+  picking = on;
+  $('#pick').setAttribute('aria-pressed', on ? 'true' : 'false');
+  $('#pick').textContent = on ? 'Done picking' : 'Pick favourites';
+  if (on) setAuto(false);
+  padsEl.classList.toggle('picking', on);
 }
 
 function setEar(mode) {
@@ -1707,11 +1840,12 @@ function wake() { lastHit = performance.now(); if (!raf) raf = requestAnimationF
 /* ---------- auto play: the area taps itself so you can sit back ---------- */
 let autoT = 0, autoLast = -1;
 function autoStep() {
-  const pool = ZONES[state.zone].pads.map((p, i) => (p.loop || i === autoLast ? -1 : i)).filter(i => i >= 0);
+  const pads = curZone().pads, pool = pads.map((q, i) => (q.loop || (i === autoLast && pads.length > 2) ? -1 : i)).filter(i => i >= 0);
+  if (!pool.length) { setAuto(false); nowEl.textContent = 'Nothing here to auto play yet'; return; }
   const i = pick(pool), b = padsEl.children[i];
   autoLast = i;
   if (b) { b.classList.add('down'); setTimeout(() => b.classList.remove('down'), 170); }
-  fire(state.zone, i);
+  fire(pads[i]);
   autoT = setTimeout(autoStep, rnd(420, 1300));
 }
 function setAuto(on) {
@@ -1892,39 +2026,129 @@ function setMicOn(on) {
   wake();
 }
 
-/* ---------- mixes, the sleep timer, and stopping everything ---------- */
+/* ---------- mixes and stopping everything ---------- */
 const MIXES = [
   { name: 'Rainy night', pads: [['water', 'Rain'], ['sleepy', 'Fireplace'], ['sleepy', 'Clock']] },
   { name: 'Forest camp', pads: [['woods', 'Stream'], ['woods', 'Wind'], ['sleepy', 'Crickets']] },
   { name: 'Sleepy cat', pads: [['sleepy', 'Cat purr'], ['sleepy', 'Heartbeat'], ['sleepy', 'Brown noise']] },
-  { name: 'Spa morning', pads: [['spa', 'Steam'], ['spa', 'Bubble bath'], ['woods', 'Stream']] }
+  { name: 'Ocean drift', pads: [['water', 'Waves'], ['woods', 'Wind'], ['sleepy', 'Brown noise']] },
+  { name: 'Spa morning', pads: [['spa', 'Steam'], ['spa', 'Bubble bath'], ['woods', 'Stream']] },
+  { name: 'Cosy kitchen', pads: [['snack', 'Kettle'], ['sleepy', 'Fireplace'], ['sleepy', 'Clock']] }
 ];
 function stopLoops() { if (E) running.forEach(L => E.stopLoop(L)); running.clear(); }
 function playMix(i) {
   const e = audio();
   if (!e) return;
   stopLoops();
-  MIXES[i].pads.forEach(([zid, name]) => {
-    const zi = ZONES.findIndex(z => z.id === zid), pi = ZONES[zi].pads.findIndex(q => q.name === name);
-    running.set(zi + ':' + pi, e.startLoop(ZONES[zi].pads[pi]));
-  });
+  MIXES[i].pads.forEach(([zid, name]) => { const pad = padOf(zid, name); running.set(pad, e.startLoop(pad)); });
   syncLoops(); nowEl.textContent = 'Mix: ' + MIXES[i].name; wake();
 }
-function stopEverything() { stopLoops(); setAuto(false); setStroke(false); syncLoops(); }
-let sleepEnd = 0, sleepT = 0, sleepTick = 0;
-function setSleep(min) {
-  clearTimeout(sleepT); clearInterval(sleepTick);
-  [...$('#sleep').children].forEach(b => b.setAttribute('aria-checked', +b.dataset.min === min ? 'true' : 'false'));
-  sleepEnd = min ? Date.now() + min * 60000 : 0;
-  if (min) {
-    sleepTick = setInterval(syncLoops, 20000);
-    // fade everything away over twenty seconds, then stop it and put the volume back
-    sleepT = setTimeout(() => {
-      if (E) E.fadeOut(20);
-      sleepT = setTimeout(() => { stopEverything(); if (E) E.setVol(state.vol); setSleep(0); nowEl.textContent = 'Sleep timer finished'; }, 21000);
-    }, min * 60000);
+function stopEverything() { stopLoops(); setAuto(false); setStroke(false); tapePlay(false); if (tape.rec) tapeRec(false); syncLoops(); }
+
+/* ---------- my tape: record a run of taps, then let it go round and round ---------- */
+const TAPEKEY = 'world-of-asmr-tape';
+const tape = { rec: false, t0: 0, events: [], len: 0, playing: false, timers: [], guard: 0 };
+const tapeRecEl = $('#tape-rec'), tapePlayEl = $('#tape-play'), tapeClearEl = $('#tape-clear'), tapeSayEl = $('#tape-say');
+try {
+  const kept = JSON.parse(localStorage.getItem(TAPEKEY) || 'null');
+  if (kept && Array.isArray(kept.events)) {
+    tape.events = kept.events.map(ev => { const [zid, name] = String(ev.k).split('/'), z = ZONES.find(q => q.id === zid), pad = z && z.pads.find(q => q.name === name); return pad && typeof ev.at === 'number' ? { pad, at: ev.at } : null; }).filter(Boolean);
+    tape.len = tape.events.length ? Math.max(900, tape.events[tape.events.length - 1].at + 700) : 0;
   }
+} catch (e) {}
+const tapeSave = () => { try { localStorage.setItem(TAPEKEY, JSON.stringify({ events: tape.events.map(ev => ({ k: ev.pad.z.id + '/' + ev.pad.name, at: Math.round(ev.at) })) })); } catch (e) {} };
+function tapeSync() {
+  const has = tape.events.length > 0;
+  tapeRecEl.textContent = tape.rec ? 'Stop recording' : has ? 'Record again' : 'Record';
+  tapeRecEl.setAttribute('aria-pressed', tape.rec ? 'true' : 'false');
+  tapePlayEl.hidden = !has || tape.rec;
+  tapePlayEl.textContent = tape.playing ? 'Stop my tape' : 'Play my tape';
+  tapePlayEl.setAttribute('aria-pressed', tape.playing ? 'true' : 'false');
+  tapeClearEl.hidden = !has || tape.rec;
+  tapeSayEl.textContent = tape.rec ? 'Recording. Tap some sounds. ' + tape.events.length + ' so far.'
+    : has ? tape.events.length + (tape.events.length > 1 ? ' taps, ' : ' tap, ') + (tape.len / 1000).toFixed(1) + ' seconds. It loops when you play it.'
+    : 'Record a run of taps, then play it back on a loop.';
   syncLoops();
+}
+function tapeNote(pad) {
+  const now = performance.now();
+  if (!tape.events.length) tape.t0 = now;
+  tape.events.push({ pad, at: now - tape.t0 });
+  if (tape.events.length >= 80 || now - tape.t0 > 30000) tapeRec(false); else tapeSync();
+}
+function tapeRec(on) {
+  tapePlay(false);
+  clearTimeout(tape.guard);
+  if (on) { tape.events = []; tape.len = 0; tape.rec = true; tape.guard = setTimeout(() => tapeRec(false), 45000); }
+  else { tape.rec = false; tape.len = tape.events.length ? Math.max(900, tape.events[tape.events.length - 1].at + 700) : 0; tapeSave(); }
+  tapeSync();
+}
+function tapeCycle() {
+  const e = audio();
+  if (!e) return;
+  tape.events.forEach(ev => tape.timers.push(setTimeout(() => {
+    e.play(ev.pad); wake();
+    const i = curZone().pads.indexOf(ev.pad), b = i >= 0 ? padsEl.children[i] : null;
+    if (b) { b.classList.add('down'); setTimeout(() => b.classList.remove('down'), 150); }
+  }, ev.at)));
+  tape.timers.push(setTimeout(() => { tape.timers = []; if (tape.playing) tapeCycle(); }, tape.len));
+}
+function tapePlay(on) {
+  tape.timers.forEach(clearTimeout); tape.timers = [];
+  tape.playing = !!on && tape.events.length > 0 && !tape.rec;
+  if (tape.playing) { tapeCycle(); nowEl.textContent = 'My tape'; }
+  tapeSync();
+}
+
+/* ---------- sleep timer ---------- */
+const sleep = { mins: 20, end: 0, total: 0, wind: 'end', tick: 0, lock: null };
+const SLEEP_MINS = [5, 10, 15, 20, 30, 45, 60, 90], FADE_MS = 30000;
+const sleepClock = $('#sleep-clock'), sleepFill = $('#sleep-fill'), sleepSayEl = $('#sleep-say'), sleepGo = $('#sleep-go'), sleepMore = $('#sleep-more'), nightEl = $('#night');
+const mmss = ms => { const sec = Math.max(0, Math.ceil(ms / 1000)); return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0'); };
+const clockTime = ts => new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+function sleepPaint() {
+  const left = sleep.end ? sleep.end - Date.now() : sleep.mins * 60000;
+  sleepClock.textContent = mmss(left);
+  $('#night-clock').textContent = sleep.end ? mmss(left) : '';
+  sleepFill.style.width = (sleep.end ? Math.max(0, Math.min(100, 100 * (1 - left / sleep.total))) : 0) + '%';
+  sleepGo.textContent = sleep.end ? 'Cancel timer' : 'Start timer';
+  sleepMore.hidden = !sleep.end;
+  [...$('#sleep-mins').children].forEach(b => b.setAttribute('aria-checked', +b.dataset.min === sleep.mins ? 'true' : 'false'));
+  [...$('#sleep-wind').children].forEach(b => b.setAttribute('aria-checked', b.dataset.w === sleep.wind ? 'true' : 'false'));
+}
+// The clock is read from the real time each second, so a phone that dozes cannot make the timer run long.
+function sleepStep() {
+  if (!sleep.end) return;
+  const left = sleep.end - Date.now();
+  if (left <= 0) { sleepDone(); return; }
+  let level = sleep.wind === 'slow' ? 0.3 + 0.7 * Math.min(1, left / sleep.total) : 1;
+  if (left < FADE_MS) level *= left / FADE_MS;
+  if (E) E.setNap(level);
+  sleepPaint(); syncLoops();
+}
+function sleepStart() {
+  sleep.total = sleep.mins * 60000; sleep.end = Date.now() + sleep.total;
+  clearInterval(sleep.tick); sleep.tick = setInterval(sleepStep, 1000);
+  sleepSayEl.textContent = 'Everything fades out at ' + clockTime(sleep.end) + '.';
+  $('#night-say').textContent = 'Tap to wake the screen';
+  sleepStep();
+}
+function sleepCancel(msg) {
+  clearInterval(sleep.tick); sleep.end = 0;
+  sleepSayEl.textContent = msg || 'Not running.';
+  sleepPaint(); syncLoops();
+}
+function sleepDone() {
+  stopEverything();
+  sleepCancel('Finished. Good night.');
+  nowEl.textContent = 'Sleep timer finished';
+  $('#night-say').textContent = 'Good night';
+  setTimeout(() => { if (E && !sleep.end) E.setNap(1); }, 1500);   // put the loudness back once everything has gone quiet
+}
+async function night(on) {
+  nightEl.hidden = !on;
+  if (sleep.lock) { try { sleep.lock.release(); } catch (e) {} sleep.lock = null; }
+  if (on) { try { sleep.lock = await navigator.wakeLock.request('screen'); } catch (e) { sleep.lock = null; } }
 }
 
 /* ---------- games ---------- */
@@ -2105,16 +2329,18 @@ function start(data) {
   if ([0, 1, 2].includes(src.sens)) state.sens = src.sens;
   const mi = MATS.findIndex(m => m.id === src.mat);
   if (mi >= 0) state.mat = mi;
-  let zi = Math.max(0, ZONES.findIndex(z => z.id === src.area));
+  if (typeof src.loopVol === 'number') state.loopVol = Math.max(0, Math.min(1, src.loopVol));
+  let zi = src.area === 'favs' ? -1 : Math.max(0, ZONES.findIndex(z => z.id === src.area));
   const hash = ZONES.findIndex(z => '#' + z.id === location.hash);
-  if (hash >= 0 && !(data && data.area)) zi = hash;
+  if (!(data && data.area)) { if (hash >= 0) zi = hash; else if (location.hash === '#favs') zi = -1; }
 
-  areasEl.innerHTML = ZONES.map((z, i) =>
+  areasEl.innerHTML = '<button type="button" class="cap blank hue area favtab" role="tab" id="area-favs" data-z="-1" style="--h:' + FAV.hue + '" aria-selected="false" aria-controls="deck"><span aria-hidden="true">\u2605</span><span class="name">My favourites</span><b id="favcount"></b></button>' + ZONES.map((z, i) =>
     '<button type="button" class="cap blank hue area" role="tab" id="area-' + z.id + '" data-z="' + i + '" style="--h:' + z.hue + '" aria-selected="false" aria-controls="deck">' +
     '<span class="dot"></span><span class="name">' + z.name + '</span><span class="hint">' + (CATKEYS[i] || '') + '</span></button>').join('');
   matsEl.innerHTML = MATS.map((m, i) =>
     '<button type="button" class="cap blank" role="radio" id="mat-' + m.id + '" data-m="' + i + '" aria-checked="false">' + m.name + '</button>').join('');
   volEl.value = Math.round(state.vol * 100);
+  $('#loopvol').value = Math.round(state.loopVol * 100);
   setEar(state.ear);
   setZone(zi, true);
   syncMic();
@@ -2124,21 +2350,25 @@ function start(data) {
     const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
     if (!d) return;
     e.preventDefault();
-    setZone((state.zone + d + ZONES.length) % ZONES.length);
-    areasEl.children[state.zone].focus();
+    setZone((Math.max(0, state.zone) + d + ZONES.length) % ZONES.length);
+    areasEl.querySelector('[data-z="' + state.zone + '"]').focus();
   });
 
   padsEl.addEventListener('pointerdown', e => {
     const b = e.target.closest('.pad');
     if (!b || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    b.classList.add('down');
-    fire(state.zone, +b.dataset.p);
+    const pad = curZone().pads[+b.dataset.p];
+    if (!pad) return;
+    if (picking) { toggleFav(pad); return; }
+    b.classList.add('down'); buzz(e);
+    fire(pad);
   });
   ['pointerup', 'pointercancel', 'pointerout'].forEach(ev => padsEl.addEventListener(ev, e => {
     const b = e.target.closest && e.target.closest('.pad'); if (b) b.classList.remove('down');
   }));
   // Enter or Space on a focused pad arrives as a click with no pointer behind it.
-  padsEl.addEventListener('click', e => { const b = e.target.closest('.pad'); if (b && e.detail === 0) fire(state.zone, +b.dataset.p); });
+  padsEl.addEventListener('click', e => { const b = e.target.closest('.pad'), pad = b && curZone().pads[+b.dataset.p]; if (pad && e.detail === 0) { if (picking) toggleFav(pad); else fire(pad); } });
+  $('#pick').addEventListener('click', () => setPicking(!picking));
 
   const letter = b => { const e = audio(); if (!e) return; e.play(LETTER_PAD(+b.dataset.n)); nowEl.textContent = 'Letter ' + b.textContent; wake(); };
   $('#letters').addEventListener('pointerdown', e => { const b = e.target.closest('.lk'); if (b && !(e.pointerType === 'mouse' && e.button !== 0)) letter(b); });
@@ -2147,7 +2377,7 @@ function start(data) {
   window.addEventListener('keydown', e => {
     if (e.metaKey || e.ctrlKey || e.altKey || e.repeat) return;
     const k = e.key.toLowerCase(), i = KEYS.indexOf(k);
-    if (i >= 0 && padsEl.children[i]) { padsEl.children[i].classList.add('down'); fire(state.zone, i); }
+    if (i >= 0 && curZone().pads[i]) { padsEl.children[i].classList.add('down'); fire(curZone().pads[i]); }
     else if (k.length === 1 && CATKEYS.indexOf(k) >= 0) setZone(CATKEYS.indexOf(k));
   });
   window.addEventListener('keyup', e => {
@@ -2157,6 +2387,7 @@ function start(data) {
 
   earsEl.addEventListener('click', e => { const b = e.target.closest('[data-ear]'); if (b) { setEar(b.dataset.ear); save(); } });
   volEl.addEventListener('input', () => { state.vol = volEl.value / 100; if (E) E.setVol(state.vol); save(); });
+  $('#loopvol').addEventListener('input', () => { state.loopVol = $('#loopvol').value / 100; if (E) E.setLoopVol(state.loopVol / 0.8); save(); });
   stopEl.addEventListener('click', () => { stopEverything(); nowEl.textContent = 'All stopped'; });
   autoEl.addEventListener('click', () => setAuto(!autoT));
 
@@ -2176,7 +2407,21 @@ function start(data) {
 
   $('#mixes').innerHTML = MIXES.map((m, i) => '<button type="button" class="cap blank" id="mix-' + i + '" data-mix="' + i + '">' + m.name + '</button>').join('');
   $('#mixes').addEventListener('click', e => { const b = e.target.closest('[data-mix]'); if (b) playMix(+b.dataset.mix); });
-  $('#sleep').addEventListener('click', e => { const b = e.target.closest('[data-min]'); if (b) setSleep(+b.dataset.min); });
+  // sleep timer
+  $('#sleep-mins').innerHTML = SLEEP_MINS.map(m => '<button type="button" class="cap blank" role="radio" id="sleep-' + m + '" data-min="' + m + '" aria-checked="false">' + m + ' min</button>').join('');
+  $('#sleep-mins').addEventListener('click', e => { const b = e.target.closest('[data-min]'); if (!b) return; sleep.mins = +b.dataset.min; if (sleep.end) sleepStart(); else sleepPaint(); });
+  $('#sleep-wind').addEventListener('click', e => { const b = e.target.closest('[data-w]'); if (b) { sleep.wind = b.dataset.w; sleepPaint(); sleepStep(); } });
+  sleepGo.addEventListener('click', () => { if (sleep.end) { sleepCancel('Cancelled.'); if (E) E.setNap(1); } else { audio(); sleepStart(); } });
+  sleepMore.addEventListener('click', () => { if (!sleep.end) return; sleep.end += 300000; sleep.total += 300000; sleepSayEl.textContent = 'Everything fades out at ' + clockTime(sleep.end) + '.'; sleepStep(); });
+  $('#sleep-dark').addEventListener('click', () => night(true));
+  $('#night-wake').addEventListener('click', () => night(false));
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) { sleepStep(); if (!nightEl.hidden) night(true); } });
+  sleepPaint();
+  // my tape
+  tapeRecEl.addEventListener('click', () => { audio(); tapeRec(!tape.rec); });
+  tapePlayEl.addEventListener('click', () => tapePlay(!tape.playing));
+  tapeClearEl.addEventListener('click', () => { tapePlay(false); tape.events = []; tape.len = 0; tapeSave(); tapeSync(); });
+  tapeSync();
   strokeEl.addEventListener('click', () => setStroke(!strokeT));
   // the automatic finger rests while the page is out of sight
   document.addEventListener('visibilitychange', () => { if (document.hidden) endPtr('auto'); });
