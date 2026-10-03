@@ -13,7 +13,6 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="icon" type="image/png" href="icon-192.png">
 <style>:root{color-scheme:light;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<script>window.WOA_STANDALONE = true;</script>
 <title>WORLD OF ASMR</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=DM+Mono:wght@400;500&family=Nunito:wght@600;800&display=swap">
 <style>
@@ -252,10 +251,10 @@ body {
 .deck-head h2 { margin: 0; font: 400 1.75rem/1.05 var(--display); letter-spacing: .01em; text-wrap: balance; }
 .deck-head p { margin: 0; color: var(--soft); font-size: .92rem; order: 3; flex: 1 1 100%; }
 .deck-head h2 { order: 1; }
-.deck-head .auto, .deck-head .power { order: 2; }
+.deck-head .auto, .deck-head .power, .deck-head .stroke { order: 2; }
 @media (min-width: 700px) {
   .deck-head p { order: 2; flex: 0 1 auto; }
-  .deck-head .auto, .deck-head .power { order: 3; }
+  .deck-head .auto, .deck-head .power, .deck-head .stroke { order: 3; }
   .mic .deck-head p { flex: 1 1 220px; }
 }
 .pads { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
@@ -318,6 +317,8 @@ body {
 .mic .deck-head { align-items: center; }
 .mic .deck-head p { max-width: 52ch; }
 .power { margin-left: auto; padding: 9px 13px; display: inline-flex; align-items: center; gap: 8px; }
+.stroke { margin-left: auto; padding: 9px 13px; }
+.stroke + .power { margin-left: 0; }
 .lamp { width: 9px; height: 9px; border-radius: 50%; background: var(--blank-edge); }
 .power[aria-checked="true"] .lamp { background: var(--hot); box-shadow: 0 0 0 4px color-mix(in oklch, var(--hot) 28%, transparent); }
 .mic-stage {
@@ -351,25 +352,15 @@ body {
 .ctl.stack { flex-direction: column; align-items: stretch; gap: 9px; padding-inline: 4px; }
 .seg.grid { display: grid; gap: 8px 6px; }
 .seg.mats { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-@media (min-width: 760px) { .seg.mats { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
+@media (min-width: 760px) { .seg.mats { grid-template-columns: repeat(8, minmax(0, 1fr)); } }
 .seg.sens { grid-template-columns: repeat(3, minmax(0, 1fr)); max-width: 540px; }
 .seg.grid .cap { min-width: 0; min-height: 46px; padding: 9px 5px; text-wrap: balance; overflow-wrap: anywhere; }
 .seg.sens .cap b { display: block; font: 400 1.02em/1.1 var(--display); letter-spacing: .04em; }
 
-.voice { padding-bottom: 14px; border-bottom: 1px solid var(--rim); }
-.speak { display: inline-flex; align-items: center; gap: 9px; font-size: 1rem; }
-.voice-row .speak { padding: 13px 18px; }
-.voice-row a.speak { display: inline-flex; }
-.speak .lamp { background: var(--label); opacity: .55; }
-.speak.on .lamp { background: var(--hot); opacity: 1; box-shadow: 0 0 0 4px color-mix(in oklch, var(--hot) 30%, transparent); }
-.voice-note { margin: 0; color: var(--soft); font-size: .88rem; max-width: 62ch; }
-.voice-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.voice-row .cap { padding: 11px 14px; }
-.voice-status { margin: 0; min-height: 1.45em; font-size: .9rem; font-weight: 800; }
-
 /* ---------- games ---------- */
 .games .deck-head p { max-width: 52ch; }
-.g-tabs { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 6px; max-width: 540px; padding-inline: 4px; }
+.g-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 6px; max-width: 720px; padding-inline: 4px; }
+@media (min-width: 560px) { .g-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .g-tabs .cap { min-width: 0; min-height: 46px; padding: 9px 5px; text-wrap: balance; }
 .g-body { display: flex; flex-direction: column; gap: 14px; }
 .g-status { margin: 0; padding-inline: 4px; min-height: 1.45em; font-weight: 800; }
@@ -395,6 +386,11 @@ body {
 .catkey { min-width: 0; min-height: 86px; font-size: 1.05rem; }
 .opt { min-width: 0; min-height: 60px; padding: 10px 8px; text-wrap: balance; }
 .opt .mark { display: block; margin-top: 5px; font: 500 .62rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; }
+.pairs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; max-width: 560px; padding-inline: 4px; }
+.card { min-width: 0; min-height: 74px; padding: 8px 4px; font-size: .8rem; text-wrap: balance; overflow-wrap: anywhere; }
+.card:not(.up) { font: 400 1.5rem/1 var(--display); }
+.cap.card.up { --face: var(--key); --side: var(--edge); color: var(--label); }
+.cap.card.right { --face: var(--good); --side: var(--good-edge); color: var(--label); }
 .cap.opt.right { --face: var(--good); --side: var(--good-edge); color: var(--label); }
 .cap.opt.wrong { --face: var(--bad); --side: var(--bad-edge); color: var(--label); }
 
@@ -408,7 +404,6 @@ body {
   color: var(--soft);
 }
 .seg { display: flex; flex-wrap: wrap; gap: 8px 6px; }
-a.cap { text-decoration: none; }
 .seg .cap, .stop { padding: 10px 13px; }
 .vol { flex: 1 1 180px; max-width: 300px; flex-wrap: nowrap; }
 .vol input { flex: 1 1 auto; min-width: 0; height: 28px; accent-color: var(--hot); }
@@ -432,7 +427,7 @@ a.cap { text-decoration: none; }
           <button type="button" class="cap hue lk" style="--h:315" data-n="3">R</button>
         </span>
       </h1>
-      <p class="lede">Twelve categories, 144 sounds, three games and a mic you can stroke and speak into. Put headphones on, then press everything.</p>
+      <p class="lede">Twelve categories, 144 sounds, four games and a mic you can stroke. Put headphones on, then press everything.</p>
       <nav class="jump" aria-label="Jump to">
         <button type="button" class="cap blank" data-go="deck">Sounds</button>
         <button type="button" class="cap blank" data-go="mic">The Mic</button>
@@ -456,7 +451,8 @@ a.cap { text-decoration: none; }
   <section class="deck mic" id="mic" aria-labelledby="mic-h">
     <div class="deck-head">
       <h2 id="mic-h">The Mic</h2>
-      <p>Stroke it, scratch it or tap it. Touch the left side for your left ear and the right side for your right.</p>
+      <p>Stroke it, scratch it or tap it. Touch the left side for your left ear and the right side for your right. Auto stroke does it for you.</p>
+      <button type="button" class="cap blank stroke" id="mic-stroke" aria-pressed="false">Auto stroke</button>
       <button type="button" class="cap blank power" id="mic-power" role="switch" aria-checked="false"><span class="lamp"></span><span id="mic-power-t">Mic off</span></button>
     </div>
     <div class="mic-stage" id="mic-stage" role="group" aria-label="A stereo microphone with a left and a right capsule. When the mic is on, stroke or tap it to hear the touch.">
@@ -464,23 +460,6 @@ a.cap { text-decoration: none; }
       <span class="mic-tag l">Left ear</span>
       <span class="mic-tag r">Right ear</span>
       <div class="mic-off" id="mic-off"><button type="button" class="cap" id="mic-wake">Turn the mic on</button></div>
-    </div>
-    <div class="ctl stack voice">
-      <span class="ctl-label" id="voicelab">Speak into it</span>
-      <div class="voice-row">
-        <button type="button" class="cap speak" id="voice-rec" hidden><span class="lamp"></span><span id="voice-rec-t">Speak into the mic</span></button>
-        <button type="button" class="cap blank speak" id="voice-live" hidden><span class="lamp"></span><span id="voice-live-t">Live whisper</span></button>
-        <a class="cap speak" id="voice-open" href="https://lewisfromsparks.github.io/world-of-asmr/" target="_blank" rel="noopener" hidden>Open the app that can hear you</a>
-        <button type="button" class="cap blank" id="voice-play" hidden>Play it back</button>
-        <div class="seg" role="radiogroup" aria-labelledby="voicelab" id="voice-mode">
-          <button type="button" class="cap blank" role="radio" id="voice-whisper" data-v="whisper" aria-checked="true">Whisper</button>
-          <button type="button" class="cap blank" role="radio" id="voice-soft" data-v="soft" aria-checked="false">Soft voice</button>
-        </div>
-        <button type="button" class="cap blank" id="voice-pick">Choose a recording</button>
-        <input type="file" id="voice-file" accept="audio/*" hidden>
-      </div>
-      <p class="voice-status" id="voice-status" role="status"></p>
-      <p class="voice-note" id="voice-note"></p>
     </div>
     <div class="ctl stack">
       <span class="ctl-label" id="matlab">Touch it with</span>
@@ -499,12 +478,13 @@ a.cap { text-decoration: none; }
   <section class="deck games" id="games" aria-labelledby="games-h">
     <div class="deck-head">
       <h2 id="games-h">Games</h2>
-      <p>Three ways to play with the sounds.</p>
+      <p>Four ways to play with the sounds.</p>
     </div>
     <div class="g-tabs" role="radiogroup" aria-labelledby="games-h" id="game-tabs">
       <button type="button" class="cap blank" role="radio" id="game-pop" data-g="pop" aria-checked="true">Bubble Wrap</button>
       <button type="button" class="cap blank" role="radio" id="game-cat" data-g="cat" aria-checked="false">Copy Cat</button>
       <button type="button" class="cap blank" role="radio" id="game-quiz" data-g="quiz" aria-checked="false">Mystery Sound</button>
+      <button type="button" class="cap blank" role="radio" id="game-pairs" data-g="pairs" aria-checked="false">Sound Pairs</button>
     </div>
     <div class="g-body" id="game-body"></div>
   </section>
@@ -539,7 +519,7 @@ a.cap { text-decoration: none; }
     </div>
   </section>
 
-  <p class="foot">Quiet on a phone? Switch silent mode off and turn the volume up. Nothing here is a recording. Every sound is made fresh in your browser, so no two presses are quite the same. The mic is drawn on the screen and feels your touch. Anything you record stays on this device. <span id="ver">Version 5</span></p>
+  <p class="foot">Quiet on a phone? Switch silent mode off and turn the volume up. Nothing here is a recording. Every sound is made fresh in your browser, so no two presses are quite the same. The mic is drawn on the screen and only feels your touch. <span id="ver">Version 6</span></p>
 </div>
 
 <script>
@@ -812,43 +792,6 @@ function makeEngine(ctx, opt) {
     setTimeout(() => { L.srcs.forEach(s => { try { s.stop(); } catch (e) {} }); try { L.g.disconnect(); } catch (e) {} }, 900);
     if (!loops.size && timer) { clearInterval(timer); timer = 0; }
   }
-  function playBuffer(buf, done) {
-    const src = ctx.createBufferSource(), g = ctx.createGain();
-    src.buffer = buf; src.connect(g); g.connect(bus);
-    src.onended = () => { try { g.disconnect(); } catch (e) {} if (done) done(); };
-    src.start(ctx.currentTime + 0.02);
-    return () => { try { src.stop(); } catch (e) {} };
-  }
-  /* Live whisper: the whisper machine running as you talk. The voice only steers the breath noise, so no pitch comes through. */
-  function liveWhisper(stream) {
-    const nodes = [], keep = n => { nodes.push(n); return n; };
-    const biq = (type, f, q) => { const b = keep(ctx.createBiquadFilter()); b.type = type; b.frequency.value = f; b.Q.value = q; return b; };
-    const gain = v => { const g = keep(ctx.createGain()); g.gain.value = v; return g; };
-    const src = keep(ctx.createMediaStreamSource(stream)), hp = biq('highpass', 130, 0.7), sum = gain(1), noise = keep(ctx.createBufferSource());
-    noise.buffer = bufs.white; noise.loop = true; noise.start();
-    src.connect(hp);
-    const rectify = new Float32Array(257), gateCurve = new Float32Array(4097);
-    for (let i = 0; i < 257; i++) rectify[i] = Math.abs(i / 128 - 1);
-    // a gate, so room hum and the phone's own speaker cannot keep the whisper going by themselves
-    for (let i = 0; i < 4097; i++) { const x = i / 2048 - 1; gateCurve[i] = x > 0.0015 ? x - 0.0015 : 0; }
-    const BANDS = 16;
-    for (let k = 0; k < BANDS; k++) {
-      const f = 200 * Math.pow(7500 / 200, k / (BANDS - 1));
-      const a1 = biq('bandpass', f, 5), a2 = biq('bandpass', f, 5), rect = keep(ctx.createWaveShaper()), smooth = biq('lowpass', 35, 0.5), gate = keep(ctx.createWaveShaper());
-      const depth = gain(70 * Math.pow(1000 / f, 0.15)), carrier = biq('bandpass', f, 5), vca = gain(0);
-      rect.curve = rectify; gate.curve = gateCurve;
-      hp.connect(a1); a1.connect(a2); a2.connect(rect); rect.connect(smooth); smooth.connect(gate); gate.connect(depth); depth.connect(vca.gain);
-      noise.connect(carrier); carrier.connect(vca); vca.connect(sum);
-    }
-    const air = biq('highshelf', 5000, 0.7), out = gain(0), an = keep(ctx.createAnalyser());
-    air.gain.value = 3; an.fftSize = 512;
-    out.gain.setTargetAtTime(1, ctx.currentTime, 0.2);
-    sum.connect(air); air.connect(out); out.connect(bus); hp.connect(an);
-    return { an, stop() {
-      out.gain.setTargetAtTime(0, ctx.currentTime, 0.05);
-      setTimeout(() => { try { noise.stop(); } catch (e) {} nodes.forEach(n => { try { n.disconnect(); } catch (e) {} }); }, 300);
-    } };
-  }
   function fadeOut(sec) { if (vol) vol.gain.setTargetAtTime(0, ctx.currentTime, sec / 4); }
   function setVol(v) { if (vol) vol.gain.setTargetAtTime(v, ctx.currentTime, 0.02); }
   function setEar(mode) {
@@ -908,7 +851,7 @@ function makeEngine(ctx, opt) {
     }
     if (hiss) hiss.gain.setTargetAtTime(want, t, 0.2);
   }
-  return { ctx, bus, vol, anL, anR, micOut, api: { N, T, M, K, D, H }, play, playAt, startLoop, stopLoop, pumpTo, setVol, setEar, micVoice, micTap, setMic, playBuffer, liveWhisper, fadeOut };
+  return { ctx, bus, vol, anL, anR, micOut, api: { N, T, M, K, D, H }, play, playAt, startLoop, stopLoop, pumpTo, setVol, setEar, micVoice, micTap, setMic, fadeOut };
 }
 
 /* The pads below call these directly; use() points them at the live engine. */
@@ -1524,18 +1467,18 @@ const ZONES = [
 
 /* Loudness balance for every pad, measured by rendering each one offline. */
 const TRIMS = /*T0*/{
-  salon: [0.44, 1, 1.15, 0.56, 0.42, 0.71, 0.41, 1.2, 0.96, 0.49, 0.34, 1.3],
-  mouth: [2.01, 1.1, 2.75, 1.51, 0.88, 0.53, 0.99, 1.19, 0.4, 1.33, 0.62, 1.68],
-  clicks: [1.34, 2.43, 1.48, 0.82, 3.48, 1.15, 0.97, 2.32, 1.16, 1.2, 1.04, 0.86],
-  taps: [1.02, 1.38, 1.14, 0.93, 1.44, 1.37, 0.68, 1.51, 2.24, 1.01, 0.94, 0.45],
-  water: [1.08, 1.14, 0.62, 0.99, 0.45, 1.36, 0.76, 0.28, 0.84, 0.29, 0.78, 0.34],
-  crinkle: [0.99, 0.87, 0.7, 0.56, 0.84, 1, 0.36, 0.53, 0.67, 1.73, 0.78, 0.68],
-  snack: [1.75, 1.69, 0.64, 0.58, 0.91, 1.01, 1.15, 1.16, 1.47, 0.39, 0.3, 0.8],
-  fidget: [1.34, 1.4, 1.5, 1.14, 0.44, 1.02, 0.56, 1.09, 0.94, 1.34, 0.89, 0.79],
-  art: [0.45, 0.94, 0.53, 0.35, 0.35, 0.69, 0.89, 1.32, 1.44, 1, 0.62, 0.91],
-  spa: [0.47, 0.66, 0.63, 0.49, 1.15, 0.45, 1.12, 1.01, 1.91, 0.9, 0.7, 0.76],
-  woods: [1.52, 0.86, 0.66, 0.39, 1.05, 1.49, 0.6, 1.15, 0.57, 0.53, 0.42, 0.34],
-  sleepy: [0.37, 0.79, 0.86, 0.67, 0.78, 1.28, 0.66, 0.63, 0.7, 1.39, 0.3, 1.17]
+  salon: [0.47, 1, 1.17, 0.57, 0.53, 0.7, 0.47, 1.23, 0.89, 0.58, 0.33, 1.3],
+  mouth: [2.14, 1.08, 2.8, 1.49, 0.89, 0.52, 1.08, 1.2, 0.39, 1.53, 0.59, 1.92],
+  clicks: [1.03, 2.33, 1.48, 0.88, 3.48, 1.09, 0.93, 2.44, 1.18, 1.14, 1.09, 0.87],
+  taps: [0.99, 1.4, 1.14, 0.93, 1.5, 1.4, 0.7, 1.49, 2.37, 1.15, 1.03, 0.4],
+  water: [1.22, 1.11, 0.59, 0.97, 0.43, 1.38, 1.12, 0.29, 0.82, 0.29, 0.77, 0.34],
+  crinkle: [0.79, 1.21, 0.73, 0.7, 0.87, 0.74, 0.35, 0.51, 0.69, 1.62, 0.81, 0.68],
+  snack: [1.18, 1.43, 0.58, 0.53, 0.9, 1.36, 1.11, 1.2, 1.3, 0.38, 0.34, 0.88],
+  fidget: [1.22, 1.48, 2.02, 1.18, 0.47, 1.01, 0.56, 1.04, 1.11, 1.29, 0.86, 0.79],
+  art: [0.51, 1.09, 0.6, 0.35, 0.34, 0.72, 0.93, 1.24, 1.04, 1.05, 0.75, 0.99],
+  spa: [0.49, 0.59, 0.65, 0.51, 1.24, 0.54, 1.11, 0.9, 1.87, 0.92, 0.68, 0.76],
+  woods: [1.55, 0.94, 0.66, 0.38, 1.02, 1.48, 0.69, 1.04, 0.62, 0.61, 0.42, 0.36],
+  sleepy: [0.41, 0.85, 0.86, 0.64, 0.78, 1.28, 0.55, 0.63, 0.66, 1.33, 0.29, 1.24]
 }/*T1*/;
 ZONES.forEach(z => z.pads.forEach((p, i) => { p.trim = (TRIMS[z.id] || [])[i] || 1; }));
 
@@ -1600,9 +1543,28 @@ const MATS = [
       { c: 'rub', lp: [1400, 2600], g: 0.9 },
       { c: 'crk3', bp: [1200, 1800], q: 0.6, g: 0.25, pw: 1.3 },
       { c: 'brown', lp: [220, 320], g: 0.4, body: 1 }],
-    tap: (t, p) => { N(t, { c: 'rub', dur: 0.09, bell: 1, g: 0.7, lp: 1500, pan: p }); N(t, { c: 'pink', dur: 0.06, g: 0.5, lp: 400, pan: p }); } }
+    tap: (t, p) => { N(t, { c: 'rub', dur: 0.09, bell: 1, g: 0.7, lp: 1500, pan: p }); N(t, { c: 'pink', dur: 0.06, g: 0.5, lp: 400, pan: p }); } },
+  // "step" is how far a finger travels between one little event and the next: a bubble bursting, a bead ticking past.
+  { id: 'wrap', name: 'Bubble wrap', vol: 1, bed: 0.4, step: 0.17, layers: [
+      { c: 'crk2', rate: [0.6, 1], bp: [1800, 2600], q: 0.6, g: 0.5 },
+      { c: 'rub', lp: [900, 1500], g: 0.5 }],
+    tap: (t, p) => popWrap(t, p) },
+  { id: 'sand', name: 'Sandpaper', vol: 1, layers: [
+      { c: 'scratch', bp: [1800, 3600], q: 0.6, g: 1 },
+      { c: 'white', hp: [3500, 5000], g: 0.25, pw: 1.2 },
+      { c: 'crk3', bp: [2600, 3400], q: 0.8, g: 0.3 }],
+    tap: (t, p) => { N(t, { c: 'scratch', dur: 0.06, bell: 1, g: 0.8, bp: 2600, q: 0.7, pan: p }); N(t, { c: 'pink', dur: 0.05, g: 0.4, lp: 500, pan: p }); } },
+  { id: 'paper', name: 'Paper', vol: 1, layers: [
+      { c: 'crk3', hp: [3200, 4200], g: 0.6 },
+      { c: 'foil', rate: [0.9, 1.5], hp: [3500, 5000], g: 0.35, pw: 1.2 },
+      { c: 'rub', bp: [2200, 3200], q: 0.6, g: 0.5 }],
+    tap: (t, p) => { N(t, { c: 'crk2', dur: 0.08, g: 0.8, hp: 3000, pan: p }); N(t, { c: 'foil', rate: 1.2, dur: 0.06, g: 0.4, hp: 3500, pan: p }); } },
+  { id: 'beads', name: 'Beads', vol: 0.9, bed: 0.6, step: 0.07, layers: [
+      { c: 'crk1', rate: [1.5, 4], bp: [3200, 4200], q: 1.5, g: 0.6, pw: 0.8 },
+      { c: 'crk2', bp: [5000, 6000], q: 1, g: 0.2 }],
+    tap: (t, p) => { const f = rnd(3400, 4400); M(t, { fs: [f, f * 1.6, f * 2.5], d: 0.03, g: 0.25, hit: 1.1, hf: 6000, pan: p }); } }
 ];
-const MTRIM = /*M0*/{ fingers: [0.33, 1.03], nails: [0.3, 1.21], hairbrush: [0.33, 1.32], comb: [0.48, 1.49], brush: [0.39, 1.55], feather: [0.25, 0.99], foam: [0.3, 0.77], glove: [0.36, 1.57], foil: [0.52, 1.51], slime: [0.44, 0.94], bud: [0.28, 0.97], towel: [0.33, 0.91] }/*M1*/;
+const MTRIM = /*M0*/{ fingers: [0.31, 0.86], nails: [0.27, 1.42], hairbrush: [0.33, 1.23], comb: [0.48, 1.55], brush: [0.42, 1.52], feather: [0.25, 0.98], foam: [0.43, 0.9], glove: [0.35, 1.33], foil: [0.61, 2], slime: [0.38, 0.68], bud: [0.29, 1.02], towel: [0.3, 0.8], wrap: [0.27, 0.91], sand: [0.29, 0.49], paper: [0.53, 2.06], beads: [0.78, 1.76] }/*M1*/;
 MATS.forEach(m => { const v = MTRIM[m.id] || [1, 1]; m.trim = v[0]; m.tapTrim = v[1]; });
 const LETTER_NOTES = [523.25, 659.25, 783.99, 1046.5];
 const LETTER_PAD = n => ({ trim: ZONES.find(z => z.id === 'sleepy').pads[3].trim, fn: t => kalimba(t, LETTER_NOTES[n]) });
@@ -1617,9 +1579,7 @@ const SHIFT = [-9, 5, 13, -3, 9, -13, 1, 11, -6, 15, -15, 7];
 const DL = [0, 0.02, -0.02, 0.012, -0.012, 0.02, -0.02, 0, 0.015, -0.015, 0.02, -0.01];
 const STORE = 'world-of-asmr';
 const state = { zone: 0, vol: 0.8, ear: 'both', sens: 0, mat: 0 };
-const mic = { on: false, level: 0 };
-// The Home Screen build sets this flag. Only there can the page hear the real microphone.
-const STANDALONE = !!window.WOA_STANDALONE;
+const mic = { on: false };
 const running = new Map();   // "area:pad" -> live loop
 let E = null, actx = null;
 
@@ -1670,7 +1630,7 @@ function syncLoops() {
     const on = running.has(state.zone + ':' + i);
     b.classList.toggle('on', on); b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
-  stopEl.disabled = !(n || autoT || live);
+  stopEl.disabled = !(n || autoT || strokeT);
   const left = sleepEnd ? Math.max(1, Math.ceil((sleepEnd - Date.now()) / 60000)) : 0;
   loopEl.textContent = [n ? n + (n > 1 ? ' loops on' : ' loop on') : '', left ? 'sleep in ' + left + ' min' : ''].filter(Boolean).join(', ');
 }
@@ -1793,7 +1753,8 @@ function micDown(e) {
   endPtr('hover');
   if (ptrs.size >= 5) return;
   const g = geom(), [x, y] = spot(e), near = nearOf(g, x, y), pan = panOf(g, x), mat = MATS[state.mat];
-  const p = { voice: en.micVoice(mat), x, y, t: e.timeStamp, speed: 0, last: performance.now(), soft: 1, near, pan };
+  const p = finger(x, y, e.timeStamp, 1);
+  p.near = near; p.pan = pan;
   ptrs.set(e.pointerId, p);
   en.micTap(mat, pan, TAP[state.sens] * (0.6 + 0.4 * near));
   p.voice.set(FLOOR[state.sens], pan, near);
@@ -1801,26 +1762,59 @@ function micDown(e) {
   nowEl.textContent = 'Mic: ' + mat.name;
   wake(); micWake();
 }
+// Move one finger (yours, or the automatic one) and let the sound follow it.
+function moveTo(p, x, y, ts) {
+  const g = geom(), dt = Math.max(4, ts - p.t), d = Math.hypot(x - p.x, y - p.y) / Math.min(g.W, 520);
+  p.speed = p.speed * 0.55 + d / dt * 1000 * 0.45;
+  p.x = x; p.y = y; p.t = ts; p.last = performance.now();
+  p.near = nearOf(g, x, y); p.pan = panOf(g, x);
+  p.voice.set(levelOf(p.speed) * p.soft, p.pan, p.near);
+  // some things make a little sound of their own as they travel: a bubble bursting, a bead ticking past
+  if (p.mat.step && E) {
+    p.trip += d;
+    let n = 0;
+    while (p.trip >= p.mat.step && n++ < 3) { p.trip -= p.mat.step; E.micTap(p.mat, p.pan, TAP[state.sens] * (0.6 + 0.4 * p.near) * p.soft); }
+    if (p.trip > p.mat.step) p.trip = 0;
+  }
+  trail.push({ x, y, t: p.last });
+  wake(); micWake();
+}
+const finger = (x, y, ts, soft) => ({ voice: E.micVoice(MATS[state.mat]), mat: MATS[state.mat], trip: 0, x, y, t: ts, speed: 0, last: performance.now(), soft, near: 0, pan: 0 });
 function micMove(e) {
   let p = ptrs.get(e.pointerId);
   if (!p) {
     // An ULTRA sensitive mic even hears a mouse passing over it.
     if (!(mic.on && E && state.sens === 2 && e.pointerType === 'mouse' && !e.buttons)) return;
     p = ptrs.get('hover');
-    if (!p) {
-      const [x, y] = spot(e);
-      p = { voice: E.micVoice(MATS[state.mat]), x, y, t: e.timeStamp, speed: 0, last: performance.now(), soft: 0.35, near: 0, pan: 0 };
-      ptrs.set('hover', p);
-    }
+    if (!p) { const [hx, hy] = spot(e); p = finger(hx, hy, e.timeStamp, 0.35); ptrs.set('hover', p); }
   }
-  const g = geom(), [x, y] = spot(e), dt = Math.max(4, e.timeStamp - p.t);
-  const sp = Math.hypot(x - p.x, y - p.y) / dt * 1000 / Math.min(g.W, 520);
-  p.speed = p.speed * 0.55 + sp * 0.45;
-  p.x = x; p.y = y; p.t = e.timeStamp; p.last = performance.now();
-  p.near = nearOf(g, x, y); p.pan = panOf(g, x);
-  p.voice.set(levelOf(p.speed) * p.soft, p.pan, p.near);
-  trail.push({ x, y, t: p.last });
-  wake(); micWake();
+  const [x, y] = spot(e);
+  moveTo(p, x, y, e.timeStamp);
+}
+/* Auto stroke: a finger of its own that wanders from one capsule to the other and back. */
+const strokeEl = $('#mic-stroke');
+let strokeT = 0, strokePh = 0, strokeLast = 0;
+function strokeFrame() {
+  if (!strokeT) return;
+  const now = performance.now(), g = geom();
+  let p = ptrs.get('auto');
+  if (!p && E && g.W && !document.hidden) { p = finger(g.cx[0], g.cy, now, 1); ptrs.set('auto', p); strokeLast = now; }
+  if (p) {
+    strokePh += Math.min(0.1, (now - strokeLast) / 1000) * (2.8 + 0.9 * Math.sin(now / 2300));
+    strokeLast = now;
+    const reach = (g.cx[1] - g.cx[0]) / 2 + g.R * 0.3;
+    moveTo(p, g.W / 2 + reach * Math.sin(strokePh), g.cy + g.R * 0.5 * Math.sin(strokePh * 2.31 + 1), now);
+  }
+  strokeT = requestAnimationFrame(strokeFrame);
+}
+function setStroke(on) {
+  cancelAnimationFrame(strokeT); strokeT = 0; endPtr('auto');
+  if (on) {
+    if (!mic.on) setMicOn(true);
+    if (audio()) { strokeT = requestAnimationFrame(strokeFrame); nowEl.textContent = 'Auto stroke: ' + MATS[state.mat].name; }
+  }
+  strokeEl.setAttribute('aria-pressed', strokeT ? 'true' : 'false');
+  syncLoops();
 }
 function micFrame() {
   micRaf = 0;
@@ -1838,7 +1832,7 @@ function drawMic(now) {
   if (!g.W) return;
   const w = Math.round(g.W * d), h = Math.round(g.H * d);
   if (micCv.width !== w || micCv.height !== h) { micCv.width = w; micCv.height = h; }
-  const ink = getComputedStyle(micCv).color, hot = getComputedStyle(cv).color, dim = mic.on || mic.level ? 1 : 0.45;
+  const ink = getComputedStyle(micCv).color, hot = getComputedStyle(cv).color, dim = mic.on ? 1 : 0.45;
   const dot = (x, y, r) => { mc.beginPath(); mc.arc(x, y, r, 0, 6.2832); mc.fill(); };
   mc.setTransform(d, 0, 0, d, 0, 0);
   mc.clearRect(0, 0, g.W, g.H);
@@ -1861,7 +1855,7 @@ function drawMic(now) {
       for (let x = -mesh + (row % 2 ? step / 2 : 0); x <= mesh; x += step) {
         if (x * x + y * y > mesh * mesh) continue;
         const px = cx + x, py = g.cy + y;
-        let glow = mic.level * 0.9;
+        let glow = 0;
         for (const p of pts) {
           const dd = Math.hypot(px - p.x, py - p.y);
           if (dd < reach) glow = Math.max(glow, (1 - dd / reach) * (0.35 + 0.65 * Math.min(1, p.speed / 1.2)) * (p.soft < 1 ? 0.5 : 1));
@@ -1887,7 +1881,7 @@ function syncMic() {
   [...matsEl.children].forEach((b, i) => b.setAttribute('aria-checked', i === state.mat ? 'true' : 'false'));
   [...sensEl.children].forEach((b, i) => b.setAttribute('aria-checked', i === state.sens ? 'true' : 'false'));
   if (E) E.setMic(mic.on, state.sens);
-  if (!mic.on) [...ptrs.keys()].forEach(endPtr);
+  if (!mic.on) { if (strokeT) setStroke(false); [...ptrs.keys()].forEach(endPtr); }
   drawMic(performance.now());
 }
 function setMicOn(on) {
@@ -1896,277 +1890,6 @@ function setMicOn(on) {
   syncMic();
   nowEl.textContent = on ? 'Mic on: ' + MATS[state.mat].name : 'Mic off';
   wake();
-}
-
-/* ---------- say it in ASMR: a spoken recording comes back as a close-up whisper ---------- */
-async function asmrVoice(raw, sr, mode) {
-  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
-  const render = c => new Promise((res, rej) => { c.oncomplete = e => res(e.renderedBuffer); const pr = c.startRendering(); if (pr && pr.then) pr.then(res, rej); });
-  // 1. Measure loudness every 8 ms, find where the talking starts and stops.
-  const hop = Math.max(1, Math.floor(sr * 0.008)), F = Math.ceil(raw.length / hop), env = new Float32Array(F);
-  for (let f = 0; f < F; f++) {
-    let sq = 0, c = 0;
-    for (let i = f * hop; i < Math.min(raw.length, (f + 1) * hop); i++) { sq += raw[i] * raw[i]; c++; }
-    env[f] = Math.sqrt(sq / (c || 1));
-  }
-  for (let f = 1; f < F; f++) env[f] = Math.max(env[f], env[f - 1] * 0.85);
-  let top = 0;
-  for (let f = 0; f < F; f++) if (env[f] > top) top = env[f];
-  if (top < 0.004) return { quiet: true };
-  const gate = top * 0.05;
-  let a = 0, b = F - 1;
-  while (a < F && env[a] < gate) a++;
-  while (b > a && env[b] < gate) b--;
-  a = Math.max(0, a - 6); b = Math.min(F - 1, b + 12);
-  const start = a * hop, n = Math.min(raw.length, (b + 1) * hop) - start, dur = n / sr;
-  // 2. Even it out. A close mic hears the quiet syllables nearly as well as the loud ones.
-  const x = new Float32Array(n), gainAt = e => (e < gate ? Math.pow(e / gate, 2) : 1) * Math.min(4, Math.pow(0.4 * top / Math.max(e, gate), 0.45)) / top * 0.5;
-  for (let i = 0; i < n; i++) {
-    const pos = (start + i) / hop - 0.5, f0 = Math.max(0, Math.min(F - 1, Math.floor(pos))), f1 = Math.min(F - 1, f0 + 1), w = Math.max(0, Math.min(1, pos - f0));
-    x[i] = raw[start + i] * (gainAt(env[f0]) * (1 - w) + gainAt(env[f1]) * w);
-  }
-  // 3. Find the words: stretches of talking with a real gap before them.
-  const thr = top * 0.09, segs = [];
-  let segStart = -1, quietFor = 99, active = 0;
-  for (let f = a; f <= b; f++) {
-    const on = env[f] > thr;
-    if (on) { active++; if (segStart < 0 && quietFor >= 14) segStart = f; quietFor = 0; }
-    else { quietFor++; if (segStart >= 0 && quietFor === 14) { segs.push([(segStart - a) * hop / sr, (f - 14 - a) * hop / sr]); segStart = -1; } }
-  }
-  if (segStart >= 0) segs.push([(segStart - a) * hop / sr, dur]);
-
-  const len = Math.ceil((dur + 0.5) * sr), ctx = new OAC(2, len, sr);
-  const play = data => { const bf = ctx.createBuffer(1, data.length, sr); bf.getChannelData(0).set(data); const src = ctx.createBufferSource(); src.buffer = bf; src.start(0); return src; };
-  const biq = (type, f, q) => { const bq = ctx.createBiquadFilter(); bq.type = type; bq.frequency.value = f; bq.Q.value = q; return bq; };
-  const gain = v => { const g = ctx.createGain(); g.gain.value = v; return g; };
-  const breath = new Float32Array(n);
-  for (let i = 0; i < n; i++) breath[i] = Math.random() * 2 - 1;
-  const spoken = play(x), noise = play(breath), hp = biq('highpass', 110, 0.7), sum = gain(1);
-  spoken.connect(hp);
-  // 4. The whisper. Split the voice into bands, follow how loud each band is, and let that shape plain breath noise.
-  //    The pitch of the voice is thrown away; the shape of the mouth is kept.
-  const rectify = new Float32Array(257);
-  for (let i = 0; i < 257; i++) rectify[i] = Math.abs(i / 128 - 1);
-  const BANDS = 20, soft = mode === 'soft';
-  for (let k = 0; k < BANDS; k++) {
-    const f = 180 * Math.pow(8200 / 180, k / (BANDS - 1));
-    const a1 = biq('bandpass', f, 5), a2 = biq('bandpass', f, 5), rect = ctx.createWaveShaper(), smooth = biq('lowpass', 40, 0.5);
-    const depth = gain(30 * Math.pow(1000 / f, 0.15) * (soft ? 0.6 : 1)), carrier = biq('bandpass', f, 5), vca = gain(0);
-    rect.curve = rectify;
-    hp.connect(a1); a1.connect(a2); a2.connect(rect); rect.connect(smooth); smooth.connect(depth); depth.connect(vca.gain);
-    noise.connect(carrier); carrier.connect(vca); vca.connect(sum);
-  }
-  // the real consonants ride on top, so every s, t and k stays crisp
-  const crisp = biq('highpass', 3800, 0.7), crispGain = gain(0.5);
-  hp.connect(crisp); crisp.connect(crispGain); crispGain.connect(sum);
-  if (soft) { const body = biq('lowpass', 5000, 0.7), bodyGain = gain(0.55); hp.connect(body); body.connect(bodyGain); bodyGain.connect(sum); }
-  const air = ctx.createBiquadFilter(); air.type = 'highshelf'; air.frequency.value = 5000; air.gain.value = 3;
-  sum.connect(air);
-  let last = air;
-  if (ctx.createStereoPanner) {   // start in the left ear, wander to the right and back
-    const pan = ctx.createStereoPanner(), pts = Math.max(8, Math.ceil(dur * 16)), curve = new Float32Array(pts);
-    for (let i = 0; i < pts; i++) curve[i] = 0.7 * Math.sin(2 * Math.PI * 0.13 * (i / (pts - 1)) * (dur + 0.4) - Math.PI / 2);
-    pan.pan.setValueCurveAtTime(curve, 0, dur + 0.4);
-    air.connect(pan); last = pan;
-  }
-  last.connect(ctx.destination);
-  // 5. Mouth noises, rendered on their own: lips parting just before a word, a sticky tick in the middle of a long one, a breath in each pause.
-  const ctx2 = new OAC(2, len, sr), E2 = makeEngine(ctx2, { flat: true });
-  E2.bus.connect(ctx2.destination);
-  use(E2);
-  let clicks = 0;
-  const tick = (t, kind, g) => { E2.playAt({ trim: g, fn: tt => mouthTick(tt, rnd(-0.6, 0.6), kind) }, Math.max(0.005, t)); clicks++; };
-  segs.forEach(([t0, t1], i) => {
-    if (Math.random() < 0.85) tick(t0 - rnd(0.05, 0.11), Math.random() < 0.55 ? 1 : 0, rnd(0.7, 1.1));
-    for (let t = t0 + rnd(0.35, 0.6); t < t1 - 0.12; t += rnd(0.45, 0.9)) tick(t, 2, rnd(0.4, 0.7));
-    const next = segs[i + 1], gap = (next ? next[0] : dur + 0.45) - t1;
-    if (gap > 0.4) { const d = Math.min(0.45, gap - 0.12), p = rnd(-0.6, 0.6);
-      E2.playAt({ trim: 0.6, fn: tt => { N(tt, { c: 'pink', dur: d, bell: 1, g: 0.35, lp: 900, hp: 200, pan: p }); N(tt, { c: 'rub', dur: d, bell: 1, g: 0.1, bp: 1500, q: 0.6, pan: p }); } }, t1 + 0.06); }
-  });
-  if (E) use(E);   // hand the pads back to the live engine before waiting for the renders
-  const whisper = await render(ctx), ticks = await render(ctx2);
-  // 6. Balance the whisper against the clicks.
-  const L = whisper.getChannelData(0), R = whisper.numberOfChannels > 1 ? whisper.getChannelData(1) : L;
-  const cL = ticks.getChannelData(0), cR = ticks.numberOfChannels > 1 ? ticks.getChannelData(1) : cL, N2 = Math.min(L.length, cL.length);
-  let sq = 0, pk = 0;
-  for (let i = 0; i < N2; i++) { const m = Math.max(Math.abs(L[i]), Math.abs(R[i])); if (m > pk) pk = m; sq += L[i] * L[i] + R[i] * R[i]; }
-  const rms = Math.sqrt(sq / Math.max(1, active * hop)), gw = Math.min(0.8 / (pk || 1), 0.12 / (rms || 1)), gc = 0.55;
-  const out = (E ? E.ctx : ctx).createBuffer(2, N2, sr), oL = out.getChannelData(0), oR = out.getChannelData(1);
-  for (let i = 0; i < N2; i++) { oL[i] = L[i] * gw + cL[i] * gc; oR[i] = R[i] * gw + cR[i] * gc; }
-  return { buffer: out, clicks, words: segs.length, seconds: dur };
-}
-
-const voice = { raw: null, sr: 0, buf: null, stop: null, mode: 'whisper', rec: null, tick: 0, busy: false };
-// Phones choose a different sound route for talking and for listening. Say which one is wanted.
-const route = type => { try { if (navigator.audioSession) navigator.audioSession.type = type; } catch (e) {} };
-// Waking the sound engine can hang when no finger is on the screen, so never wait on it for long.
-const wakeEngine = () => Promise.race([actx.resume().catch(() => {}), new Promise(r => setTimeout(r, 500))]);
-const vStatus = $('#voice-status'), vPlay = $('#voice-play'), vRec = $('#voice-rec'), vFile = $('#voice-file');
-const vSay = t => { vStatus.textContent = t; };
-async function voiceLoad(bytes) {
-  if (!audio()) { vSay('This browser cannot play sound.'); return; }
-  vSay('Listening to it…');
-  let dec;
-  try { dec = await new Promise((res, rej) => { const pr = actx.decodeAudioData(bytes, res, rej); if (pr && pr.catch) pr.catch(rej); }); }
-  catch (e) { vSay('That file is not a sound this browser can read. Try an m4a, mp3 or wav.'); return; }
-  const n = Math.min(dec.length, Math.floor(dec.sampleRate * 15)), mono = new Float32Array(n);
-  for (let c = 0; c < dec.numberOfChannels; c++) { const d = dec.getChannelData(c); for (let i = 0; i < n; i++) mono[i] += d[i] / dec.numberOfChannels; }
-  voice.raw = mono; voice.sr = dec.sampleRate;
-  await voiceMake(true);
-}
-async function voiceMake(andPlay) {
-  if (!voice.raw || voice.busy) return;
-  voice.busy = true;
-  vSay(voice.mode === 'soft' ? 'Softening it…' : 'Whispering it…');
-  await new Promise(r => setTimeout(r, 30));
-  try {
-    const res = await asmrVoice(voice.raw, voice.sr, voice.mode);
-    if (res.quiet) vSay('That was almost silent. Press Speak and talk a little closer to the phone.');
-    else {
-      voice.buf = res.buffer; vPlay.hidden = false;
-      vSay('Done. ' + res.seconds.toFixed(1) + ' seconds, with ' + res.clicks + ' mouth sounds added.');
-      if (andPlay) {
-        await wakeEngine();
-        if (actx.state === 'running') voicePlay();
-        else vSay('Ready. Press "Play it back" to hear it.');
-      }
-    }
-  } catch (e) { if (E) use(E); vSay('The whisper could not be made (' + ((e && e.name) || 'error') + '). Try a shorter one.'); }
-  voice.busy = false;
-}
-function voicePlay() {
-  const en = audio();
-  if (!voice.buf || !en) return;
-  if (voice.stop) voice.stop();
-  const me = en.playBuffer(voice.buf, () => { if (voice.stop === me) { voice.stop = null; vPlay.textContent = 'Play it back'; } });
-  voice.stop = me; vPlay.textContent = 'Stop';
-  nowEl.textContent = voice.mode === 'soft' ? 'Your soft voice' : 'Your whisper';
-  wake();
-}
-function recStop() { if (voice.rec) voice.rec.stop(); }
-function recLabel(on) { $('#voice-rec-t').textContent = on ? 'Stop' : 'Speak into the mic'; vRec.classList.toggle('on', on); $('#mic-off').hidden = mic.on || on || !!live; }
-const micWhy = e => { const why = e && e.name;
-  return why === 'NotAllowedError' || why === 'SecurityError' ? 'The microphone is blocked. Allow the microphone for this app in your settings, then try again.'
-    : why === 'NotFoundError' ? 'No microphone was found.' : 'The microphone would not start (' + (why || 'unknown') + ').'; };
-// Ask for the microphone. The phone has to be told it is about to listen before it is asked, or an iPhone hands over a silent microphone.
-async function askMic(wanted) {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { vSay('This browser cannot use the microphone here. Choose a recording instead.'); return null; }
-  voice.asking = true;
-  vSay('Asking for the microphone…');
-  route('play-and-record');
-  try {
-    try { return await navigator.mediaDevices.getUserMedia({ audio: wanted }); }
-    catch (e) { if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) throw e; return await navigator.mediaDevices.getUserMedia({ audio: true }); }
-  } catch (e) { route('playback'); vSay(micWhy(e)); return null; }
-  finally { voice.asking = false; }
-}
-async function recToggle() {
-  if (voice.rec) { recStop(); return; }
-  if (voice.busy || voice.asking) return;
-  if (!audio()) { vSay('This browser cannot play sound.'); return; }
-  if (live) liveStop();
-  if (voice.stop) voice.stop();
-  const stream = await askMic({ echoCancellation: false, noiseSuppression: true, autoGainControl: true });
-  if (!stream) return;
-  await wakeEngine();
-  if (E) E.setVol(0);   // keep the pads out of the recording
-  // Two recorders run side by side: the raw sound taken straight from the microphone, and the phone's own recorder as a spare.
-  const sr = actx.sampleRate, chunks = [], parts = [], t0 = performance.now();
-  let total = 0, heard = 0, src = null, tap = null, mute = null, mr = null;
-  try {
-    src = actx.createMediaStreamSource(stream);
-    tap = actx.createScriptProcessor(4096, 1, 1); mute = actx.createGain(); mute.gain.value = 0;
-    tap.onaudioprocess = ev => {
-      const d = ev.inputBuffer.getChannelData(0);
-      chunks.push(new Float32Array(d)); total += d.length;
-      let m = 0;
-      for (let i = 0; i < d.length; i += 4) { const v = Math.abs(d[i]); if (v > m) m = v; }
-      if (m > heard) heard = m;
-      mic.level = Math.min(1, m * 5);
-    };
-    src.connect(tap); tap.connect(mute); mute.connect(actx.destination);
-  } catch (e) { tap = null; }
-  try { if (window.MediaRecorder) { mr = new MediaRecorder(stream); mr.ondataavailable = e => { if (e.data && e.data.size) parts.push(e.data); }; mr.start(); } } catch (e) { mr = null; }
-  const tidy = () => {
-    stream.getTracks().forEach(tr => tr.stop());
-    try { if (tap) { tap.onaudioprocess = null; tap.disconnect(); mute.disconnect(); } if (src) src.disconnect(); } catch (e) {}
-    route('playback');
-    if (E) E.setVol(state.vol);
-    mic.level = 0; drawMic(performance.now());
-  };
-  if (!tap && !mr) { tidy(); vSay('This browser cannot record here. Choose a recording instead.'); return; }
-  const finish = async () => {
-    clearInterval(voice.tick); voice.rec = null; voice.asking = true; recLabel(false);
-    let bytes = null;
-    if (mr && mr.state !== 'inactive') bytes = await new Promise(res => {
-      const giveUp = setTimeout(() => res(null), 2000);
-      mr.onstop = () => { clearTimeout(giveUp); new Blob(parts, { type: mr.mimeType || 'audio/mp4' }).arrayBuffer().then(res, () => res(null)); };
-      try { mr.stop(); } catch (e) { clearTimeout(giveUp); res(null); }
-    });
-    tidy(); voice.asking = false;
-    if ((performance.now() - t0) / 1000 < 0.6) { vSay('That was too short. Press Speak, say something, then press Stop.'); return; }
-    if (total >= sr * 0.4 && heard >= 0.003) {
-      const mono = new Float32Array(Math.min(total, Math.floor(sr * 15)));
-      let at = 0;
-      for (const c of chunks) { if (at >= mono.length) break; mono.set(c.subarray(0, Math.min(c.length, mono.length - at)), at); at += c.length; }
-      voice.raw = mono; voice.sr = sr;
-      voiceMake(true);
-    } else if (bytes && bytes.byteLength > 1500) voiceLoad(bytes);
-    else vSay(total || bytes ? 'The microphone only gave silence. Check this app is allowed to use the microphone, then try again.' : 'The microphone gave no sound at all. Close the app, open it again and press Speak.');
-  };
-  voice.rec = { stop: finish };
-  voice.tick = setInterval(() => {
-    const secs = (performance.now() - t0) / 1000;
-    drawMic(performance.now());
-    if (tap && !total && secs > 1) actx.resume().catch(() => {});
-    vSay('Listening, ' + Math.floor(secs) + ' s. Say something, then press Stop.');
-    if (secs >= 12) recStop();
-  }, 90);
-  recLabel(true);
-  vSay('Listening. Say something, then press Stop.');
-}
-
-/* ---------- live whisper: talk, and hear it whispered as you go ---------- */
-let live = null;
-const vLive = $('#voice-live');
-function liveLabel(on) { $('#voice-live-t').textContent = on ? 'Stop live whisper' : 'Live whisper'; vLive.classList.toggle('on', on); $('#mic-off').hidden = mic.on || on || !!voice.rec; }
-function liveStop() {
-  if (!live) return;
-  clearInterval(live.tick); live.node.stop();
-  live.stream.getTracks().forEach(tr => tr.stop());
-  live = null;
-  route('playback');
-  mic.level = 0; drawMic(performance.now());
-  liveLabel(false); syncLoops();
-  vSay('Live whisper is off.');
-}
-async function liveToggle() {
-  if (live) { liveStop(); return; }
-  if (voice.rec || voice.busy || voice.asking) return;
-  const en = audio();
-  if (!en) { vSay('This browser cannot play sound.'); return; }
-  if (voice.stop) voice.stop();
-  // echo cancelling on, so the phone's own speaker is not whispered back again
-  const stream = await askMic({ echoCancellation: true, noiseSuppression: true, autoGainControl: true });
-  if (!stream) return;
-  await wakeEngine();
-  let node;
-  try { node = en.liveWhisper(stream); } catch (e) { stream.getTracks().forEach(tr => tr.stop()); route('playback'); vSay('Live whisper could not start (' + ((e && e.name) || 'error') + ').'); return; }
-  const td = new Uint8Array(512), trim = padOf('mouth', 'Tongue click').trim * 0.6;
-  let quiet = 999;
-  live = { stream, node, tick: setInterval(() => {
-    node.an.getByteTimeDomainData(td);
-    let m = 0;
-    for (let i = 0; i < td.length; i++) { const v = Math.abs(td[i] - 128); if (v > m) m = v; }
-    const lv = m / 128;
-    mic.level = Math.min(1, lv * 5); drawMic(performance.now()); wake();
-    // lips part as each new word starts
-    if (lv < 0.02) quiet += 70;
-    else { if (quiet >= 220 && Math.random() < 0.7) en.play({ trim, fn: t => mouthTick(t, rnd(-0.6, 0.6), Math.random() < 0.5 ? 1 : 0) }); quiet = 0; }
-  }, 70) };
-  liveLabel(true); syncLoops();
-  nowEl.textContent = 'Live whisper';
-  vSay('Live. Talk, and you hear it whispered. Headphones stop it echoing.');
 }
 
 /* ---------- mixes, the sleep timer, and stopping everything ---------- */
@@ -2187,11 +1910,7 @@ function playMix(i) {
   });
   syncLoops(); nowEl.textContent = 'Mix: ' + MIXES[i].name; wake();
 }
-function stopEverything() {
-  stopLoops(); setAuto(false);
-  if (voice.stop) voice.stop();
-  recStop(); liveStop(); syncLoops();
-}
+function stopEverything() { stopLoops(); setAuto(false); setStroke(false); syncLoops(); }
 let sleepEnd = 0, sleepT = 0, sleepTick = 0;
 function setSleep(min) {
   clearTimeout(sleepT); clearInterval(sleepTick);
@@ -2212,7 +1931,7 @@ function setSleep(min) {
 const gameEl = $('#game-body'), gameTabs = $('#game-tabs'), BEST = 'world-of-asmr-best';
 let best = {}, game = 'pop', gameTimers = [];
 try { best = JSON.parse(localStorage.getItem(BEST) || '{}') || {}; } catch (e) {}
-['pop', 'cat', 'quiz'].forEach(k => { if (typeof best[k] !== 'number') delete best[k]; });
+['pop', 'cat', 'quiz', 'pairs'].forEach(k => { if (typeof best[k] !== 'number') delete best[k]; });
 const saveBest = () => { try { localStorage.setItem(BEST, JSON.stringify(best)); } catch (e) {} };
 const later = (fn, ms) => { gameTimers.push(setTimeout(fn, ms)); };
 const padOf = (zid, name) => ZONES.find(z => z.id === zid).pads.find(q => q.name === name);
@@ -2329,11 +2048,51 @@ function quizPick(i) {
   gActions(gBtn('g-again', 'Hear it again') + (end ? gBtn('g-start', 'Play again') : gBtn('g-next', 'Next sound')));
 }
 
+// Sound Pairs: twelve cards face down, six sounds, each one twice. Find the pairs.
+let pairs = null;
+function pairsNew() {
+  const all = ZONES.flatMap(z => z.pads.filter(q => !q.loop)), picks = [];
+  while (picks.length < 6) { const c = pick(all); if (!picks.some(q => q.name === c.name)) picks.push(c); }
+  pairs = { cards: picks.concat(picks).sort(() => Math.random() - 0.5), open: [], done: new Set(), turns: 0, lock: false };
+  gShell('Turn over two cards. If they make the same sound, they stay.' + (best.pairs ? ' Your best is ' + best.pairs + ' turns.' : ''),
+    '<div class="pairs" id="pairs">' + pairs.cards.map((c, i) => '<button type="button" class="cap blank card" data-k="' + i + '" aria-label="Card ' + (i + 1) + ', face down">?</button>').join('') + '</div>',
+    gBtn('g-new', 'New cards'));
+}
+function pairsFlip(i) {
+  if (!pairs || pairs.lock || pairs.done.has(i) || pairs.open.includes(i)) return;
+  const row = $('#pairs').children, show = (k, up) => {
+    const b = row[k];
+    b.textContent = up ? pairs.cards[k].name : '?';
+    b.classList.toggle('up', up);
+    b.setAttribute('aria-label', up ? pairs.cards[k].name : 'Card ' + (k + 1) + ', face down');
+  };
+  show(i, true);
+  const e = audio();
+  if (e) { e.play(pairs.cards[i]); wake(); }
+  pairs.open.push(i);
+  if (pairs.open.length < 2) return;
+  pairs.turns++;
+  const [a, b] = pairs.open;
+  if (pairs.cards[a] === pairs.cards[b]) {
+    pairs.done.add(a); pairs.done.add(b); pairs.open = [];
+    row[a].classList.add('right'); row[b].classList.add('right');
+    if (pairs.done.size < pairs.cards.length) { gSay('A pair. ' + (pairs.cards.length - pairs.done.size) / 2 + ' to find.'); return; }
+    const record = !best.pairs || pairs.turns < best.pairs;
+    if (record) { best.pairs = pairs.turns; saveBest(); }
+    gSay('All six pairs in ' + pairs.turns + ' turns.' + (record ? ' That is your best yet.' : ' Your best is ' + best.pairs + '.'));
+    later(() => sfx(padOf('sleepy', 'Sparkle'), padOf('sleepy', 'Sparkle').fn), 500);
+  } else {
+    pairs.lock = true;
+    gSay('Not a pair.');
+    later(() => { show(a, false); show(b, false); pairs.open = []; pairs.lock = false; }, 1000);
+  }
+}
+
 function setGame(id) {
   gameTimers.forEach(clearTimeout); gameTimers = [];
   game = id;
   [...gameTabs.children].forEach(b => b.setAttribute('aria-checked', b.dataset.g === id ? 'true' : 'false'));
-  if (id === 'cat') catNew(); else if (id === 'quiz') quizNew(); else popNew();
+  if (id === 'cat') catNew(); else if (id === 'quiz') quizNew(); else if (id === 'pairs') pairsNew(); else popNew();
 }
 
 /* ---------- wiring ---------- */
@@ -2403,7 +2162,7 @@ function start(data) {
 
   powerEl.addEventListener('click', () => setMicOn(!mic.on));
   $('#mic-wake').addEventListener('click', () => setMicOn(true));
-  matsEl.addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (b) { state.mat = +b.dataset.m; syncMic(); save(); if (mic.on) nowEl.textContent = 'Mic: ' + MATS[state.mat].name; } });
+  matsEl.addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (b) { state.mat = +b.dataset.m; endPtr('auto'); syncMic(); save(); if (mic.on) nowEl.textContent = 'Mic: ' + MATS[state.mat].name; } });
   sensEl.addEventListener('click', e => { const b = e.target.closest('[data-s]'); if (b) { state.sens = +b.dataset.s; syncMic(); save(); } });
   micStage.addEventListener('pointerdown', micDown, { passive: false });
   micStage.addEventListener('pointermove', micMove);
@@ -2415,28 +2174,12 @@ function start(data) {
   if (window.MutationObserver) new MutationObserver(redraw).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   if (window.ResizeObserver) new ResizeObserver(() => drawMic(performance.now())).observe(micCv);
 
-  // say it in ASMR
-  $('#voice-note').textContent = STANDALONE
-    ? 'Press Speak into the mic, say something, then press Stop. It comes back as a close-up whisper with the little mouth clicks added. Live whisper does it while you talk. Your voice stays on this device.'
-    : 'Inside Claude this page is not allowed to hear a microphone, so you cannot speak into it here. Open the app at its own address and the Speak button appears. Here you can still choose a voice recording and hear it whispered back. Your recording stays on this device.';
-  vRec.hidden = !STANDALONE; vLive.hidden = !STANDALONE; $('#voice-open').hidden = STANDALONE;
-  vLive.addEventListener('click', liveToggle);
   $('#mixes').innerHTML = MIXES.map((m, i) => '<button type="button" class="cap blank" id="mix-' + i + '" data-mix="' + i + '">' + m.name + '</button>').join('');
   $('#mixes').addEventListener('click', e => { const b = e.target.closest('[data-mix]'); if (b) playMix(+b.dataset.mix); });
   $('#sleep').addEventListener('click', e => { const b = e.target.closest('[data-min]'); if (b) setSleep(+b.dataset.min); });
-  if (STANDALONE) $('#mic .deck-head p').textContent += ' Or press Speak into the mic and hear your own voice whispered back.';
-  vRec.addEventListener('click', recToggle);
-  $('#voice-pick').addEventListener('click', () => { audio(); vFile.click(); });
-  vFile.addEventListener('change', async () => { const f = vFile.files && vFile.files[0]; vFile.value = ''; if (f) voiceLoad(await f.arrayBuffer()); });
-  vPlay.addEventListener('click', () => { if (voice.stop) voice.stop(); else voicePlay(); });
-  $('#voice-mode').addEventListener('click', e => {
-    const b = e.target.closest('[data-v]');
-    if (!b) return;
-    voice.mode = b.dataset.v;
-    [...$('#voice-mode').children].forEach(k => k.setAttribute('aria-checked', k === b ? 'true' : 'false'));
-    if (voice.stop) voice.stop();
-    voiceMake(true);
-  });
+  strokeEl.addEventListener('click', () => setStroke(!strokeT));
+  // the automatic finger rests while the page is out of sight
+  document.addEventListener('visibilitychange', () => { if (document.hidden) endPtr('auto'); });
 
   // games
   gameTabs.addEventListener('click', e => { const b = e.target.closest('[data-g]'); if (b) setGame(b.dataset.g); });
@@ -2453,7 +2196,8 @@ function start(data) {
   });
   gameEl.addEventListener('click', e => {
     const t = e.target, byKey = e.detail === 0;
-    if (t.closest('#g-new')) popNew();
+    if (t.closest('#g-new')) { if (game === 'pairs') pairsNew(); else popNew(); }
+    else if (t.closest('.card')) pairsFlip(+t.closest('.card').dataset.k);
     else if (t.closest('#g-start')) { if (game === 'cat') { cat.seq = []; catRound(); } else { quiz.n = 0; quiz.score = 0; quizNext(); } }
     else if (t.closest('#g-again')) quizPlay();
     else if (t.closest('#g-next')) quizNext();
